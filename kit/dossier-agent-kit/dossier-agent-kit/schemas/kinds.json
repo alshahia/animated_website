@@ -1,0 +1,189 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Kind Matrix (structured)",
+  "source_authority": "01_kinds.md, 01_kinds_taxonomy.md",
+  "dossier_snapshot_date": "2026-07-29",
+  "kinds": [
+    {
+      "id": "kind-i",
+      "name": "Scroll-driven reveal / parallax",
+      "trigger": "scroll",
+      "surface": "DOM/CSS + page sections",
+      "guide_file": "03_build_guides/01_kind-i_scroll_reveal.md",
+      "primary_engines": [
+        { "name": "CSS animation-timeline", "license": "native", "when": "browser support acceptable, Chromium-first audience" },
+        { "name": "GSAP ScrollTrigger", "license": "MIT", "when": "non-trivial pin/scrub/sequencing, or Firefox support required" },
+        { "name": "Lenis", "license": "MIT", "when": "paired with GSAP for smooth scroll; do not combine with native smooth scroll" }
+      ],
+      "min_viable_condition": "section_count >= 3",
+      "consumes_budget": [],
+      "reduced_motion_behavior": "kill pin:true/scrub:true triggers, ScrollTrigger.normalizeScroll(false), render in normal document flow",
+      "acceptance_test_ref": "tests/kind-i.spec.ts"
+    },
+    {
+      "id": "kind-ii",
+      "name": "3D scene / WebGL / WebGPU",
+      "trigger": "scroll+pointer",
+      "surface": "3D/WebGL/WebGPU hero or page",
+      "guide_file": "03_build_guides/02_kind-ii_3d_scene.md",
+      "primary_engines": [
+        { "name": "Three.js r185+ / React Three Fiber", "license": "MIT", "when": "React team, needs WebGPU baseline with WebGL fallback" },
+        { "name": "Babylon.js", "license": "Apache-2.0", "when": "product viz needing PBR/physics/Gaussian splatting" },
+        { "name": "<model-viewer>", "license": "Apache-2.0", "when": "one-tag GLB+AR embed, no custom scene logic needed" }
+      ],
+      "min_viable_condition": "has_3d_asset == true AND asset <= 5MB glTF",
+      "consumes_budget": ["motion.limit.full-viewport-scenes"],
+      "reduced_motion_behavior": "frameloop='demand', OrbitControls autoRotate=false, static camera view, poster image remains LCP",
+      "acceptance_test_ref": "tests/kind-ii.spec.ts"
+    },
+    {
+      "id": "kind-iii",
+      "name": "Shader / GLSL fragment",
+      "trigger": "ambient+pointer",
+      "surface": "full-viewport fragment",
+      "guide_file": "03_build_guides/03_kind-iii_shader.md",
+      "primary_engines": [
+        { "name": "Three.js shaderMaterial / TSL", "license": "MIT", "when": "Three.js already loaded (co-locate with kind-ii)" },
+        { "name": "OGL", "license": "MIT", "when": "standalone shader-only page, tree-shaking matters" },
+        { "name": "glslCanvas", "license": "MIT", "when": "one script tag, no build step" }
+      ],
+      "min_viable_condition": "team has GLSL authoring capacity AND compile time < 200ms on mid-tier Android",
+      "consumes_budget": ["motion.limit.full-viewport-scenes", "motion.limit.ambient-loops"],
+      "reduced_motion_behavior": "replace canvas with static gradient div; do not run RAF without rendering",
+      "acceptance_test_ref": "tests/kind-iii.spec.ts"
+    },
+    {
+      "id": "kind-iv",
+      "name": "Cursor / pointer-tracking",
+      "trigger": "pointer",
+      "surface": "DOM/CSS or 3D-tilt",
+      "guide_file": "03_build_guides/04_kind-iv_cursor_tracking.md",
+      "primary_engines": [
+        { "name": "GSAP quickTo", "license": "MIT", "when": "vanilla, single magnetic CTA" },
+        { "name": "Motion useMotionValue", "license": "MIT", "when": "React, spring-physics preferred, already using Motion elsewhere" }
+      ],
+      "min_viable_condition": "audience is desktop-first B2B/SaaS/portfolio, NOT form-heavy or mobile-first",
+      "consumes_budget": ["motion.limit.concurrent"],
+      "reduced_motion_behavior": "no pointermove handler at all; static layout; browser cursor never hidden",
+      "acceptance_test_ref": "tests/kind-iv.spec.ts"
+    },
+    {
+      "id": "kind-v",
+      "name": "Animated illustration (Lottie/dotLottie/Rive)",
+      "trigger": "state_machine_or_time",
+      "surface": "2D canvas/vector inline",
+      "guide_file": "03_build_guides/05_kind-v_animated_illustration.md",
+      "primary_engines": [
+        { "name": "dotLottie-web", "license": "MIT", "when": "stateless loop, smallest bundle, new asset" },
+        { "name": "Rive runtime", "license": "MIT runtime / SaaS editor", "when": "multi-state UI (idle->hover->pressed) driven by user input" }
+      ],
+      "min_viable_condition": "illustration replaces a paragraph of explanation, not decoration",
+      "consumes_budget": ["motion.limit.concurrent"],
+      "reduced_motion_behavior": "autoplay=false, render first frame only",
+      "acceptance_test_ref": "tests/kind-v.spec.ts"
+    },
+    {
+      "id": "kind-vi",
+      "name": "Preloader / intro sequence",
+      "trigger": "page_load",
+      "surface": "full-viewport once",
+      "guide_file": "03_build_guides/06_kind-vi_preloader.md",
+      "primary_engines": [
+        { "name": "GSAP timeline on window.load", "license": "MIT", "when": "heavy hero assets that genuinely take >1s" }
+      ],
+      "min_viable_condition": "real asset load time > 1s AND brand intro is part of the product story; default is NO preloader",
+      "consumes_budget": ["motion.limit.full-viewport-scenes (only during visible window)"],
+      "reduced_motion_behavior": "skip fade, dismiss synchronously on window.load",
+      "acceptance_test_ref": "tests/kind-vi.spec.ts"
+    },
+    {
+      "id": "kind-vii",
+      "name": "Page transitions (SPA)",
+      "trigger": "navigation",
+      "surface": "full-viewport route",
+      "guide_file": "03_build_guides/07_kind-vii_page_transitions.md",
+      "primary_engines": [
+        { "name": "View Transitions API", "license": "native", "when": "Chromium/Safari primary audience" },
+        { "name": "Swup", "license": "MIT", "when": "SSR site needing Firefox fallback" }
+      ],
+      "min_viable_condition": "is_spa == true",
+      "consumes_budget": ["motion.limit.full-viewport-scenes (momentarily)"],
+      "reduced_motion_behavior": "browser auto-snaps to instant crossfade; explicit CSS override optional",
+      "acceptance_test_ref": "tests/kind-vii.spec.ts"
+    },
+    {
+      "id": "kind-viii",
+      "name": "Microinteraction / CSS-only",
+      "trigger": "hover_focus_click",
+      "surface": "inline block",
+      "guide_file": "03_build_guides/08_kind-viii_microinteraction.md",
+      "primary_engines": [
+        { "name": "CSS transition", "license": "native", "when": "always the baseline" },
+        { "name": "Motion (motion/react)", "license": "MIT", "when": "React, spring physics needed" }
+      ],
+      "min_viable_condition": "mandatory baseline — always included",
+      "consumes_budget": ["motion.limit.concurrent"],
+      "reduced_motion_behavior": "opacity/color only, no translate/scale",
+      "acceptance_test_ref": "tests/kind-viii.spec.ts"
+    },
+    {
+      "id": "kind-ix",
+      "name": "Generative art / canvas",
+      "trigger": "ambient_scroll",
+      "surface": "full-viewport or hero canvas",
+      "guide_file": "03_build_guides/09_kind-ix_generative_art.md",
+      "primary_engines": [
+        { "name": "p5.js (instance mode)", "license": "LGPL-2.1", "when": "quick iteration, beginner-friendly" },
+        { "name": "canvas-sketch", "license": "MIT", "when": "engineering-grade, production hero" }
+      ],
+      "min_viable_condition": "site benefits from ambient movement but does not have a 3D asset",
+      "consumes_budget": ["motion.limit.full-viewport-scenes", "motion.limit.ambient-loops"],
+      "reduced_motion_behavior": "noLoop() after one draw, or unmount canvas for static img",
+      "acceptance_test_ref": "tests/kind-ix.spec.ts"
+    },
+    {
+      "id": "kind-x",
+      "name": "Audio-reactive",
+      "trigger": "audio_input",
+      "surface": "hero/sections canvas",
+      "guide_file": "03_build_guides/10_kind-x_audio_reactive.md",
+      "primary_engines": [
+        { "name": "Web Audio API", "license": "native", "when": "single audio element, bundle-conscious" },
+        { "name": "Tone.js", "license": "MIT", "when": "rich audio routing" }
+      ],
+      "min_viable_condition": "has_audio_input == true AND explicit user-gesture gate implemented",
+      "consumes_budget": ["motion.limit.concurrent", "motion.limit.ambient-loops"],
+      "reduced_motion_behavior": "static equalizer bars, no RAF-driven animation",
+      "acceptance_test_ref": "tests/kind-x.spec.ts"
+    },
+    {
+      "id": "kind-xi",
+      "name": "AR / <model-viewer>",
+      "trigger": "tap",
+      "surface": "inline/hero 3D",
+      "guide_file": "03_build_guides/11_kind-xi_ar_model_viewer.md",
+      "primary_engines": [
+        { "name": "<model-viewer>", "license": "Apache-2.0", "when": "GLB + AR on iOS in one tag; requires explicit human opt-in per R11_ar_gate (not auto-selected by router)" }
+      ],
+      "min_viable_condition": "explicit_user_request_for_ar_quicklook == true (manual opt-in only, mirrors R12 for kind-xii); also requires product is physical AND glTF/USDZ asset <= 5MB exists",
+      "consumes_budget": ["motion.limit.full-viewport-scenes (if hero-sized)"],
+      "reduced_motion_behavior": "poster image only, no auto-rotate",
+      "acceptance_test_ref": "tests/kind-xi.spec.ts (no starter demo — opt-in only; agent must add component + spec when user explicitly requests AR)"
+    },
+    {
+      "id": "kind-xii",
+      "name": "AI-generated live motion",
+      "trigger": "runtime_api_call",
+      "surface": "hero/sections canvas",
+      "guide_file": "03_build_guides/12_kind-xii_ai_live_motion.md",
+      "primary_engines": [
+        { "name": "Motion AI Kit", "license": "MIT client + provider ToS", "when": "drop-in prompt-to-palette" },
+        { "name": "Vercel AI SDK", "license": "MIT client + provider ToS", "when": "custom streaming UI" }
+      ],
+      "min_viable_condition": "explicit user opt-in per request; never default-included by the router",
+      "consumes_budget": ["motion.limit.concurrent (capped at 1, single-flight)", "motion.limit.full-viewport-scenes"],
+      "reduced_motion_behavior": "apply generated palette with 0ms transition; Cancel still works",
+      "acceptance_test_ref": "tests/kind-xii.spec.ts"
+    }
+  ]
+}

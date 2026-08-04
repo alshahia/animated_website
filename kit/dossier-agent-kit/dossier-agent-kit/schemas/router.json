@@ -1,0 +1,186 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Animated-Website Dossier Router",
+  "description": "Deterministic input->output routing so an agent does not have to re-derive kind/stack decisions by reading prose tables across 13+ files. Consumes a brief, emits an ordered build plan. Authority: 01_kinds.md, 01_kinds_taxonomy.md, 02_resources.md, 05_conversion_playbook.md.",
+  "version": "1.0.0",
+  "dossier_snapshot_date": "2026-07-29",
+
+  "input_schema": {
+    "site_type": {
+      "type": "enum",
+      "values": ["marketing_landing", "portfolio", "product_ecommerce", "editorial_longform", "saas_app_marketing", "docs_or_blog"],
+      "required": true
+    },
+    "audience": {
+      "type": "enum",
+      "values": ["senior_dev", "junior_dev", "non_technical_founder"],
+      "required": true,
+      "effect": "gates which stack tier is offered; non_technical_founder routes to no-code, never to a raw engine pick"
+    },
+    "framework": {
+      "type": "enum",
+      "values": ["react_next", "react_vite", "vue_nuxt", "vanilla_static", "no_code_platform", "unspecified"],
+      "required": true
+    },
+    "has_3d_asset": { "type": "boolean", "default": false },
+    "has_audio_input": { "type": "boolean", "default": false },
+    "is_spa": { "type": "boolean", "default": false },
+    "perf_tier": {
+      "type": "enum",
+      "values": ["strict", "standard", "relaxed"],
+      "default": "standard",
+      "effect": "strict caps JS budget at 100KB gz and forbids kind ii/iii/ix full-viewport scenes unless has_3d_asset is explicitly true"
+    },
+    "brand_intensity": {
+      "type": "enum",
+      "values": ["editorial_cinematic", "product_clean", "playful"],
+      "default": "product_clean",
+      "effect": "selects the typography/duration profile in 06_motion_grammar.md (family-editorial-* vs family-product-* vs family-playful-*)"
+    },
+    "section_count": { "type": "integer", "default": 5, "effect": "< 3 sections disqualifies kind (i) per 01_kind-i_scroll_reveal.md why-not checklist" }
+  },
+
+  "routing_rules": [
+    {
+      "id": "R1_no_code_gate",
+      "condition": "audience == 'non_technical_founder' OR framework == 'no_code_platform'",
+      "action": "STOP_AND_ROUTE",
+      "route_to": "02_resources/06_no_code_platforms.md",
+      "output": { "stack": "webflow_or_framer", "kinds": [], "reason": "per 01_kinds.md §5 + 06_no_code_platforms.md §8: founders are not picking an engine" }
+    },
+    {
+      "id": "R2_baseline_kinds",
+      "condition": "always (after R1 fails)",
+      "action": "ADD_KIND",
+      "kind": "kind-viii",
+      "reason": "microinteraction is mandatory baseline per 01_kinds.md §7 / 04_do_dont.md; every button/link needs hover+focus feedback"
+    },
+    {
+      "id": "R3_scroll_reveal_gate",
+      "condition": "section_count >= 3",
+      "action": "ADD_KIND",
+      "kind": "kind-i",
+      "engine_pick": "CSS animation-timeline if browser_support_acceptable else GSAP ScrollTrigger + Lenis",
+      "reason": "01_kind-i_scroll_reveal.md why-not checklist: <3 sections disqualifies this kind"
+    },
+    {
+      "id": "R4_hero_surface_pick",
+      "condition": "site_type in ['product_ecommerce'] AND has_3d_asset == true",
+      "action": "ADD_KIND",
+      "kind": "kind-ii",
+      "constraint": "consumes the ONE motion.limit.full-viewport-scenes slot; no kind-iii/ix full-viewport scene may coexist",
+      "reason": "02_kind-ii_3d_scene.md: use when product is physical and glTF asset exists"
+    },
+    {
+      "id": "R5_hero_surface_pick_no_asset",
+      "condition": "site_type in ['marketing_landing','saas_app_marketing'] AND has_3d_asset == false AND perf_tier != 'strict'",
+      "action": "ADD_KIND_CHOICE",
+      "choices": ["kind-iii (shader, needs GLSL capacity)", "kind-ix (generative art, p5.js/canvas-sketch, lower authoring cost)"],
+      "default_if_unspecified": "kind-ix",
+      "constraint": "consumes the ONE motion.limit.full-viewport-scenes slot",
+      "reason": "01_kinds.md §5 'Fill a hero with a fluid/gradient/particle background'"
+    },
+    {
+      "id": "R6_illustration_gate",
+      "condition": "site_type in ['saas_app_marketing','product_ecommerce'] AND brand_intensity != 'editorial_cinematic'",
+      "action": "ADD_KIND_OPTIONAL",
+      "kind": "kind-v",
+      "sub_pick": "dotLottie for stateless loops; Rive if onboarding/empty-state needs hover->active->pressed states",
+      "reason": "05_kind-v_animated_illustration.md decision criterion table"
+    },
+    {
+      "id": "R7_preloader_gate",
+      "condition": "has_3d_asset == true OR (site_type == 'portfolio' AND brand_intensity == 'editorial_cinematic')",
+      "action": "ADD_KIND_OPTIONAL",
+      "kind": "kind-vi",
+      "constraint": "only if real asset load > 1s; NEVER add as decoration (06_kind-vi_preloader.md 'Avoid mandatory preloaders')",
+      "reason": "heavy hero assets (glTF, video) justify a load mask"
+    },
+    {
+      "id": "R8_page_transitions_gate",
+      "condition": "is_spa == true",
+      "action": "ADD_KIND",
+      "kind": "kind-vii",
+      "engine_pick": "View Transitions API with Swup/Barba.js fallback for Firefox",
+      "reason": "07_kind-vii_page_transitions.md; only relevant to SPA route changes, not MPA"
+    },
+    {
+      "id": "R9_cursor_gate",
+      "condition": "audience == 'senior_dev' AND site_type in ['portfolio','marketing_landing'] AND perf_tier != 'strict'",
+      "action": "ADD_KIND_OPTIONAL",
+      "kind": "kind-iv",
+      "constraint": "must be disabled on (pointer: coarse); do not add to product_ecommerce forms",
+      "reason": "04_kind-iv_cursor_tracking.md why-not checklist excludes form-heavy/mobile-first sites"
+    },
+    {
+      "id": "R10_audio_gate",
+      "condition": "has_audio_input == true",
+      "action": "ADD_KIND",
+      "kind": "kind-x",
+      "constraint": "AudioContext must be gated behind explicit user gesture; no autoplay",
+      "reason": "10_kind-x_audio_reactive.md"
+    },
+    {
+      "id": "R11_ar_gate",
+      "condition": "explicit_user_request_for_ar_quicklook == true",
+      "action": "ADD_KIND_OPTIONAL",
+      "kind": "kind-xi",
+      "constraint": "manual opt-in only (mirrors R12 for kind-xii) — requires a real glTF+USDZ pair (K11-1) and physical-product context; router never auto-selects even for product_ecommerce + has_3d_asset. USDZ has no open-source writer, so the kind is intentionally without a starter scaffold until a real user request arrives.",
+      "reason": "11_kind-xi_ar_model_viewer.md — iOS-only AR Quick Look needs USDZ; until user explicitly asks, omit the kind"
+    },
+    {
+      "id": "R12_ai_motion_gate",
+      "condition": "explicit_user_request_for_generative_prompt_ui == true",
+      "action": "ADD_KIND_OPTIONAL",
+      "kind": "kind-xii",
+      "constraint": "single-flight lock mandatory; never auto-invoked by this router without explicit opt-in",
+      "reason": "12_kind-xii_ai_live_motion.md — latency (1-10s) disqualifies default inclusion"
+    }
+  ],
+
+  "budget_allocation_after_routing": {
+    "rule": "sum ADD_KIND full-viewport-scene consumers across the plan; if > 1, router MUST fail with a conflict error rather than silently picking one",
+    "motion.limit.full-viewport-scenes": {
+      "cap": 1,
+      "consumers": ["kind-ii", "kind-iii", "kind-ix (if full-viewport)", "kind-vi (only during visible window)"]
+    },
+    "motion.limit.ambient-loops": {
+      "cap": 2,
+      "consumers": ["kind-iii", "kind-ix", "kind-x", "kind-v (dotLottie loops)"]
+    },
+    "motion.limit.concurrent": {
+      "cap": 8,
+      "note": "sum of simultaneously-visible animated tracks across ALL active kinds on one viewport, not per-kind"
+    }
+  },
+
+  "output_schema": {
+    "ordered_kind_list": "array of kind IDs in build order (baseline kind-viii first, hero surface kind last so it can respect the full-viewport-scene budget check)",
+    "token_profile": "one of editorial | product | playful, selects typography.family-* and duration bias per 06_motion_grammar.md",
+    "stack_pick": { "primary_engine": "string", "smooth_scroll": "string|null", "license_summary": "array" },
+    "starter_scaffold_ref": "path into starters/ matching framework + primary_engine",
+    "file_refs": "array of dossier file paths the agent must read before generating code for each selected kind",
+    "conflicts": "array, non-empty only if budget_allocation check failed — router must surface this to the human before proceeding"
+  },
+
+  "example_trace": {
+    "input": {
+      "site_type": "saas_app_marketing",
+      "audience": "senior_dev",
+      "framework": "react_next",
+      "has_3d_asset": false,
+      "is_spa": true,
+      "perf_tier": "standard",
+      "brand_intensity": "product_clean",
+      "section_count": 6
+    },
+    "fires": ["R2_baseline_kinds", "R3_scroll_reveal_gate", "R5_hero_surface_pick_no_asset(default=kind-ix)", "R8_page_transitions_gate"],
+    "output": {
+      "ordered_kind_list": ["kind-viii", "kind-i", "kind-vii", "kind-ix"],
+      "token_profile": "product",
+      "stack_pick": { "primary_engine": "GSAP + ScrollTrigger", "smooth_scroll": "Lenis", "license_summary": ["GSAP MIT", "Lenis MIT", "canvas-sketch MIT"] },
+      "starter_scaffold_ref": "starters/nextjs-gsap-lenis",
+      "conflicts": []
+    }
+  }
+}

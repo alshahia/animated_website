@@ -1,0 +1,119 @@
+{
+  "title": "Forbidden Patterns (lint-able)",
+  "source_authority": "04_do_dont.md, 03_build_guides.md §5, per-kind guide 'Forbidden patterns' tables",
+  "note": "check field is a description of a static/runtime check an agent or linter can implement; not literal executable code, but specific enough to translate into one directly",
+  "cross_cutting": [
+    {
+      "id": "CC1",
+      "pattern": "animating width/height/top/left/right/bottom/margin/padding",
+      "reason": "triggers layout reflow, regresses INP",
+      "fix": "animate transform and opacity only",
+      "check": "grep animated CSS/JS for transition-property or gsap/motion calls targeting width|height|top|left|margin|padding; flag any match"
+    },
+    {
+      "id": "CC2",
+      "pattern": "* { animation-duration: 0.01ms !important; } as the sole reduced-motion strategy",
+      "reason": "breaks third-party widgets, strips intentional final-state design",
+      "fix": "implement per-behavior reduced-motion mapping from 06_motion_grammar.md",
+      "check": "grep global stylesheet for a single blanket !important override with no per-component branches"
+    },
+    {
+      "id": "CC3",
+      "pattern": "permanent will-change: transform on every animated element",
+      "reason": "memory bloat, layers never reclaimed",
+      "fix": "apply will-change immediately before animation, remove on completion/onComplete",
+      "check": "grep CSS/inline styles for will-change not paired with a removal in JS (onComplete, cleanup fn)"
+    },
+    {
+      "id": "CC4",
+      "pattern": "RAF loop running while document.hidden",
+      "reason": "battery drain",
+      "fix": "pause on visibilitychange === 'hidden', resume on visible",
+      "check": "static analysis: every requestAnimationFrame call site has a paired visibilitychange listener in the same component/module"
+    },
+    {
+      "id": "CC5",
+      "pattern": "AudioContext started without user gesture",
+      "reason": "blocked by browser autoplay policy, fails silently",
+      "fix": "gate behind explicit click/keydown handler",
+      "check": "grep for `new AudioContext()` or `Tone.start()` not inside an event handler callback"
+    },
+    {
+      "id": "CC6",
+      "pattern": "canvas/WebGL/model-viewer as the LCP element",
+      "reason": "canvas has no intrinsic dimensions, causes INP/LCP regression",
+      "fix": "2D poster image with explicit width/height is the LCP; canvas mounts after FCP",
+      "check": "Lighthouse: assert largestContentfulPaint element tagName !== 'CANVAS' and !== 'MODEL-VIEWER'"
+    },
+    {
+      "id": "CC7",
+      "pattern": "missing <noscript> fallback for canvas/WebGL/3D hero",
+      "reason": "SEO bots and no-JS users see nothing",
+      "fix": "static <img> with intrinsic dimensions inside <noscript>, or poster in normal DOM order before canvas",
+      "check": "grep hero component markup for canvas/model-viewer sibling with noscript or DOM-order poster image"
+    },
+    {
+      "id": "CC8",
+      "pattern": "motion.limit.concurrent exceeded (> 8 simultaneously visible tracks)",
+      "reason": "visual chaos, INP regression",
+      "fix": "cap active tracks, defer/stagger the rest",
+      "check": "runtime: count simultaneously-animating elements in viewport at any timestamp during Playwright trace"
+    },
+    {
+      "id": "CC9",
+      "pattern": "modifier-click (Cmd/Ctrl/Shift+click) intercepted by custom routing/transition logic",
+      "reason": "breaks browser-native open-in-new-tab",
+      "fix": "check e.metaKey || e.ctrlKey || e.shiftKey and return early before preventDefault",
+      "check": "Playwright: Cmd+click a nav link, assert a new tab/context opens instead of SPA transition firing"
+    },
+    {
+      "id": "CC10",
+      "pattern": "hover-only styling with no (hover:hover) media gate",
+      "reason": "touch devices get a stuck/awkward hover state",
+      "fix": "wrap :hover rules in @media (hover: hover) and (pointer: fine)",
+      "check": "grep CSS for bare :hover selectors outside a (hover: hover) media block"
+    }
+  ],
+  "per_kind_additions": {
+    "kind-i": [
+      { "id": "K1-1", "pattern": "ScrollTrigger instance created without .kill() on unmount", "check": "Playwright: unmount component tree, assert ScrollTrigger.getAll().length === 0" },
+      { "id": "K1-2", "pattern": "gsap.ticker.lagSmoothing(0) with no measured evidence", "check": "grep for lagSmoothing(0) and flag for manual review" }
+    ],
+    "kind-ii": [
+      { "id": "K2-1", "pattern": "frameloop='always' on pages with >5s of no interaction", "check": "flag any <Canvas> missing frameloop='demand' or a matching invalidate() call" },
+      { "id": "K2-2", "pattern": "WebGPURenderer used without navigator.gpu feature detection", "check": "grep for WebGPURenderer instantiation not preceded by an 'gpu' in navigator check" }
+    ],
+    "kind-iii": [
+      { "id": "K3-1", "pattern": "gl_PointSize unbounded (>64px) on mobile", "check": "grep fragment shader source for gl_PointSize without a clamp/min()" }
+    ],
+    "kind-iv": [
+      { "id": "K4-1", "pattern": "pointer handler active on (pointer: coarse)", "check": "Playwright: emulate touch device, assert no pointermove listener registered" },
+      { "id": "K4-2", "pattern": "focus ring replaced by motion-only feedback", "check": "Playwright: Tab to element, assert outline/outline-color changes independent of any transform" }
+    ],
+    "kind-v": [
+      { "id": "K5-1", "pattern": "lottie.loadAnimation without destroy() on unmount", "check": "Playwright: unmount, assert no lingering RAF via performance monitor" }
+    ],
+    "kind-vi": [
+      { "id": "K6-1", "pattern": "preloader visible for >5s with no hard timeout ceiling", "check": "grep for a setTimeout dismiss fallback alongside the window.load listener" }
+    ],
+    "kind-vii": [
+      { "id": "K7-1", "pattern": "no Firefox fallback for document.startViewTransition", "check": "grep for a `if (!document.startViewTransition)` branch near every call site" }
+    ],
+    "kind-viii": [
+      { "id": "K8-1", "pattern": "transition: all instead of enumerated properties", "check": "grep CSS for `transition: all`" }
+    ],
+    "kind-ix": [
+      { "id": "K9-1", "pattern": "unbounded particle count", "check": "grep for particle loop bound not derived from motion.limit.concurrent" }
+    ],
+    "kind-x": [
+      { "id": "K10-1", "pattern": "MediaElementAudioSourceNode created without crossOrigin='anonymous' set first", "check": "grep for createMediaElementSource call, verify crossOrigin assignment precedes it" }
+    ],
+    "kind-xi": [
+      { "id": "K11-1", "pattern": "USDZ shipped for non-iOS-only audience without a glTF counterpart", "check": "verify both a .glb and .usdz asset exist for the same model-viewer src set" }
+    ],
+    "kind-xii": [
+      { "id": "K12-1", "pattern": "model auto-invoked on component mount", "check": "grep for the inference call not gated behind a user-submit handler" },
+      { "id": "K12-2", "pattern": "no AbortController wired to a Cancel affordance", "check": "grep for fetch/stream call without a paired AbortController.abort() call site" }
+    ]
+  }
+}

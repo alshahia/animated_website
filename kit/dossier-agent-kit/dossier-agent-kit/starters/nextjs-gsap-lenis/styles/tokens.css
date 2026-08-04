@@ -1,0 +1,67 @@
+/*
+  Motion tokens as CSS custom properties.
+  Source of truth: 06_motion_grammar.md + tokens.json
+  RULE FOR AGENTS: never write a raw ms/px/cubic-bezier value in component code.
+  Always reference var(--motion-duration-*) etc. If a value you need isn't here,
+  that's a signal to re-check tokens.json rather than invent one.
+*/
+
+:root {
+  /* motion.duration.* */
+  --motion-duration-instant: 0ms;
+  --motion-duration-quick: 80ms;
+  --motion-duration-fast: 140ms;
+  --motion-duration-base: 220ms;
+  --motion-duration-slow: 360ms;
+  --motion-duration-story: 560ms;
+  --motion-duration-cinematic: 900ms;
+
+  /* motion.easing.* */
+  --motion-ease-linear: cubic-bezier(0, 0, 1, 1);
+  --motion-ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --motion-ease-enter: cubic-bezier(0.16, 1, 0.3, 1);
+  --motion-ease-exit: cubic-bezier(0.4, 0, 1, 1);
+  --motion-ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --motion-ease-overshoot: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* motion.distance.* (translate values, px) */
+  --motion-distance-none: 0px;
+  --motion-distance-xs: 4px;
+  --motion-distance-sm: 8px;
+  --motion-distance-md: 16px;
+  --motion-distance-lg: 32px;
+  --motion-distance-xl: 64px;
+
+  /* motion.delay.* */
+  --motion-delay-item: 60ms;
+  --motion-delay-hero: 100ms;
+  --motion-delay-section: 120ms;
+  --motion-delay-group-cap: 400ms;
+
+  /* color (product_clean profile default; swap per token_profile from router.json) */
+  --color-bg: #0d1117;
+  --color-surface-1: #161b22;
+  --color-ink: #e6edf3;
+  --color-primary: #6eb5ff;
+  --color-on-primary: #05121f;
+}
+
+/*
+  Reduced-motion contract (06_motion_grammar.md "Reduced-motion mapping" table).
+  This block is the enforcement point: components should read these overridden
+  custom properties rather than re-implementing their own matchMedia branch
+  wherever that's sufficient (large-distance/duration cases). Cases needing
+  behavioral changes (pin/scrub kill, RAF stop) still need JS - see lib/reduced-motion.ts.
+*/
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --motion-duration-slow: var(--motion-duration-instant);
+    --motion-duration-story: var(--motion-duration-instant);
+    --motion-duration-cinematic: var(--motion-duration-instant);
+    --motion-distance-xs: var(--motion-distance-none);
+    --motion-distance-sm: var(--motion-distance-none);
+    --motion-distance-md: var(--motion-distance-none);
+    --motion-distance-lg: var(--motion-distance-none);
+    --motion-distance-xl: var(--motion-distance-none);
+  }
+}

@@ -1,0 +1,75 @@
+{
+  "title": "Kind Composition Matrix",
+  "purpose": "Every kind guide in the dossier is written as if it's the only motion on the page. Real sites stack 3-5 kinds simultaneously. This file is what's missing: how they share budgets, what order they initialize in, and which pairs actively conflict.",
+  "source_authority": "derived from 04_do_dont.md limits + 06_motion_grammar.md limit tokens + per-kind guide constraints; no single dossier file previously covered this",
+
+  "initialization_order": {
+    "rule": "engines that own the scroll/viewport must initialize before engines that read scroll position or viewport state",
+    "order": [
+      { "step": 1, "kind": "kind-vi", "reason": "preloader (if present) must resolve before anything else measures layout or starts a RAF loop; body.loading blocks scroll during this phase" },
+      { "step": 2, "kind": "kind-i (smooth scroll engine: Lenis)", "reason": "Lenis must be constructed before ScrollTrigger.update is bound, and before any other kind reads window.scrollY" },
+      { "step": 3, "kind": "kind-vii", "reason": "View Transitions API registration happens at route-change time, but the click-interceptor must be wired after Lenis exists so scroll position can be captured pre-transition" },
+      { "step": 4, "kind": "kind-ii / kind-iii / kind-ix (whichever owns the full-viewport-scene slot)", "reason": "mount after the scroll engine so IntersectionObserver-driven pause logic has a stable scroll container to observe" },
+      { "step": 5, "kind": "kind-i (per-section ScrollTrigger reveals)", "reason": "registered after the full-viewport scene so its trigger boundaries don't get invalidated by a late-mounting canvas changing document height" },
+      { "step": 6, "kind": "kind-iv, kind-v, kind-viii, kind-x, kind-xi, kind-xii", "reason": "inline/local kinds; mount order among these does not matter, but each MUST register its own cleanup independently" }
+    ],
+    "anti_pattern": "mounting kind-ii/iii/ix before Lenis exists causes ScrollTrigger.refresh() to fire against a pre-scroll-engine document height, producing incorrect trigger boundaries that only surface after first scroll"
+  },
+
+  "shared_budget_conflicts": [
+    {
+      "budget": "motion.limit.full-viewport-scenes",
+      "cap": 1,
+      "conflict_pairs": [
+        ["kind-ii", "kind-iii"],
+        ["kind-ii", "kind-ix"],
+        ["kind-iii", "kind-ix"],
+        ["kind-ii", "kind-vi (only during its visible window, then releases)"],
+        ["kind-vii", "kind-ii/iii/ix (only momentarily during the transition itself)"]
+      ],
+      "resolution": "kind-vi and kind-vii are transient consumers (they release the slot when done); kind-ii/iii/ix are the only kinds that hold the slot for the page's steady state. Router must reject a plan with more than one steady-state consumer.",
+      "example_conflict": "a product page wants a 3D hero (kind-ii) AND a shader background behind the pricing section (kind-iii) -> illegal. Resolve by making the shader a bounded-region canvas (not full-viewport) so it falls outside this budget, or by dropping one."
+    },
+    {
+      "budget": "motion.limit.ambient-loops",
+      "cap": 2,
+      "conflict_pairs": [
+        ["kind-iii", "kind-ix", "kind-x", "kind-v (looping dotLottie)"]
+      ],
+      "resolution": "sum ALL currently-looping ambient elements across every active kind, not per-kind. A shader background (1 loop) + a looping Lottie icon in the nav (1 loop) already uses the full budget of 2 -- a second looping Lottie elsewhere on the same viewport is a violation.",
+      "example_conflict": "kind-iii ambient shader + kind-x audio visualizer + kind-v looping onboarding animation, all visible in the same viewport at once = 3 loops, exceeds cap. Stagger visibility (pause off-screen loops via IntersectionObserver) or cut one."
+    },
+    {
+      "budget": "motion.limit.concurrent",
+      "cap": 8,
+      "conflict_pairs": ["all kinds contribute to this shared pool simultaneously"],
+      "resolution": "count every simultaneously-animating element in the current viewport at any single timestamp, across all active kinds combined, not per-kind. A hero with 3 kind-i staggered reveals + 4 kind-viii hover-ready cards + 1 kind-iv cursor follower can hit 8 easily if the user hovers while scrolling.",
+      "example_conflict": "kind-i staggered card grid (6 cards revealing) fires at the same scroll position where kind-viii hover states are also active on already-revealed cards above the fold -- can exceed 8 concurrent tracks. Stagger kind-i reveals with motion.delay.item so the peak concurrent count stays under budget, and profile with Playwright's animation-count assertion (see kind-i.spec.ts pattern) at the worst-case scroll position, not just at rest."
+    }
+  ],
+
+  "known_engine_conflicts": [
+    {
+      "pair": ["Lenis", "native browser smooth scroll (scroll-behavior: smooth)"],
+      "conflict": "both try to own scroll position interpolation; user sees jittery double-easing",
+      "resolution": "set scroll-behavior: auto globally when Lenis is active; never set both (04_do_dont.md Avoid #8)"
+    },
+    {
+      "pair": ["View Transitions API", "Barba.js/Swup"],
+      "conflict": "both intercept navigation and animate the route change; double-fires if both are wired to the same click handler",
+      "resolution": "feature-detect once at the router level: if 'startViewTransition' in document, use only the native API; Swup/Barba is the fallback branch, never both active simultaneously"
+    },
+    {
+      "pair": ["kind-iv cursor tracking", "kind-x audio visualizer both reading pointermove/RAF on the same page"],
+      "conflict": "each kind's guide shows its own RAF loop; naive composition produces N independent RAF loops instead of one shared tick",
+      "resolution": "starter scaffolds should expose one shared RAF ticker (see lib/scroll-setup.ts's gsap.ticker pattern) that all kinds subscribe to, rather than each kind calling its own requestAnimationFrame"
+    },
+    {
+      "pair": ["kind-ii Three.js WebGL context", "kind-iii Three.js shaderMaterial context"],
+      "conflict": "two separate WebGL contexts on one page can exceed the browser's per-page context limit (typically 8-16) and silently fail",
+      "resolution": "if both kind-ii and kind-iii are needed, they should share ONE Three.js renderer/scene rather than instantiate independently -- this is also why they share the full-viewport-scenes budget above"
+    }
+  ],
+
+  "agent_instruction": "Before generating code for a multi-kind page, run the router's ordered_kind_list through shared_budget_conflicts. If any conflict_pair is fully present in the list AND both are steady-state (not transient) consumers, stop and surface the conflict rather than generating code that will silently violate the token limits at runtime."
+}

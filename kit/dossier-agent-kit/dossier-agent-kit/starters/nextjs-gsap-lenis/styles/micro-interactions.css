@@ -1,0 +1,28 @@
+/* kind-viii microinteraction baseline. Source: 08_kind-viii_microinteraction.md */
+
+@media (hover: hover) and (pointer: fine) {
+  .hover-target {
+    transition:
+      transform var(--motion-duration-fast) var(--motion-ease-standard),
+      opacity var(--motion-duration-fast) var(--motion-ease-standard),
+      background-color var(--motion-duration-fast) var(--motion-ease-standard);
+  }
+  .hover-target:hover {
+    transform: translateY(calc(var(--motion-distance-sm) * -1));
+  }
+}
+
+.hover-target:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* CC1 compliance: never animate width/height/top/left/margin/padding here. */
+
+@media (prefers-reduced-motion: reduce) {
+  .hover-target {
+    transform: none !important;
+    transition: opacity var(--motion-duration-quick) linear,
+      background-color var(--motion-duration-quick) linear !important;
+  }
+}

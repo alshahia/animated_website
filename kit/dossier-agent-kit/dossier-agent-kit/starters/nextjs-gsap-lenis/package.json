@@ -1,0 +1,63 @@
+{
+  "name": "dossier-starter-nextjs-gsap-lenis",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Reference starter for kind-i (scroll reveal) + kind-vii (page transitions) + kind-viii (microinteraction). Wires in motion tokens, reduced-motion handling, and CI gates so an agent extends instead of scaffolds from scratch.",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "test:e2e": "playwright test",
+    "test:a11y": "playwright test tests/a11y.spec.ts",
+    "lighthouse:ci": "lhci autorun"
+  },
+  "dependencies": {
+    "next": "^15.0.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "gsap": "^3.12.5",
+    "lenis": "^1.3.0",
+    "p5": "^1.11.0",
+    "motion": "^11.0.0",
+    "three": "^0.185.0",
+    "@react-three/fiber": "^9.0.0",
+    "@react-three/drei": "^10.7.0",
+    "@lottiefiles/dotlottie-react": "^0.19.0",
+    "ogl": "^1.0.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.48.0",
+    "@axe-core/playwright": "^4.10.0",
+    "@lhci/cli": "^0.14.0",
+    "typescript": "^5.6.0",
+    "@types/react": "^19.0.0",
+    "@types/node": "^22.0.0",
+    "@types/p5": "^1.7.7"
+  },
+  "license_posture": {
+    "gsap": "Standard No-Charge License (Webflow-owned since 2024 — free for all uses including commercial; NOT standard SPDX MIT/Apache). Verified live against npm registry. per 08_corrections_vs_source.md #1",
+    "lenis": "MIT - repo is darkroomengineering/lenis per 08_corrections_vs_source.md #5 (verified: darkroomengineering/lenis in npm registry)",
+    "p5": "LGPL-2.1 - dynamic linking OK, do not redistribute modified p5.js source, per 04_generative_shader.md. DRIFT: registry at v2.3.2, kit pinned ^1.11.0 (v2 has breaking instance-mode API changes); major bump deferred — see VERIFICATION.md §freshness",
+    "motion": "MIT - formerly Framer Motion, package renamed per 08_corrections_vs_source.md #2. DRIFT: registry at v12.43.0, kit pinned ^11.0.0; major bump deferred (v12 drops some legacy props, requires import-path audit); see VERIFICATION.md §freshness",
+    "three": "MIT - r185+ has first-class WebGPU per 08_corrections_vs_source.md #3 (verified: registry at 0.185.1)",
+    "@react-three/fiber": "MIT - registry at v9.7.0, kit pinned ^9.0.0 (compatible); peer react >=19 <19.3",
+    "@react-three/drei": "MIT - registry at v10.7.7, kit pinned ^10.7.0 (compatible); peer fiber ^9",
+    "@lottiefiles/dotlottie-react": "MIT (runtime) - verified against registry. Marketplace content has separate per-file license, see 07_license_posture.md",
+    "ogl": "Unlicense (public domain, equivalent to MIT permissive) - verified against registry, NOT standard MIT",
+    "tone": "MIT - verified against registry (v15.1.22)",
+    "swup": "MIT - verified against registry (v4.9.2); fallback for View Transitions API per R8",
+    "playwright": "Apache-2.0",
+    "axe-core": "MPL-2.0 - verified against registry",
+    "lighthouse-ci": "Apache-2.0 - verified against registry"
+  },
+  "freshness_verified_against_npm_registry": {
+    "date": "2026-08-04",
+    "method": "npm view <pkg> version license peerDependencies",
+    "patched_in_phase_2": ["gsap license text", "ogl license text (MIT → Unlicense)"],
+    "deferred_major_bumps": [
+      { "pkg": "motion", "from": "^11.0.0", "to": "^12.0.0", "reason": "v12 drops some legacy props; requires import-path audit before bump" },
+      { "pkg": "p5", "from": "^1.11.0", "to": "^2.0.0", "reason": "v2 changed instance-mode API; breaking change requires test re-run" }
+    ],
+    "ok_no_drift": ["lenis ^1.3.0→1.3.25", "three ^0.185.0→0.185.1", "@react-three/fiber ^9.0.0→9.7.0", "@react-three/drei ^10.7.0→10.7.7", "@lottiefiles/dotlottie-react ^0.19.0→0.19.12", "tone ^15.0.0→15.1.22", "@axe-core/playwright ^4.10.0→4.12.1", "@lhci/cli ^0.14.0→0.15.1"]
+  }
+}
