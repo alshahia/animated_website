@@ -23,7 +23,6 @@ if [[ ! -d "$PATH_TO_CHECK" ]]; then
   exit 2
 fi
 
-# Find all .html files under the path
 mapfile -t HTML_FILES < <(find "$PATH_TO_CHECK" -type f -name '*.html' 2>/dev/null || true)
 
 if [[ ${#HTML_FILES[@]} -eq 0 ]]; then
@@ -36,38 +35,48 @@ VIOLATIONS=0
 echo "Linting ${#HTML_FILES[@]} HTML files under $PATH_TO_CHECK ..."
 echo
 
-# Check 1: inline hex outside :root or [data-theme] blocks
-# This is a heuristic — it flags raw #xxxxxx in style attributes that aren't var(--*)
-# Excludes common safe cases: SVG fill/stroke="none", comments, etc.
+# Check 1: inline hex outside :root { ... } or [data-theme] { ... } blocks.
+# Block scope tracked via brace depth across the whole file (single awk pass).
+# Hex inside any such block is treated as a token-system declaration and skipped.
+# Note: ~20 advisory findings on agents_manager/design/resources/mockup-templates/
+# are intentional (brand-book palette swatches + window-chrome mockup colors +
+# mockup annotation note highlights). The brand-book IS the token source; the
+# chrome is decorative. Tokenizing them would defeat the purpose of those
+# mockups. False-positive exclusions below cover SVG attributes, comments,
+# table-data `#xxxx` values (e.g. order numbers), and currentColor.
 for file in "${HTML_FILES[@]}"; do
-  # Find style attributes with raw hex (not via var(--))
-  # Pattern: # followed by 3 or 6 hex chars, not preceded by -- or word char
-  HEX_HITS=$(grep -nE '#[0-9a-fA-F]{3,6}' "$file" 2>/dev/null \
-    | grep -vE 'var\(--' \
-    | grep -vE 'fill="none"|stroke="none"' \
-    | grep -vE '<!--' \
-    | grep -vE 'fill="currentColor"|stroke="currentColor"' \
-    || true)
+  awk -v file="$file" '
+    BEGIN { in_token = 0; depth = 0 }
+    {
+      line = $0
+      opens = gsub(/[{]/, "x", line)
+      closes = gsub(/[}]/, "x", line)
+      opened_now = (match($0, /:root[[:space:]]*[{]|[[]data-theme[^{]*[{]/) > 0) ? 1 : 0
+      was_in_token = in_token
+      depth += opens - closes
+      if (opened_now) { in_token = 1; if (depth < 1) depth = 1 }
+      if (in_token && depth <= 0) { in_token = 0; depth = 0 }
+      if (was_in_token || opened_now) next
+      if ($0 ~ /#[0-9a-fA-F]{3,6}/ \
+          && $0 !~ /var\(--/ \
+          && $0 !~ /fill="none"/ \
+          && $0 !~ /stroke="none"/ \
+          && $0 !~ /<!--/ \
+          && $0 !~ /fill="currentColor"/ \
+          && $0 !~ /stroke="currentColor"/ \
+          && $0 !~ /<td>/ \
+          && $0 !~ /<th>/) {
+        print "  [HEX] " file ":" NR " -- inline hex outside token system"
+        print "         " $0
+      }
+    }
+  ' "$file"
+done | tee /tmp/lint-design-hex.out >/dev/null
+HEX_COUNT=$(grep -c '^\s*\[HEX\]' /tmp/lint-design-hex.out || true)
+VIOLATIONS=$((VIOLATIONS + HEX_COUNT))
 
-  # Also exclude lines that are inside a :root or [data-theme] block
-  # (heuristic: if the surrounding context has --var declaration nearby)
-  if [[ -n "$HEX_HITS" ]]; then
-    while IFS= read -r hit; do
-      line_num=$(echo "$hit" | cut -d: -f1)
-      # Check 5 lines before — if any contain ":root" or "[data-theme", skip
-      context=$(sed -n "$((line_num > 5 ? line_num - 5 : 1)),$((line_num - 1))p" "$file" 2>/dev/null || true)
-      if echo "$context" | grep -qE ':root|\[data-theme'; then
-        continue
-      fi
-      echo "  [HEX] $file:$line_num — inline hex outside token system"
-      echo "         $hit"
-      VIOLATIONS=$((VIOLATIONS + 1))
-    done <<< "$HEX_HITS"
-  fi
-done
-
-# Check 2: emoji in UI markup (decorative)
-# Common emoji ranges; skip if inside text content (e.g., Arabic Quran text with ﷽)
+# Check 2: emoji in UI markup (decorative).
+# Common emoji ranges; skip if inside Arabic Quran text with Quran glyphs.
 EMOJI_PATTERN=$'\xF0\x9F[\x8C-\x9F][\x80-\xBF]|\xE2[\x98-\x9C][\x80-\xBF]'
 for file in "${HTML_FILES[@]}"; do
   EMOJI_HITS=$(grep -nP "$EMOJI_PATTERN" "$file" 2>/dev/null \
@@ -76,12 +85,11 @@ for file in "${HTML_FILES[@]}"; do
   if [[ -n "$EMOJI_HITS" ]]; then
     while IFS= read -r hit; do
       line_num=$(echo "$hit" | cut -d: -f1)
-      # Skip if inside Arabic Quran content area (.ar-q class)
-      context=$(sed -n "$line_num p" "$file" 2>/dev/null || true)
+      context=$(sed -n "${line_num}p" "$file" 2>/dev/null || true)
       if echo "$context" | grep -qE 'class="ar-q"|class="[^"]*ar-q'; then
         continue
       fi
-      echo "  [EMOJI] $file:$line_num — emoji in UI (use SVG instead)"
+      echo "  [EMOJI] $file:$line_num -- emoji in UI (use SVG instead)"
       echo "           $hit"
       VIOLATIONS=$((VIOLATIONS + 1))
     done <<< "$EMOJI_HITS"
