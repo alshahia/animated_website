@@ -1,3 +1,4 @@
+"use client";
 import { MagneticButton } from "@/components/MagneticButton";
 
 export default function CtaPage() {

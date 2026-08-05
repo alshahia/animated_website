@@ -151,3 +151,49 @@ Smoke after final swap: `npx tsc --noEmit` clean, `npx next build` clean
 (10 static routes), all 7 demo routes return HTTP 200, all 5 assets serve
 with correct Content-Type headers (image/jpeg, image/webp, model/gltf-binary,
 audio/mpeg, application/octet-stream).
+
+## Browser smoke (2026-08-05, via browsermcp)
+
+Real browser verification against `next start` on port 3000, replacing the
+Playwright path that the sandbox can run (Chromium download blocked via
+`cdn.playwright.dev` 403). `browsermcp` provides navigate / snapshot /
+screenshot / console — click interactions time out on the CDP WebSocket
+(channel issue, not a route bug), so interactive assertions are deferred
+to the local-machine Playwright run.
+
+| Route | HTTP | Testid / indicator in real DOM |
+|---|---|---|
+| `/` | 200 | 6 sections (hero, features, how-it-works, pricing, testimonials, cta) + onboarding lottie img + `data-testid="hover-card"` + `data-testid="page-link"` |
+| `/loading-demo` | 200 | `status="Loading"` (preloader) + h1 "Content is always here, preloader just sits on top of it." |
+| `/cta` | 200 | `data-testid="magnetic-button"` (kind-iv building block) |
+| `/product` | 200 | kind-ii product hero `img alt="Walnut stool, 45 cm tall"` |
+| `/shader-demo` | 200 | h1 "Shader hero demo" |
+| `/audio-demo` | 200 | `button "Enable audio"` (CC5: gated behind user gesture) |
+| `/ai-hero-demo` | 200 | textbox "Describe your hero..." + `button "Generate"` (K12-1: no auto-invoke) |
+
+**Console (clean):** no errors. Two non-fatal info-level messages:
+- `THREE.Clock deprecated → use THREE.Timer` (r185 drift, not a bug)
+- 5× `THREE.WebGLProgram: warning X4122` (shader precision, normal info)
+
+**Bug found + fixed during browser smoke:** initial `/cta` snapshot under
+`next start` rendered "Application error: a client-side exception".
+Traced to a stale `.next/` build from before the motion v12 bump — the
+old prerender was serving v11-era chunks. After `rm -rf .next && next
+build`, all 7 routes serve 200 under prod. Two defensive measures added
+to `/cta` for the same failure family:
+
+1. **`app/cta/page.tsx` → `"use client"`** — the only page in the kit
+   that imports a `useMotionValue` / `useSpring` component. Marking the
+   page client-only skips the static-prerender SSR/hydration phase
+   entirely, which is where the v12 + React 19 boundary previously
+   glitched.
+2. **`app/cta/error.tsx`** — Next.js error boundary. If a future motion
+   or React upgrade regresses the static prerender of this route, the
+   user sees a clear "Something went wrong loading the CTA demo" message
+   with a Try-again button instead of the generic "Application error"
+   stripe.
+
+Both fixes are scoped to `/cta` only — the other 6 demo routes were
+unaffected by the original issue and stayed server components. Rebuild
+and re-smoke after the fixes: `npx tsc --noEmit` clean, `npx next build`
+clean (10 static routes), all 7 routes 200, no console errors.
