@@ -176,3 +176,252 @@ curl -fsS http://localhost:3000/poster.jpg -o /dev/null -w 'poster: %{http_code}
 
 If all four lines return `200` and the validation steps above pass, the
 asset swap is complete and the kit is ready for production deployment.
+
+---
+
+## 5. LLM-suitable generation prompts (drop-in)
+
+Copy-paste any of the four prompts below directly into Midjourney / Flux /
+DALL-E 3 / Tripo3D / Meshy / Suno / etc. Each prompt is self-contained,
+includes the technical constraints from sections 1–4 above, and is tuned
+for a specific generator family.
+
+### 5.1 `poster.jpg` + `poster.webp` — Hero poster image
+
+**Generators:** Midjourney v6 · Flux Pro · DALL-E 3 · SDXL · Ideogram
+**Use:** LCP element + reduced-motion fallback for canvas / WebGL /
+`<model-viewer>` heroes
+
+```
+PRODUCT PHOTO — HERO POSTER IMAGE
+16:9 aspect ratio, 1920×1080 native (or 3840×2160 for 2x DPR).
+Final output: JPEG ≤200 KB, plus WebP ≤200 KB via cwebp -q 82.
+
+Subject: the product, centered, eye-level, ~60% of frame.
+Background: subtle radial gradient (#FAFAFA center → #ECECEC edges),
+no busy patterns — the background MUST stay calm so copy and CTAs
+painted on top remain readable.
+Lighting: soft three-point studio (key 45° camera-left, fill 30%
+camera-right, rim from above-back). No harsh shadows.
+Style: clean modern product photography, no stock-photo smiles,
+no people, no text in the image (copy lives in the DOM).
+Color: brand-neutral. Saturated primary color (#2E5BFF or your
+brand primary) on the product, neutral grays elsewhere.
+Mood: confident, premium, calm. Apple-product-photography energy.
+
+Hard constraints:
+- No text, no watermarks, no logos baked into pixels
+- No people, no hands, no models holding the product
+- Subject must remain recognizable at 480px wide (mobile)
+- sRGB color space, Mozaic/Guetzli-equivalent compression
+- Avoid pure white background (causes layout flicker on iOS Safari)
+
+Validation: PIL opens, dimensions ≥1920×1080, format JPEG,
+file size ≤200,000 bytes. Then run cwebp -q 82 to produce
+the WebP variant.
+
+Negative prompt (if your generator supports it):
+text, watermark, logo, signature, frame, border, collage,
+screenshot, blurry, low-resolution, illustration, anime,
+cartoon, painting, oversaturated, dark background,
+cluttered background, person, hand, model.
+```
+
+Quick test after generation:
+
+```powershell
+python3 -c "from PIL import Image; im=Image.open('poster.jpg'); assert im.size[0]>=1920 and im.size[1]>=1080; assert im.format=='JPEG'; import os; assert os.path.getsize('poster.jpg')<=200000; print('OK',im.size)"
+```
+
+### 5.2 `product.glb` — 3D model for kind-ii hero
+
+**Generators:** Tripo3D · Meshy AI · Genie (Luma) · CSM · Rodin · Hunyuan-3D
+**Use:** Mounted in `/product` route via `<model-viewer>` + R3F `<Canvas>`
+with auto-rotate + OrbitControls
+
+```
+3D MODEL — SINGLE-FILE GLB FOR WEB
+Final output: glTF 2.0 binary (.glb) ≤5 MB.
+Target consumer: <model-viewer> web component + Three.js r185+
+via @react-three/fiber.
+
+Subject: [YOUR PRODUCT HERE — e.g., "walnut stool, 45cm tall,
+modern Scandinavian design, three tapered legs"].
+Style: clean PBR, product-viz quality, no stylized/cartoon look.
+Coordinate system: Y-up, +Z forward, units in METERS (1 unit = 1m).
+Real-world scale: the product's actual physical size in meters.
+
+Hard technical constraints:
+- Triangle count: ≤50,000 (mobile-safe)
+- Textures: ≤4 total, each ≤2048×2048, total texture payload ≤4 MB
+- Materials: PBR Metallic-Roughness ONLY (NOT Phong,
+  NOT Specular-Glossiness)
+- No external texture references — bake everything into the .glb
+- If animated: bake animations INTO the .glb (no separate .json)
+- License: CC0, CC-BY, or your own IP — no marketplace models
+  with per-file license terms
+
+Generate + optimize pipeline:
+1. Generate at highest quality your tool allows
+2. Export as .glb (NOT .gltf + textures separately)
+3. Run gltf-transform optimize: --compress draco
+   --texture-compress webp
+4. Validate with: npx @gltf-transform/cli validate
+5. Round-trip parse with pygltflib to confirm:
+   meshes≥1, accessors≥1, buffers≥1, size≤5,000,000 bytes
+
+Lighting context the renderer will use (inform generator):
+studio environment HDRI, soft directional key + ambient,
+no harsh shadows, neutral white background by default
+(renderer sets background via CSS, not the model).
+Camera default: position [0, 0, 3], fov 45°, looking at origin.
+
+What to avoid:
+- Excessive subdivision (smooths over design intent)
+- Procedural textures (won't survive glTF export)
+- Animations that require external controllers
+- Materials with transmission >0 (needs IBL — works but heavier)
+- Models larger than 5 MB (router rejects, triggers preloader)
+```
+
+Quick test after generation:
+
+```powershell
+python3 -c "
+import pygltflib, os
+g = pygltflib.GLTF2().load('product.glb')
+sz = os.path.getsize('product.glb')
+assert sz <= 5_000_000, f'oversized: {sz}'
+assert len(g.meshes) >= 1
+assert len(g.buffers) >= 1
+print('OK', len(g.meshes), 'meshes,', sz, 'bytes')
+"
+npx @gltf-transform/cli validate product.glb
+```
+
+### 5.3 `track.mp3` — Background audio for kind-x visualizer
+
+**Generators:** Suno v3.5 · Udio · Stable Audio
+**Use:** Background track analyzed by Tone.js + Web Audio API for the
+`/audio-demo` visualizer
+
+```
+BACKGROUND AUDIO TRACK — LOOPING, NO VOCALS
+Final output: MP3 ≤100 KB, 30–60 seconds, mono or stereo.
+
+Style: instrumental only. Cinematic ambient / minimal electronic /
+downtempo. Reference mood: Tycho, Bonobo, Four Tet, Ólafur Arnalds.
+Tempo: 80–110 BPM (slow enough that visualizer bars are readable,
+not so slow it sounds dirge-like).
+Energy arc: gentle build over 30s → soft peak → 10s release → loop
+seamlessly (start and end must match within ±50ms).
+Instrumentation: synth pads, light piano/keys, subtle bass pulse,
+no drums (drums cause visualizer to spike distractingly), no vocals.
+Frequency profile: bass <120Hz moderate, mids 200–2000Hz prominent
+(where the bars live), highs airy but not piercing.
+
+Hard constraints:
+- Total duration 30–60 seconds (visualizer loops; longer is wasteful)
+- Loop-point: bar 1 must equal the last bar (seamless loop)
+- File size ≤100 KB (8 kbps mono at 60s = 60 KB headroom)
+- No samples, no covers, no copyrighted melodies
+- License: original work or CC0/CC-BY for the demo
+
+Validate: ffprobe confirms valid MP3 container, correct duration,
+no clipping (peak amplitude < -1 dBFS).
+
+Negative prompt (if supported):
+vocals, lyrics, drums, percussion, beat, aggressive, distorted,
+loud, harsh, busy, complex arrangement, orchestral, choir,
+spoken word, podcast, news, interview, dialogue.
+```
+
+Quick test after generation:
+
+```powershell
+ffprobe -v error -show_entries format=duration,bit_rate -show_entries stream=codec_name,sample_rate -of default=nw=1 track.mp3
+# Expected: codec_name=mp3, duration≈30-60, bit_rate≈64-128k
+```
+
+### 5.4 `onboarding.lottie` — Animated illustration for kind-v
+
+**Generators:** Manual in After Effects + Bodymovin, or LottieFiles editor.
+**AI assistance:** Genmo (Replicate) · Krea · Runway for initial motion
+concept → rebuild as Lottie.
+**Use:** Loading-state illustration on `/loading-demo`, mounted via
+`<dotlottie-react>` with `autoplay` toggle.
+
+> Lottie animations are vector-based, hand-authored. Pure prompt-to-Lottie
+> generation is rare. The practical workflow is: AI-assist the concept,
+> then hand-author the vector animation.
+
+```
+ANIMATED ILLUSTRATION CONCEPT (for AI-assisted concepting)
+Final output: dotLottie (.lottie) ≤50 KB.
+Format: zip containing manifest.json + a Bodymovin/Lottie JSON
+animation. Top-level keys required: v, fr, ip, op, w, h, layers.
+
+Concept: a friendly onboarding animation, ~2–4 second loop,
+showing a hand-drawn product icon (e.g., a stylized leaf, rocket,
+or your product's mark) gently floating up-and-down with a soft
+scale pulse on entry.
+
+Visual style:
+- Stroke-based vector illustration (no fills, or one solid color fill)
+- 2–3 colors maximum (primary brand color, neutral, white background)
+- Rounded corners, soft edges, friendly tone
+- No text, no logos baked in
+- Pixel-perfect at 240×240 viewport
+
+Motion spec (loop-able):
+- Frame rate: 30 fps
+- Duration: 2.4s = 72 frames (or 3s = 90 frames)
+- Intro: 0–0.4s, scale 0.6 → 1.0 with ease-out
+- Hold: 0.4–2.0s, gentle vertical drift ±8px with sine easing
+- Outro: 2.0–2.4s, opacity 1 → fade back to 1 (loop point)
+- Loop seamlessly: frame 0 == frame 72 visually
+
+Authoring pipeline:
+1. Generate concept frames via Krea or Runway (still images of
+   the animation keyframes)
+2. Rebuild as vector in Figma or After Effects
+3. Animate with Bodymovin plugin → export .json
+4. Bundle into .lottie via @lottiefiles/dotlottie-web CLI:
+   npx dotlottie-cli bundle animation.json --output onboarding.lottie
+5. Validate: unzip + check manifest.json schema + Lottie top-level keys
+
+Hard constraints:
+- One shape layer or one shape group (not 50 layers)
+- No expressions (Bodymovin can't export them)
+- No effects/blend modes that don't survive Bodymovin export
+- No raster layers (everything vector)
+- License: original, or CC0/CC-BY for the demo
+  (NEVER marketplace Lottie files — per-file license terms)
+
+Reduced-motion behavior (per kinds.json):
+autoplay=false, render first frame only — the spec already handles
+this in code, but design the first frame so it's a valid
+"resting" state, not mid-animation.
+```
+
+Quick test after generation:
+
+```powershell
+# Validate zip structure
+Expand-Archive "onboarding.lottie" -DestinationPath _lottie_check -Force
+Get-Content _lottie_check\manifest.json
+Get-Content _lottie_check\animation.json | Select-String -Pattern '"v"|"fr"|"ip"|"op"|"w"|"h"|"layers"'
+```
+
+### 5.5 Common prefix — append to any prompt
+
+```
+CONSTRAINTS (apply to every generation):
+- Production use, not decorative. Will be deployed on a live site.
+- No watermarks, no signatures, no "AI-generated" disclaimers.
+- Optimized for web delivery (file size, format, viewport fit).
+- License must be transferable to the project owner.
+- If the brief is ambiguous, pick the simplest, most boring option
+  that meets the technical spec. Save creative flourishes for
+  a separate revision pass.
+```

@@ -12,27 +12,31 @@
     "lighthouse:ci": "lhci autorun"
   },
   "dependencies": {
-    "next": "^15.0.0",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
+    "@lottiefiles/dotlottie-react": "^0.19.0",
+    "@react-three/drei": "^10.7.0",
+    "@react-three/fiber": "^9.0.0",
     "gsap": "^3.12.5",
     "lenis": "^1.3.0",
-    "p5": "^1.11.0",
     "motion": "^11.0.0",
-    "three": "^0.185.0",
-    "@react-three/fiber": "^9.0.0",
-    "@react-three/drei": "^10.7.0",
-    "@lottiefiles/dotlottie-react": "^0.19.0",
-    "ogl": "^1.0.0"
+    "next": "^15.0.0",
+    "ogl": "^1.0.0",
+    "p5": "^1.11.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "three": "^0.185.0"
   },
   "devDependencies": {
-    "@playwright/test": "^1.48.0",
     "@axe-core/playwright": "^4.10.0",
+    "@gltf-transform/cli": "^4.4.2",
+    "@gltf-transform/core": "^4.4.2",
+    "@gltf-transform/extensions": "^4.4.2",
+    "@gltf-transform/functions": "^4.4.2",
     "@lhci/cli": "^0.14.0",
-    "typescript": "^5.6.0",
-    "@types/react": "^19.0.0",
+    "@playwright/test": "^1.48.0",
     "@types/node": "^22.0.0",
-    "@types/p5": "^1.7.7"
+    "@types/p5": "^1.7.7",
+    "@types/react": "^19.0.0",
+    "typescript": "^5.6.0"
   },
   "license_posture": {
     "gsap": "Standard No-Charge License (Webflow-owned since 2024 — free for all uses including commercial; NOT standard SPDX MIT/Apache). Verified live against npm registry. per 08_corrections_vs_source.md #1",
@@ -53,11 +57,33 @@
   "freshness_verified_against_npm_registry": {
     "date": "2026-08-04",
     "method": "npm view <pkg> version license peerDependencies",
-    "patched_in_phase_2": ["gsap license text", "ogl license text (MIT → Unlicense)"],
-    "deferred_major_bumps": [
-      { "pkg": "motion", "from": "^11.0.0", "to": "^12.0.0", "reason": "v12 drops some legacy props; requires import-path audit before bump" },
-      { "pkg": "p5", "from": "^1.11.0", "to": "^2.0.0", "reason": "v2 changed instance-mode API; breaking change requires test re-run" }
+    "patched_in_phase_2": [
+      "gsap license text",
+      "ogl license text (MIT → Unlicense)"
     ],
-    "ok_no_drift": ["lenis ^1.3.0→1.3.25", "three ^0.185.0→0.185.1", "@react-three/fiber ^9.0.0→9.7.0", "@react-three/drei ^10.7.0→10.7.7", "@lottiefiles/dotlottie-react ^0.19.0→0.19.12", "tone ^15.0.0→15.1.22", "@axe-core/playwright ^4.10.0→4.12.1", "@lhci/cli ^0.14.0→0.15.1"]
+    "deferred_major_bumps": [
+      {
+        "pkg": "motion",
+        "from": "^11.0.0",
+        "to": "^12.0.0",
+        "reason": "v12 drops some legacy props; requires import-path audit before bump"
+      },
+      {
+        "pkg": "p5",
+        "from": "^1.11.0",
+        "to": "^2.0.0",
+        "reason": "v2 changed instance-mode API; breaking change requires test re-run"
+      }
+    ],
+    "ok_no_drift": [
+      "lenis ^1.3.0→1.3.25",
+      "three ^0.185.0→0.185.1",
+      "@react-three/fiber ^9.0.0→9.7.0",
+      "@react-three/drei ^10.7.0→10.7.7",
+      "@lottiefiles/dotlottie-react ^0.19.0→0.19.12",
+      "tone ^15.0.0→15.1.22",
+      "@axe-core/playwright ^4.10.0→4.12.1",
+      "@lhci/cli ^0.14.0→0.15.1"
+    ]
   }
 }
