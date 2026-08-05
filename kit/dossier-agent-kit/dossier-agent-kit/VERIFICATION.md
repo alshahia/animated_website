@@ -123,3 +123,31 @@ Tier 3 rule applied: never hardcode a license string or version pin from
 memory — query the registry. Tier 2 rule applied: GSAP's custom Webflow
 license is not standard SPDX, so describing it as "MIT" is wrong even
 though the use is effectively free for all projects.
+
+## Final asset swap (2026-08-04)
+
+Real assets deployed to replace PIL / pygltflib / ffmpeg / hand-built placeholders.
+
+| Slot | Deployed | Source | Size | Spec |
+|---|---|---|---|---|
+| `public/poster.jpg` | user-provided JPEG resized to 1920×1080 @ q82 | `resources/media/poster_source_b.jpeg` (388 KB → resized) | 77 KB | ≤200 KB ✓ |
+| `public/poster.webp` | PIL re-encode of poster.jpg @ q82 | derived | 31 KB | ≤200 KB ✓ |
+| `public/product.glb` | `gltf-transform copy` of user-provided glTF | `resources/media/Apple+Watch+Ultra+3.gltf` (4.75 MB → 3.38 MB) — bridge: `resources/media/_apple.glb` | 3.38 MB | ≤5 MB ✓ |
+| `public/track.mp3` | ffmpeg re-encode to 24 kbps mono 16 kHz 25s | `resources/media/atlasaudio-background-inspiring-519617.mp3` (3.14 MB → 74 KB) | 74 KB | ≤100 KB ✓ |
+| `public/icons/onboarding.lottie` | user-provided dotLottie | `resources/media/cloud-animation.lottie` | 2.6 KB | ≤50 KB ✓ |
+
+`iPhone 17 Pro glTF` (`I+phone+17+pro.gltf`) was inspected and removed — it
+references external `I phone 18 pro.bin` (1.8 MB) + a `Textures/` folder
+with 7 PNG/JPG/WebP images that aren't in `resources/media/`. Without
+them, the glTF can't be rendered. Removed from the repo until those
+sidecar files are available.
+
+Original JPEG filenames (`Product_photo_clean_modern_photo?_202608041555 (1).jpeg`
+and the sibling) contained `?` and `(1)` chars that broke PowerShell
+`Copy-Item` and Python `open()` — they were deleted after being copied to
+clean-named `poster_source_{a,b}.jpeg`.
+
+Smoke after final swap: `npx tsc --noEmit` clean, `npx next build` clean
+(10 static routes), all 7 demo routes return HTTP 200, all 5 assets serve
+with correct Content-Type headers (image/jpeg, image/webp, model/gltf-binary,
+audio/mpeg, application/octet-stream).

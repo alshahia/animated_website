@@ -62,14 +62,19 @@ One source of truth (router + kinds matrix + 95 tokens). Zero ambiguity on every
 Tick each before declaring the cleanup + workflow applied:
 
 - [x] Shell-glob garbage folder deleted (verified empty pre-delete, 8 subdirs, 0 files)
-- [ ] `kit/poster.jpg` replaced with real asset (still placeholder — Phase 6 spec handoff pending)
-- [ ] `kit/product.glb` replaced with real model (still placeholder — Phase 6 spec handoff pending)
+- [x] `kit/poster.jpg` replaced with real asset (77 KB JPEG, 1920×1080 @ q82 from `poster_source_b.jpeg`)
+- [x] `kit/product.glb` replaced with real model (3.38 MB GLB converted from `Apple+Watch+Ultra+3.gltf` via `gltf-transform copy`)
+- [x] `kit/track.mp3` re-encoded to spec (74 KB, 24 kbps mono 16 kHz 25s)
+- [x] `kit/icons/onboarding.lottie` swapped (2.6 KB from `cloud-animation.lottie`)
 - [x] AR route dropped → `product.usdz` no longer required (Phase 1)
 - [x] `resources/animated_website_minimax_2.7/` marked as DO-NOT-USE (USAGE_GUIDE.md, INDEX.md, CLEANUP_LIST.md all flag)
 - [x] `cloudflare.com` / bare `github.io` CDN URLs in deepseek_flash — none found; cdnjs paths validated
 - [x] `resources/animated_website_minimax_3/05_build_guides/` duplicate folder deleted (was empty)
 - [x] `freshness_protocol.md` Tier 3 re-verification done (Phase 2 — all package.json deps queried against live npm registry; 2 license patches applied; 2 major-version drifts documented for follow-up)
 - [x] Router output verified on 1 brief per site_type → `kit/SAMPLE_VALIDATION.md` (6 traces: marketing_landing, portfolio, product_ecommerce, editorial_longform, saas_app_marketing, docs_or_blog)
-- [ ] `TRACE.md` worked example still passes — Phase 5 final validation pending
+- [x] `TRACE.md` worked example still passes (Phase 5: tsc clean, next build clean 10 routes, all assets serve correct Content-Type, all 7 demo routes HTTP 200)
+- [x] `iPhone 17 Pro glTF` removed — incomplete (missing external `.bin` + `Textures/`)
+- [x] `kit/ASSET_SPECS.md` §5 LLM generation prompts added (4 prompts + common prefix)
+- [x] `@gltf-transform/{cli,functions,extensions,core}` devDeps added
 
 When every box is ticked, this work is done.
