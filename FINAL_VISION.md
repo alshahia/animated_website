@@ -1,16 +1,16 @@
-# Final Expected Vision — Animated Website Kit + Resources
+# Final Expected Vision — Animated-Website Generator
 
-Generated as the target state to validate against when this work is finished. Pair with `USAGE_GUIDE.md` (how to get there) and `CLEANUP_LIST.md` (what to remove).
+Generated as the target state to validate against when work is finished. Pair with `kit/USAGE_GUIDE.md` (how to get there) and `kit/CLEANUP_LIST.md` (what to remove).
 
 ---
 
 ## The target
 
-After applying `USAGE_GUIDE.md` and `CLEANUP_LIST.md`, the repo has:
+After applying `kit/USAGE_GUIDE.md` and `kit/CLEANUP_LIST.md`, the animated-website generator has:
 
 ### 1. A clean, deterministic kit
 - [x] No shell-glob garbage folders (Phase 1: `{schemas,starters/nextjs-gsap-len is/` deleted — 8 empty subdirs gone)
-- [x] No placeholder assets in production paths (poster.jpg, product.glb flagged for swap in Phase 6 spec; product.usdz no longer required since AR route was dropped)
+- [x] No placeholder assets in production paths (poster.jpg, product.glb swapped for real assets in final asset swap; product.usdz no longer required since AR route was dropped)
 - [x] No fake CDN URLs in templates (Phase 1 sweep found none in deepseek_flash — cdnjs paths and `*.github.io` real-repo URLs are valid)
 - Any agent (human or AI) can answer "what kinds does this site need?" by running `schemas/router.json` (R1–R12) — not by guessing.
 - The repo is navigable: `kit/dossier-agent-kit/dossier-agent-kit/{schemas,starters,examples}/` is the only thing under `kit/` that matters for new work.
@@ -19,6 +19,7 @@ After applying `USAGE_GUIDE.md` and `CLEANUP_LIST.md`, the repo has:
 - `starters/nextjs-gsap-lenis/` scaffolded with real components (12), tests (14), routes (10 — was 11, /ar-demo removed in Phase 1), CI, Lighthouse config — already wired.
 - Per-kind files added from `resources/animated_website_minimax_3/03_build_guides/` slot in without rewiring the build chain.
 - [x] AR route dropped (Phase 1) — no silent 404 on `product.usdz`.
+- [x] `/cta` hardened with `"use client"` + `error.tsx` boundary (2026-08-05) — defensive against motion v12 + React 19 SSR/hydration edge cases.
 
 ### 3. A governed motion system
 - Every animation uses one of the 95 named tokens (duration 7, easing 6, distance 6, delay 4, limit 3 + color/typography/spacing/etc.).
@@ -35,15 +36,23 @@ After applying `USAGE_GUIDE.md` and `CLEANUP_LIST.md`, the repo has:
 ### 5. A single source of truth per concern
 | Concern | Source of truth |
 |---|---|
-| Which kinds to build | `schemas/router.json` |
-| Per-kind engines + license + budget + A11y | `schemas/kinds.json` |
-| Conflicts + initialization order | `schemas/composition_matrix.json` |
-| Anti-patterns | `schemas/forbidden_patterns.json` |
+| Which kinds to build | `kit/dossier-agent-kit/dossier-agent-kit/schemas/router.json` |
+| Per-kind engines + license + budget + A11y | `kit/dossier-agent-kit/dossier-agent-kit/schemas/kinds.json` |
+| Conflicts + initialization order | `kit/dossier-agent-kit/dossier-agent-kit/schemas/composition_matrix.json` |
+| Anti-patterns | `kit/dossier-agent-kit/dossier-agent-kit/schemas/forbidden_patterns.json` |
 | Motion tokens | `resources/animated_website_minimax_3/06_motion_grammar.md` |
 | License posture | `resources/animated_website_minimax_3/07_license_posture.md` |
 | Known errors in source | `resources/animated_website_minimax_3/08_corrections_vs_source.md` |
 | Freshness policy | `kit/dossier-agent-kit/dossier-agent-kit/freshness_protocol.md` |
-| Worked example | `examples/golden-trace-saas-marketing/TRACE.md` |
+| Worked example | `kit/dossier-agent-kit/dossier-agent-kit/examples/golden-trace-saas-marketing/TRACE.md` |
+| Asset specs | `kit/ASSET_SPECS.md` |
+| Sample validation | `kit/SAMPLE_VALIDATION.md` |
+
+### 6. Project orientation (2026-08-05)
+- [x] `README.md` opens with the animated-website generator pitch
+- [x] `AGENTS.md` frames the animated-website project as the foreground, agents-manager as vendored
+- [x] `agents_manager/AGENTS.md` holds the vendored controller's own context_gen
+- [x] `INDEX.md` flipped from "two halves" to "the project + vendored tools"
 
 ---
 
@@ -76,5 +85,8 @@ Tick each before declaring the cleanup + workflow applied:
 - [x] `iPhone 17 Pro glTF` removed — incomplete (missing external `.bin` + `Textures/`)
 - [x] `kit/ASSET_SPECS.md` §5 LLM generation prompts added (4 prompts + common prefix)
 - [x] `@gltf-transform/{cli,functions,extensions,core}` devDeps added
+- [x] `/cta` defensively hardened with `"use client"` + `error.tsx` (2026-08-05)
+- [x] Browser smoke via `browsermcp` documented in `kit/VERIFICATION.md` (all 7 routes 200, no console errors)
+- [x] Docs re-oriented: animated-website project is the foreground, agents-manager is vendored (2026-08-05)
 
 When every box is ticked, this work is done.

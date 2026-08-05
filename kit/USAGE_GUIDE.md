@@ -1,6 +1,6 @@
-# Animated Website Kit + Resources — Usage Guide
+# Animated-Website Generator — Kit Usage Guide
 
-Generated from review of `E:\react_projects\animated_website\kit\` and `E:\react_projects\animated_website\resources\`.
+This guide is the **operational manual** for the animated-website agent's working set: `kit/` + `resources/`. The project IS the animated-website generator; `agents-manager/` is vendored orchestration. See `README.md` for the project pitch and `AGENTS.md` for context.
 
 **TL;DR — which to treat as canonical:**
 - **Kit canonical source:** `kit/dossier-agent-kit/dossier-agent-kit/` (the agent kit itself)

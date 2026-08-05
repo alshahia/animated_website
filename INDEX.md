@@ -1,34 +1,67 @@
-# Project Index — `E:\react_projects\animated_website`
+# Project Index — `animated-website`
 
 One-stop reference for the entire repo. Read this first, then drill into the specific file/folder you need.
 
-> This repo is **two things in one**:
-> 1. The **agents-manager controller** itself (the orchestration system — what gets released).
-> 2. A **downstream animated-website project** built using agents-manager, which produced the `kit/` and `resources/` you see here.
+> This repo is the **animated-website generator**: an agent-assisted system that produces any animated website end-to-end. It ships with two halves:
+>
+> 1. **The animated-website project** (the foreground) — the agent's working set: `kit/` + `resources/`. The agent that produces animated websites lives here.
+> 2. **Vendored tooling** (the backdrop) — `agents-manager/`, `bin/`, `share/`, `tasks/`, `scripts/`, `opencode.jsonc`. A copy of the upstream [agents-manager](https://github.com/anomalyco/agents-manager) release that the animated-website agent runs on.
 
-If you're working on the controller → focus on `agents_manager/`, `bin/`, `share/`, `tasks/`, `opencode.jsonc`, `AGENTS.md`, `CLAUDE.md`.
-If you're working on the animated-website project → focus on `kit/`, `resources/`, and the index/guide files at root (`INDEX.md`, `USAGE_GUIDE.md`, `CLEANUP_LIST.md`, `FINAL_VISION.md`).
+If you want to **build an animated website** → focus on `kit/`, `resources/`, and the index/guide files at root (`README.md`, `INDEX.md`, `kit/USAGE_GUIDE.md`, `kit/CLEANUP_LIST.md`, `FINAL_VISION.md`).
+
+If you want to **edit the vendored orchestrator** → focus on `agents_manager/`, `bin/`, `share/`, `tasks/`, `agents_manager/AGENTS.md`, `CLAUDE.md`.
 
 ---
 
-## Quick navigation — what's where
+## Quick navigation
 
 | Path | What it is | Read/use it for |
 |---|---|---|
-| **`INDEX.md`** | This file | One-stop reference. Start here. |
-| **`USAGE_GUIDE.md`** | What to use / not use, 12 kinds, 95 tokens, 8-step workflow | Animated-website tasks |
-| **`CLEANUP_LIST.md`** | A. delete/replace actions · B. do-not-use items | Tidying the repo |
+| **`README.md`** | Animated-website generator pitch | Start here |
+| **`INDEX.md`** | This file | One-stop reference |
+| **`AGENTS.md`** | Animated-website project context_gen | Working on the project |
 | **`FINAL_VISION.md`** | Target state + validation checklist | Verifying "done" |
-| **`AGENTS.md`** | controller's own context_gen rules | Working ON the controller |
-| **`CLAUDE.md`** | Top-level orientation + auto-routing rule | Understanding how the controller routes work |
-| **`opencode.jsonc`** | Agent definitions (master + 9 specialists) | Working ON the controller |
-| **`README.md`** | Public-facing readme (badges, install, pipeline) | Onboarding new users |
+| **`agents_manager/AGENTS.md`** | Vendored controller context_gen | Working ON the orchestrator |
+| **`CLAUDE.md`** | Top-level orientation + auto-routing | Understanding orchestrator routing |
+| **`opencode.jsonc`** | Agent definitions (master + 9 specialists) | Orchestrator internals |
 
 ---
 
-## Controller side (skip if you're only working on the animated-website project)
+## The animated-website project (the foreground)
 
-### `agents_manager/` — the controller source
+### `kit/` — the agent's compiled skill set
+
+| Path | Use it for | Don't use |
+|---|---|---|
+| `kit/USAGE_GUIDE.md` | What to use / not, 12 kinds, 95 tokens, 8-step workflow | — |
+| `kit/CLEANUP_LIST.md` | A. delete/replace · B. do-not-use | — |
+| `kit/SAMPLE_VALIDATION.md` | 1 brief per site_type — 6 router traces, all clean | — |
+| `kit/ASSET_SPECS.md` | poster.jpg + product.glb specs, swap procedure, route re-test list, 4 LLM generation prompts | — |
+| `kit/ASSETS_README.md` | Asset swap chain (historical record) | — |
+| `kit/VERIFICATION.md` | What was actually run + bugs caught + browser smoke | — |
+| `kit/dossier-agent-kit/dossier-agent-kit/README.md` | 7-step agent workflow inside the kit | — |
+| `kit/dossier-agent-kit/dossier-agent-kit/freshness_protocol.md` | 3-tier freshness rules (Tier 1 trust, Tier 3 re-verify every time) | — |
+| `kit/dossier-agent-kit/dossier-agent-kit/schemas/kinds.json` | **Queryable 12-kind matrix** | — |
+| `kit/dossier-agent-kit/dossier-agent-kit/schemas/router.json` | **Decision tree (R1–R12)** | — |
+| `kit/dossier-agent-kit/dossier-agent-kit/schemas/composition_matrix.json` | **Init order + conflict resolution + 3 budget caps** | — |
+| `kit/dossier-agent-kit/dossier-agent-kit/schemas/forbidden_patterns.json` | **10 CC + per-kind additions** | — |
+| `kit/dossier-agent-kit/dossier-agent-kit/starters/nextjs-gsap-lenis/` | **Real working starter** (12 components, 14 tests, 10 routes, CI) — AR removed (Phase 1) | — |
+| `kit/dossier-agent-kit/dossier-agent-kit/examples/golden-trace-saas-marketing/TRACE.md` | **End-to-end worked example** | — |
+
+### `resources/` — research base (3 model dossiers, 2026-07-29 scrape)
+
+| Path | Use it for | Don't use |
+|---|---|---|
+| `resources/animated_website_minimax_3/` | **CANONICAL** — 30+ files, 12-kind taxonomy, 95 tokens, license posture, 8 corrections | — |
+| `resources/animated_website_deepseek_flash/` | **Secondary** — 20-genre inventory + deep anti-pattern coverage + 60+ resources / 80+ templates | — |
+| `resources/animated_website_minimax_2.7/` | — | **Pre-correction — DO NOT USE as canonical** |
+
+---
+
+## Vendored tooling (the backdrop)
+
+### `agents_manager/` — the orchestrator source
+- `AGENTS.md` — controller context_gen (vendored)
 - `SKILL.md` — master orchestration protocol (~57KB)
 - `CHANGELOG.md` — system evolution (read newest entry first, ~158KB total)
 - `README.md` — controller readme
@@ -45,7 +78,7 @@ If you're working on the animated-website project → focus on `kit/`, `resource
   - `extract/` — non-roster; on-demand extraction skill
   - `memory/`, `chub-gate/`, `chub-validate/`, `upstream-contrib/`
 
-**Hard rule:** Do NOT edit `agents_manager/<role>/SKILL.md` unless redesigning the controller.
+**Hard rule:** Do NOT edit `agents_manager/<role>/SKILL.md` unless redesigning the vendored controller.
 
 ### `bin/` — installers
 - `agents-manager.py` (Python UX, stdlib only — **recommended**)
@@ -84,44 +117,10 @@ If you're working on the animated-website project → focus on `kit/`, `resource
 
 ---
 
-## Animated-website project side
-
-### `kit/` — the agent kit
-| Path | Use it for | Don't use |
-|---|---|---|
-| `kit/USAGE_GUIDE.md` | What to use / not, 12 kinds, 95 tokens, 8-step workflow | — |
-| `kit/CLEANUP_LIST.md` | A. delete/replace · B. do-not-use | — |
-| `kit/SAMPLE_VALIDATION.md` | 1 brief per site_type — 6 router traces, all clean | — |
-| `kit/ASSET_SPECS.md` | poster.jpg + product.glb specs, swap procedure, route re-test list | — |
-| `kit/ASSETS_README.md` | Which assets are placeholders vs production (Phase 6 specs in ASSET_SPECS.md) | — |
-| `kit/VERIFICATION.md` | What was actually run + 3 real bugs caught | — |
-| `kit/poster.jpg` | — | **Placeholder — replace before production** |
-| `kit/product.glb` | — | **Placeholder cube — replace before production** |
-| `kit/dossier-agent-kit/dossier-agent-kit/README.md` | 7-step agent workflow | — |
-| `kit/dossier-agent-kit/dossier-agent-kit/freshness_protocol.md` | 3-tier freshness rules | — |
-| `kit/dossier-agent-kit/dossier-agent-kit/VERIFICATION.md` | Duplicate of root kit/VERIFICATION.md | — |
-| `kit/dossier-agent-kit/dossier-agent-kit/schemas/kinds.json` | **Queryable 12-kind matrix** | — |
-| `kit/dossier-agent-kit/dossier-agent-kit/schemas/router.json` | **Decision tree (R1–R12)** | — |
-| `kit/dossier-agent-kit/dossier-agent-kit/schemas/composition_matrix.json` | **Init order + conflict resolution** | — |
-| `kit/dossier-agent-kit/dossier-agent-kit/schemas/forbidden_patterns.json` | **10 CC + per-kind additions** | — |
-| `kit/dossier-agent-kit/dossier-agent-kit/starters/nextjs-gsap-lenis/` | **Real working starter** (12 components, 14 tests, 10 routes, CI) — AR removed (Phase 1) | — |
-| `kit/dossier-agent-kit/dossier-agent-kit/examples/golden-trace-saas-marketing/TRACE.md` | **End-to-end worked example** | — |
-| `kit/dossier-agent-kit/dossier-agent-kit/{schemas,starters/nextjs-gsap-len is/...` | — | **DELETED (Phase 1) — was 8 empty subdirs** |
-
-### `resources/` — three model research dossiers (2026-07-29 scrape)
-| Path | Use it for | Don't use |
-|---|---|---|
-| `resources/animated_website_minimax_3/` | **CANONICAL** — 30+ files, 12-kind taxonomy, 95 tokens, license posture, 8 corrections | — |
-| `resources/animated_website_deepseek_flash/` | **Secondary** — 20-genre inventory + deep anti-pattern coverage + 60+ resources / 80+ templates | — |
-| `resources/animated_website_minimax_2.7/` | — | **Pre-correction — DO NOT USE as canonical** |
-| Any `https://cloudflare.com` or bare `https://github.io` script src in HTML templates | — | **Scrape placeholder URLs** (none found in deepseek_flash in Phase 1 — cdnjs paths and `*.github.io` repos are real; warning applies to upstream scrape source, not these docs) |
-
----
-
 ## Common questions → answer (no searching needed)
 
 **Q: I'm starting a new animated website. What do I open first?**
-A: `INDEX.md` → `USAGE_GUIDE.md` Step 1 (`08_corrections_vs_source.md`) → `schemas/router.json`.
+A: `README.md` → `kit/USAGE_GUIDE.md` Step 1 (`08_corrections_vs_source.md`) → `schemas/router.json`.
 
 **Q: Where are the 12 kinds defined?**
 A: Two places, both authoritative:
@@ -147,16 +146,16 @@ A: `kit/dossier-agent-kit/dossier-agent-kit/freshness_protocol.md` (3 tiers).
 A: `kit/dossier-agent-kit/dossier-agent-kit/examples/golden-trace-saas-marketing/TRACE.md`.
 
 **Q: What files are placeholders I should replace?**
-A: `CLEANUP_LIST.md` § A.2 — `kit/poster.jpg` (PIL placeholder), `kit/product.glb` (pygltflib placeholder cube). `kit/product.usdz` is no longer required — AR/kind-xi removed in Phase 1.
+A: All current placeholders are swapped. See `kit/ASSETS_README.md` for the swap chain and `kit/ASSET_SPECS.md` for replacement specs.
 
-**Q: I want to understand the controller pipeline.**
-A: `AGENTS.md` → `agents_manager/SKILL.md` → `agents_manager/<role>/SKILL.md` per specialist. Pipeline shape in `README.md` § "The seven agents".
+**Q: I want to understand the vendored orchestrator's pipeline.**
+A: `agents_manager/AGENTS.md` → `agents_manager/SKILL.md` → `agents_manager/<role>/SKILL.md` per specialist. Pipeline shape in `agents_manager/README.md` "The seven agents".
 
 **Q: How do I install agents-manager into another project?**
 A: `bin/README.md` + `bin/standalone-installer/README.md`. Python UX recommended: `python3 bin/agents-manager.py`.
 
-**Q: What's new in the latest release?**
-A: `agents_manager/CHANGELOG.md` (top entry = newest). Also `README.md` "What's new in v0.16.0" etc.
+**Q: What's new in the latest vendored agents-manager release?**
+A: `agents_manager/CHANGELOG.md` (top entry = newest). Also `agents_manager/README.md` "What's new in v0.16.0" etc.
 
 **Q: Where do agents write their output?**
 A: `share/README.md` "Who reads / writes what" table.
@@ -170,8 +169,7 @@ A: `tasks/T-YYYY-MM-DD-NNN.md`.
 
 - Don't use `resources/animated_website_minimax_2.7/` as canonical — it's pre-correction.
 - Don't trust bare `https://cloudflare.com` or `https://github.io` (without a real path) CDN URLs in templates — they're scrape placeholders. (Phase 1 sweep found none in deepseek_flash; cdnjs paths with versions and `*.github.io` real-repo URLs are fine.)
-- Don't put `kit/poster.jpg` or `kit/product.glb` in production — both are placeholders. `kit/product.usdz` is no longer required (AR removed in Phase 1).
-- Don't edit `agents_manager/<role>/SKILL.md` unless redesigning the controller.
+- Don't edit `agents_manager/<role>/SKILL.md` unless redesigning the vendored controller.
 - Don't commit anything unless the user explicitly asks.
 - Don't skip the review phase because "it looks fine."
 - Don't bypass `freshness_protocol.md` Tier 3 — re-verify versions/CDNs every time before hardcoding. (Phase 2 re-verified all package.json deps against the live npm registry — see `kit/VERIFICATION.md` §freshness.)
@@ -185,41 +183,45 @@ A: `tasks/T-YYYY-MM-DD-NNN.md`.
 
 ```
 E:\react_projects\animated_website\
+├── README.md                   ← animated-website generator pitch
 ├── INDEX.md                    ← you are here
-├── USAGE_GUIDE.md              ← what to use / not (animated-website tasks)
-├── CLEANUP_LIST.md             ← A. delete/replace · B. do-not-use
-├── FINAL_VISION.md             ← target state + validation checklist
-├── AGENTS.md                   ← controller rules (when working ON controller)
+├── AGENTS.md                   ← animated-website project context_gen
 ├── CLAUDE.md                   ← top-level orientation + auto-routing
-├── README.md                   ← public readme
-├── opencode.jsonc              ← agent definitions
+├── FINAL_VISION.md             ← target state + validation checklist
+├── opencode.jsonc              ← vendored agent definitions
 ├── .gitignore
-├── agents_manager/             ← controller source (10 specialists + master)
-├── bin/                        ← installers + release + smoke
-├── kit/                        ← animated-website agent kit
+├── agents_manager/             ← vendored controller source
+│   ├── AGENTS.md               ← controller context_gen (vendored)
+│   ├── SKILL.md                ← master orchestration protocol
+│   ├── CHANGELOG.md
+│   ├── README.md
+│   ├── coder/ research/ planning/ design/ review/ investigate/ ship/ health/ assets/ extract/
+│   └── memory/ chub-gate/ chub-validate/ upstream-contrib/
+├── bin/                        ← vendored installers + release + smoke
+├── share/                      ← vendored inter-agent communication bus
+├── tasks/                      ← vendored T-YYYY-MM-DD-NNN task files
+├── scripts/                    ← vendored validation
+├── .agents/skills/mavis-team/  ← vendored project-local skill override
+├── kit/                        ← animated-website agent kit (the project)
 │   ├── USAGE_GUIDE.md
 │   ├── CLEANUP_LIST.md
 │   ├── ASSETS_README.md
+│   ├── ASSET_SPECS.md
+│   ├── SAMPLE_VALIDATION.md
 │   ├── VERIFICATION.md
-│   ├── poster.jpg              ← PLACEHOLDER
-│   ├── product.glb             ← PLACEHOLDER
+│   ├── poster.jpg / poster.webp / product.glb / track.mp3 / icons/onboarding.lottie
 │   └── dossier-agent-kit/
 │       └── dossier-agent-kit/
 │           ├── README.md
 │           ├── freshness_protocol.md
-│           ├── VERIFICATION.md
-│           ├── SAMPLE_VALIDATION.md  ← one brief per site_type (Phase 3)
-│           ├── schemas/        ← kinds.json, router.json, composition_matrix.json, forbidden_patterns.json
+│           ├── VERIFICATION.md      ← duplicate of root kit/VERIFICATION.md
+│           ├── schemas/             ← kinds.json, router.json, composition_matrix.json, forbidden_patterns.json
 │           ├── starters/
-│           │   └── nextjs-gsap-lenis/    ← 12 components, 14 tests, 10 routes (AR removed Phase 1)
-│           ├── examples/
-│           │   └── golden-trace-saas-marketing/TRACE.md
-├── resources/                  ← three model research dossiers
-│   ├── animated_website_minimax_3/        ← CANONICAL
-│   ├── animated_website_deepseek_flash/   ← secondary (breadth)
-│   └── animated_website_minimax_2.7/      ← DO NOT USE (pre-correction)
-├── share/                      ← inter-agent communication bus
-├── tasks/                      ← T-YYYY-MM-DD-NNN task files
-├── scripts/                    ← validation
-└── .agents/skills/mavis-team/  ← project-local skill override
+│           │   └── nextjs-gsap-lenis/   ← 12 components, 14 tests, 10 routes (AR removed Phase 1)
+│           └── examples/
+│               └── golden-trace-saas-marketing/TRACE.md
+└── resources/                  ← three model research dossiers
+    ├── animated_website_minimax_3/        ← CANONICAL
+    ├── animated_website_deepseek_flash/   ← secondary (breadth)
+    └── animated_website_minimax_2.7/      ← DO NOT USE (pre-correction)
 ```

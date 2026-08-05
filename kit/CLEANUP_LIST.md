@@ -1,6 +1,6 @@
-# Cleanup & "Do Not Use" List
+# Cleanup & "Do Not Use" List — animated-website generator
 
-Generated from review of `E:\react_projects\animated_website\kit\` and `E:\react_projects\animated_website\resources\`.
+Concrete hygiene for the animated-website generator's working set (`kit/` + `resources/`). The agent that produces animated websites reads these files; keep them clean. `agents-manager/` is vendored and outside this list's scope.
 
 Two categories:
 - **A. DELETE / REPLACE** — concrete filesystem actions

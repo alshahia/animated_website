@@ -1,172 +1,68 @@
-# AGENTS.md — context_gen
+# AGENTS.md — animated-website generator
 
-This repo IS the **agents-manager controller**: an OpenCode multi-agent orchestration system. 9 specialist agents are defined in `opencode.jsonc` (master + research + planning + design + assets + coder + review + investigate + ship + health). Walls are enforced by prose (v0.5.0+ soft walls — every agent has `permission: "allow"`), not by OpenCode's permission layer.
+This repo IS the **animated-website generator**: an agent-assisted system that produces any animated website end-to-end, from a brief. Two pieces live here:
 
-**Working in this repo:** when the task is to edit the controller itself (a specialist's `SKILL.md`, a release, a controller bug), edit directly — do NOT spawn the `master` agent. Master is for downstream projects that have installed the controller. The same hard rules still apply (no auto-commits, no skipping review, no editing other specialists' `SKILL.md` unless it's a deliberate controller redesign).
+1. **The animated-website project (the foreground).** The agent's working set:
+   - `kit/` — the agent's compiled skill set: 12 kinds, decision tree, motion grammar, starter, schemas, examples
+   - `resources/` — the research base (3 model dossiers; canonical = `animated_website_minimax_3`)
+2. **Vendored tooling (the backdrop).** `agents-manager/`, `bin/`, `share/`, `tasks/`, `scripts/`, `opencode.jsonc` — a copy of the upstream [agents-manager](https://github.com/anomalyco/agents-manager) release that the animated-website agent runs on.
 
-## Two halves of this repo
+The animated-website project is the protagonist. agents-manager is the orchestrator it ships with, like a `node_modules/` to a Next.js app.
 
-This repository contains two distinct things in one working tree:
+## Quick start (any animated-website task)
 
-1. **The agents-manager controller** — the orchestration system being shipped. Folders: `agents_manager/`, `bin/`, `share/`, `tasks/`, `scripts/`, plus `opencode.jsonc` and `CLAUDE.md`.
-2. **A downstream animated-website project** — research + agent kit produced using agents-manager. Folders: `kit/` and `resources/`. See `INDEX.md`, `USAGE_GUIDE.md` (in `kit/`), `CLEANUP_LIST.md` (in `kit/`), and `FINAL_VISION.md` at the project root.
+1. Read `README.md` for the elevator pitch.
+2. New task → `kit/USAGE_GUIDE.md` (8-step workflow) → `kit/dossier-agent-kit/dossier-agent-kit/schemas/router.json` (decision tree).
+3. The router returns `ordered_kind_list` + `starter_scaffold_ref` + `token_profile` + `stack_pick`. Start from `kit/dossier-agent-kit/dossier-agent-kit/starters/nextjs-gsap-lenis/` and add per-kind files from `resources/animated_website_minimax_3/03_build_guides/`.
 
-**How to know which half you're in:**
-- Task touches `agents_manager/`, `bin/`, `share/`, `tasks/`, `opencode.jsonc`, or any specialist `SKILL.md` / `rules.md` → controller work. Follow the hard rules + pipeline below.
-- Task touches `kit/`, `resources/`, `INDEX.md`, `USAGE_GUIDE.md`, `CLEANUP_LIST.md`, or `FINAL_VISION.md` → downstream animated-website project. The hard rules below do NOT apply; the project documents its own conventions.
-- Task touches `scripts/`, `.agents/`, `.gitignore`, `README.md` → shared; usually controller but verify case-by-case.
+## What's where
 
-Do not confuse the two halves. The controller and the downstream kit are independently versioned concepts even though they share a git history.
-
-## Pipeline (default shape — v0.16.0+ adaptive)
-
-```
-master -> am-research -> am-planning -> [am-assets if visual template] -> am-design + am-coder (parallel) -> am-review
-                                                            |                            |
-                                                            v                            v
-                                                  [am-investigate]  <--- recommended by am-review for CRITICAL/HIGH
-                                                            |
-                                                            v
-                                                       am-coder (fix)
-                                                            |
-                                                            v
-                                                       am-review (re-validate)
-                                                            |
-                                                            v
-                                                       am-ship (release)
-                                                       am-health (score)
-```
-
-- **master** orchestrates ONLY. Never codes, plans, designs, or reviews directly.
-- **Specialists never spawn other specialists.** Only master orchestrates.
-- All inter-agent communication goes through files in `share/`. No out-of-band chat.
-- Review reports must be brutally honest. False PASS ships bugs; false FAIL just costs a fix loop.
-- Master runs a 5-question preflight before dispatching any specialist.
-- `am-assets` is dispatched at **Phase 3a** (between Planning and Build) only when the task uses a visual template that declares assets in its frontmatter AND no `assets/MANIFEST.json` exists yet. v0.16.0+ allows `am-design` and `am-coder` to run in parallel.
-- `am-investigate` is dispatched when am-review's report includes a `## Recommend am-investigate` block (CRITICAL/HIGH findings with unclear cause) OR when the user reports a bug directly.
-- `am-ship` is dispatched at Phase 5 release when the user says "ship" / "release" / "tag". Runs validation + VERSION bump + CHANGELOG block + tag + push. Idempotent.
-- `am-health` is dispatched on demand ("is this healthy?" / "run all checks") or at Phase 5 close when health tracking is enabled. Report-only — never fixes.
-- `agents_manager/extract/` is a non-roster on-demand skill (loaded by any specialist for "extract this to a template" requests). It is **not** registered in `opencode.jsonc`.
-
-## Auto-routing
-
-- Multi-step work (research -> plan -> build -> review) -> spawn master via `task(subagent_type="master", prompt="...")`.
-- Single-step work (quick edit, one-off question) -> do it directly. No master needed.
-
-## Hard rules
-
-- **Do NOT commit unless explicitly asked.** Project convention; commits are user-driven.
-- **Do NOT skip the review phase** because "it looks fine."
-- **Do NOT accept the first review report without reading it.**
-- **max_fix_loops = 3.** Cap on review -> fix -> re-review cycles; surface to user after.
-- **Do NOT edit `agents_manager/<role>/SKILL.md`** unless explicitly redesigning the controller.
-- **v0.9.0+**: `am-design` never writes `src/**`; reference implementations are `am-coder`'s job.
-- **v0.22.0+**: Every agent must validate external module/library/framework/SDK/API usage with `chub` before writing code against it. Training data may be outdated or hallucinated; chub is canonical. Enforced by: (1) `bin/agents-manager` install installs `chub` by default and copies the `chub-gate` opencode plugin + `chub-validate` skill (project-local by default; `--chub-global` for `~/.config/opencode/`, for users without agents-manager), (2) the `chub-gate` plugin re-injects the chub reminder into context after every compaction so the rule survives mid-session memory loss, (3) specialist SKILL.md has a pre-write step requiring `chub get <id>` citation in the coder summary, (4) `am-review` checks for the citation and FAILs tasks with unvalidated imports. If chub isn't installed in the target project, install it (`npm install -g @aisuite/chub`) or surface to master. See master SKILL.md § Context-hub protocol for the full workflow.
-
-## Per-agent output paths ("Owns" column)
-
-| Agent | Primary output destination |
+| Path | Purpose |
 |---|---|
-| master | `share/handoffs/`, `share/notes/99_decisions.md`, `tasks/` |
-| am-research | `share/notes/01_research_*.md` |
-| am-planning | `share/notes/02_plan_*.md`, `tasks/<id>.md` rows; v0.17.0+ also writes `share/notes/02_plan_review_*.md` for plan-mode review angles (plan-ceo / plan-eng / plan-design / plan-devex) |
-| am-design (v0.9.0+) | `share/design/<task-id>/**` |
-| am-assets (v0.9.0+, Phase 3a) | `assets/MANIFEST.json`, `share/notes/03a_assets_*.md`, `share/handoffs/03a_assets-to-coder-*.md` |
-| am-coder | source code, `share/notes/03_coder_summary_*.md` |
-| am-review | `share/reports/04_review_*.md`; v0.18.0+ also writes `## Recommend am-investigate` blocks when findings need root-cause work |
-| am-investigate (v0.18.0+) | `share/notes/04_investigate_*.md` |
-| am-ship (v0.18.0+) | `share/notes/05_ship_*.md`; edits `VERSION` + `agents_manager/CHANGELOG.md` |
-| am-health (v0.18.0+) | `share/health/<date>.json` + `share/notes/05_health_*.md` |
+| `README.md` | Elevator pitch + how to use the generator |
+| `INDEX.md` | One-stop file map (drill-down reference) |
+| `FINAL_VISION.md` | Target state + validation checklist |
+| `kit/USAGE_GUIDE.md` | 8-step workflow + what to use / not |
+| `kit/CLEANUP_LIST.md` | A. delete/replace · B. do-not-use |
+| `kit/ASSET_SPECS.md` | Asset specs + LLM generation prompts |
+| `kit/SAMPLE_VALIDATION.md` | 1 brief per `site_type` — 6 router traces, all clean |
+| `kit/VERIFICATION.md` | What was actually run + bugs caught |
+| `kit/ASSETS_README.md` | Asset swap chain (historical record) |
+| `kit/dossier-agent-kit/dossier-agent-kit/` | The agent kit itself — schemas, starter, examples, freshness protocol |
+| `resources/animated_website_minimax_3/` | **Canonical** research dossier (read `08_corrections_vs_source.md` FIRST) |
+| `resources/animated_website_deepseek_flash/` | Secondary dossier (20-genre breadth, deep anti-pattern coverage) |
+| `resources/animated_website_minimax_2.7/` | **Do not use** — pre-correction, 8 known errors |
+| `agents_manager/` | Vendored multi-agent orchestrator (its own `AGENTS.md` lives here) |
+| `bin/`, `share/`, `tasks/`, `scripts/`, `opencode.jsonc` | Vendored orchestrator runtime |
 
-In v0.5.0+ any agent can technically read/write anywhere (`permission: "allow"`); the convention is to write only to the listed paths unless coordination requires more.
+## The 12 kinds (one-line each)
 
-## Tool surface (v0.19.0+/v0.20.0+)
+i. Scroll reveal / parallax · ii. 3D scene / WebGL / WebGPU · iii. Shader / GLSL fragment · iv. Cursor / pointer-tracking · v. Animated illustration (Lottie / Rive) · vi. Preloader / intro · vii. Page transitions (SPA) · viii. Microinteraction / CSS-only · ix. Generative art / canvas · x. Audio-reactive · xi. AR / `<model-viewer>` *(manual opt-in only)* · xii. AI live motion *(manual opt-in only)*.
 
-Five tools (four MCP servers + the chub CLI) are wired into specialists as documented in their SKILL.md `allowed-tools`:
+Full matrix: `kit/dossier-agent-kit/dossier-agent-kit/schemas/kinds.json`. Decision tree: `schemas/router.json`. 95 motion tokens: `resources/animated_website_minimax_3/06_motion_grammar.md`. 3 budget caps: `schemas/composition_matrix.json` (concurrent=8, ambient-loops=2, full-viewport-scenes=1). 10 cross-cutting anti-patterns + per-kind additions: `schemas/forbidden_patterns.json`.
 
-| Tool | Type | Used by | Purpose |
-|---|---|---|---|
-| `browsermcp` | MCP | am-research (v0.18.0+) | Live-site research via headless browser |
-| `codebase-memory` | MCP | am-research, am-review, am-investigate, am-coder (v0.19.0+) | Graph-based code intelligence: symbol search, call-path tracing, complexity audit, blast-radius analysis |
-| `github` | MCP | am-ship (v0.19.0+) | PR creation + release verification (gh CLI retained as fallback) |
-| `testsprite` | MCP | am-coder (run), am-review (cite) (v0.19.0+, optional) | Post-build UI smoke tests for downstream projects with a running UI |
-| `chub` (context-hub) | CLI | all 10 agents (v0.20.0+, MANDATORY) | Library/API/SDK doc fetcher; install on-demand via `npm install -g @aisuite/chub`. See master SKILL.md § Context-hub protocol. |
+## Hard rules for this project
 
-MCPs are enabled at the host level (parent `opencode.json`), not per-agent — so availability is environment-dependent. Each SKILL.md documents the fallback (grep/glob/gh) when the MCP isn't installed in the target project. The chub CLI is invoked via Bash and installed on-demand by any agent when missing.
+- **Read `08_corrections_vs_source.md` first.** 8 known errors in the source scrape (library renamed, GSAP free since 2024, Lenis repo moved, AGPL traps). Skip = bugs later.
+- **Use the router, not vibes.** `schemas/router.json` R1–R12 returns the kind list. Don't pick kinds manually.
+- **Honor the 3 budget caps** — concurrent=8, ambient-loops=2, full-viewport-scenes=1.
+- **Run `freshness_protocol.md` Tier 3** before hardcoding any package version or CDN URL. Re-verify every time.
+- **Don't auto-select kind-xi (AR) or kind-xii (AI live motion)** — both require explicit human opt-in (R11, R12).
+- **Don't put `@theatre/studio` (AGPL-3.0) or Remotion-at-scale (commercial threshold) in a stack without flagging it** — see `resources/animated_website_minimax_3/07_license_posture.md` watchlist.
+- **Don't edit `agents_manager/<role>/SKILL.md`** unless redesigning the vendored controller — that's upstream territory.
+- **Don't commit unless explicitly asked.** Project convention; commits are user-driven.
 
-## Task tracking
+## Vendored agents-manager
 
-- ID format: `T-YYYY-MM-DD-NNN`. One file per id in `tasks/`.
-- Phase log + sub-task rows live in `tasks/<id>.md`.
-- Each phase writes its own handoff/summary/report file (see "Owns" column above).
+The orchestrator at `agents_manager/` is a vendored copy of the upstream multi-agent tool. Its own context_gen doc lives at `agents_manager/AGENTS.md`; its own release notes at `agents_manager/CHANGELOG.md`. For tasks that touch the vendored controller (specialist `SKILL.md` edits, release automation, controller bugs), read `agents_manager/AGENTS.md` first.
 
-## Controller dispatchers (v0.11.0+)
-
-Three install paths for putting agents-manager into a target project:
-
-- `bin/agents-manager` (bash) — reads manifest via inline Python3
-- `bin/agents-manager.ps1` (PowerShell) — reads manifest via `ConvertFrom-Json`
-- `bin/agents-manager.py` (Python UX) — single dialect, stdlib only, recommended
-
-All three accept `--global/--local/--both/--skip` on `skills add` (v0.11.0). Default scope = `both` (honors per-skill source).
-
-## Standalone installer (downloads alone, runs anywhere)
-
-`bin/standalone-installer/install.{py,sh,cmd}` + `README.md`. Downloads latest release from GitHub API, extracts to temp, runs bundled installer, cleans up. Stdlib only.
-
-## Releases (tag-driven, fully automated)
-
-1. Add a `## vX.Y.Z — <theme> (YYYY-MM-DD)` block to `agents_manager/CHANGELOG.md` (newest on top) **before** tagging. The release workflow extracts this block as the GitHub Release notes; without it the release body is a placeholder.
-2. `git tag -a vX.Y.Z -m "vX.Y.Z: <one-line>"` then `git push origin vX.Y.Z`. `release.yml` builds the ZIP from a fixed allowlist (`opencode.jsonc`, `CLAUDE.md`, `agents_manager`, `share`, `tasks`, `.agents/skills/mavis-team`, `bin`) and runs a 3-step gh-api dance (create→PATCH→upload) to dodge an HTTP 500 quirk on the initial POST when `name`/`body` are set.
-3. Release appears in <2 min at `https://github.com/<owner>/agents-manager/releases/tag/vX.Y.Z`.
-
-## Lint / verify
-
-```bash
-# Bash (file is CRLF on Windows working tree; convert first)
-npx --yes shellcheck <(python3 -c "open('bin/agents-manager','rb').read().replace(b'\r\n',b'\n').decode().encode()")
-
-# PowerShell
-pwsh -NoProfile -Command "Invoke-ScriptAnalyzer -Path bin/agents-manager.ps1"
-
-# Python
-python3 -m py_compile bin/agents-manager.py bin/install.py bin/standalone-installer/install.py
-
-# Frontmatter (controller files)
-python3 scripts/validate-frontmatter.py
-```
-
-There are no tests for `bin/` scripts — only `scripts/validate-frontmatter.py`. CI runs on `ubuntu-latest` only, so `.cmd` scripts can't be CI-linted; use the manual smoke checklist in CHANGELOG / plan files instead.
-
-## EOL
-
-`.gitattributes` rules: `*.sh text eol=lf`, `*.ps1 text eol=crlf`, `*.cmd text eol=crlf`, `*.bat text eol=crlf`, `*.json/yaml/md text eol=lf`. Windows working tree may show CRLF due to `core.autocrlf=true`; git normalizes on commit.
+For animated-website tasks, agents-manager is the orchestrator that fits the project's needs: research-first (canonical dossier) → plan (router output) → build (starter + per-kind files) → review (forbidden patterns lint). The animated-website agent doesn't have to use agents-manager; it can be invoked directly. But agents-manager is already wired and tested, so the project ships with it.
 
 ## Reading order for a new session
 
-1. `CLAUDE.md` — top-level orientation + auto-routing rule
-2. `opencode.jsonc` — agent definitions
-3. `agents_manager/SKILL.md` — master orchestration protocol
-4. `agents_manager/<role>/SKILL.md` — for any specialist you dispatch
-5. `agents_manager/CHANGELOG.md` — system evolution (read latest entry first)
-6. `share/notes/02_plan_*.md` + `tasks/<id>.md` — current in-flight work
-
-## Tool usage efficiency (v0.5.1+)
-
-### Read workflow
-- **Discovery first, read second.** When you don't know what files exist, use `glob` (by pattern) or `grep` (by content) to find them. Read in parallel only AFTER you know which files you need.
-- **Batch parallel reads when files are known.** A folder analysis that surfaces N files to read → issue all N `read` calls in one message, not N messages.
-- **Use `offset`/`limit` for large files** (>2000 lines). Reserve full reads for files you genuinely need in one piece.
-- **Re-read or re-grep after edits.** Edits shift line numbers; the next edit's `oldString` may no longer match.
-
-### Edit workflow
-- **A `read` precedes every `edit` batch** (tool contract). Read once, then issue all edits in a single message.
-- **Batch parallel `edit` calls** when independent. Sequence only when later edits depend on earlier (line shifts, shared mutating context).
-- **Use `write` for full-file replacement** (new files, full rewrites). `edit` is for surgical changes only.
-- **Verify `oldString` uniqueness across the batch** before issuing. Silent collisions are the #1 edit-batch failure mode.
-- **Verify once after the batch completes**, not mid-batch.
-
-### Other parallelism (when in doubt, batch)
-- `bash`: multiple independent commands → one message with multiple tool calls.
-- `glob` + `grep`: often worth batching together — pattern search + content search in one message.
-- `task` (subagent dispatch): NOT batchable. Only `master` dispatches subagents per pipeline rule.
+1. `README.md` — elevator pitch
+2. `kit/dossier-agent-kit/dossier-agent-kit/README.md` — 7-step agent workflow inside the kit
+3. `resources/animated_website_minimax_3/08_corrections_vs_source.md` — must read
+4. `kit/USAGE_GUIDE.md` — operational guide
+5. `kit/dossier-agent-kit/dossier-agent-kit/schemas/router.json` — the decision tree
+6. `INDEX.md` — file map for drilling down
