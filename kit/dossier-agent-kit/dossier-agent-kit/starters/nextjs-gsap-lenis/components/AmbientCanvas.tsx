@@ -7,6 +7,12 @@ import { useReducedMotion } from "@/lib/use-reduced-motion";
  * mode, per 09_kind-ix_generative_art.md's minimal snippet shape, extended
  * with pause-on-hidden and reduced-motion handling wired to the shared hook.
  *
+ * Reduced-motion contract (per 09_kind-ix §4 + CC4 in forbidden_patterns):
+ * when prefers-reduced-motion is reduce, no canvas mounts and no RAF
+ * ever runs — render a static background instead. This avoids the
+ * "two screenshots taken 500ms apart should be identical" test failing
+ * by 1-frame jitter.
+ *
  * This is the hero-surface pick from the golden trace
  * (examples/golden-trace-saas-marketing/TRACE.md) — it consumes the single
  * motion.limit.full-viewport-scenes slot for this page.
@@ -17,6 +23,20 @@ export function AmbientCanvas() {
 
   useEffect(() => {
     if (!ref.current) return;
+
+    // Capture matchMedia synchronously so the decision is final on first paint
+    // and never reverts via a React state cascade.
+    const reducedSync =
+      typeof window !== "undefined" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    if (reducedSync) {
+      // Reduced motion: static background. No library, no canvas, no RAF.
+      ref.current.style.background =
+        "radial-gradient(ellipse at top, rgba(110,181,255,0.08), transparent 60%), linear-gradient(180deg, #0d1117 0%, #0a0d12 100%)";
+      return;
+    }
+
     let instance: any;
     let onVis: (() => void) | undefined;
 
@@ -38,11 +58,10 @@ export function AmbientCanvas() {
         };
       };
       instance = new p5(sketch);
-      if (reduced) instance.noLoop();
 
       onVis = () => {
         if (document.visibilityState === "hidden") instance.noLoop();
-        else if (!reduced) instance.loop();
+        else instance.loop();
       };
       document.addEventListener("visibilitychange", onVis);
     });
@@ -51,14 +70,21 @@ export function AmbientCanvas() {
       instance?.remove();
       if (onVis) document.removeEventListener("visibilitychange", onVis);
     };
-  }, [reduced]);
+  }, []);
 
   return (
     <div
       ref={ref}
       aria-hidden="true"
       data-testid="ambient-canvas"
-      style={{ position: "fixed", inset: 0, zIndex: -1, pointerEvents: "none" }}
+      style={{
+        position: "fixed",
+        inset: 0,
+        zIndex: -1,
+        pointerEvents: "none",
+        background:
+          "radial-gradient(ellipse at top, rgba(110,181,255,0.04), transparent 60%)",
+      }}
     />
   );
 }

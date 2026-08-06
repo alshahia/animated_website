@@ -12,6 +12,14 @@ import Lenis from "lenis";
 
 gsap.registerPlugin(ScrollTrigger);
 
+// Expose on window for tests + dev debugging. GSAP doesn't auto-attach
+// itself in standard bundle mode, and tests/kind-i.spec.ts assert against
+// `window.ScrollTrigger.getAll().length` to verify cleanup. Without this,
+// the test silently returns 0 because `?.` short-circuits on undefined.
+if (typeof window !== "undefined") {
+  (window as unknown as { ScrollTrigger: typeof ScrollTrigger }).ScrollTrigger = ScrollTrigger;
+}
+
 export interface ScrollHandle {
   lenis: Lenis | null;
   reduced: boolean;

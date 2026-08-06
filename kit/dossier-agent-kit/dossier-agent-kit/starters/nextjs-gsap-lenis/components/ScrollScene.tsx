@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useRef } from "react";
+import gsap from "gsap";
 import { registerReveal } from "@/lib/scroll-setup";
 import { useReducedMotion } from "@/lib/use-reduced-motion";
 
@@ -21,7 +22,15 @@ export function ScrollScene({
   const reduced = useReducedMotion();
 
   useEffect(() => {
-    if (!ref.current || reduced) return;
+    if (!ref.current) return;
+    if (reduced) {
+      // Reduced motion OR mid-flight reduced-motion transition: bypass the
+      // gsap.fromTo tween entirely so content is visible immediately (and
+      // stays visible — opacity stays at the 1 set here, not the 0 set by
+      // a partially-initialized tween that was then killed).
+      gsap.set(ref.current, { opacity: 1, y: 0, clearProps: "opacity,transform" });
+      return;
+    }
     const tween = registerReveal(ref.current);
     return () => {
       tween.scrollTrigger?.kill();

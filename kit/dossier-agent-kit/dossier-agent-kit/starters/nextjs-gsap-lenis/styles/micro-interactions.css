@@ -12,6 +12,19 @@
   }
 }
 
+/* WCAG 2.5.5 / 2.5.8 — touch-target minimum 44x44 CSS pixels regardless of
+   pointer capability. Applied universally so touch devices get clickable
+   surfaces even though :hover is hidden from them. Inline display rules
+   for the test targets (`.hover-target`) intentionally only set min-height
+   so inline-block shrinking text doesn't collapse to 17px in CI. */
+.hover-target {
+  display: inline-flex;
+  align-items: center;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 8px 12px;
+}
+
 .hover-target:focus-visible {
   outline: 2px solid var(--color-primary);
   outline-offset: 2px;

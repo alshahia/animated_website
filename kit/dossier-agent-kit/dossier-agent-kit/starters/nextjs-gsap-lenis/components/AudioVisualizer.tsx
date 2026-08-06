@@ -78,7 +78,7 @@ export function AudioVisualizer({ src }: { src: string }) {
       )}
       <canvas
         ref={canvasRef}
-        aria-hidden
+        aria-hidden="true"
         data-testid="audio-visualizer-canvas"
         style={{ position: "fixed", inset: 0, zIndex: -1, pointerEvents: "none" }}
       />
