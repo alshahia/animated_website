@@ -150,9 +150,9 @@ npx next build        # 10 static routes expected
 npm run test:e2e      # 144 tests, 3 projects (chromium / chromium-reduced-motion / mobile-chrome-touch)
 npm run lighthouse:ci # TBT target ≤ 200 ms
 
-# Kit freshness
-python3 ../scripts/validate-frontmatter.py   # 13 SKILL.md files
-bash ../../bin/lint-design.sh ../../../agents_manager/design/resources/mockup-templates/  # advisory only
+# Kit freshness (run from repo root, not the starter)
+python3 scripts/validate-frontmatter.py agents_manager/*/SKILL.md   # 12 SKILL.md files
+bash bin/lint-design.sh agents_manager/design/resources/mockup-templates/  # advisory only
 ```
 
 ## Gotchas that will trip up a fresh agent
