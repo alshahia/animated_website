@@ -20,6 +20,7 @@ If you want to **edit the vendored orchestrator** → focus on `agents_manager/`
 | **`README.md`** | Animated-website generator pitch | Start here |
 | **`INDEX.md`** | This file | One-stop reference |
 | **`AGENTS.md`** | Animated-website project context_gen | Working on the project |
+| **`HANDOFF.md`** | Fresh-agent resume document | Resuming work in a new session |
 | **`FINAL_VISION.md`** | Target state + validation checklist | Verifying "done" |
 | **`agents_manager/AGENTS.md`** | Vendored controller context_gen | Working ON the orchestrator |
 | **`CLAUDE.md`** | Top-level orientation + auto-routing | Understanding orchestrator routing |
