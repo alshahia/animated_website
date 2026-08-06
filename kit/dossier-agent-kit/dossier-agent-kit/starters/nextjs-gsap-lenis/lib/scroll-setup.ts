@@ -3,36 +3,37 @@
  * Source: 01_kind-i_scroll_reveal.md "Minimal snippet shape", extended with
  * cleanup + reduced-motion branching so it's actually usable, not just illustrative.
  *
- * Usage: call initScroll() once at app root (e.g. in a top-level layout effect),
- * and call its returned teardown() on unmount / route change in an SPA.
+ * Ponytail: gsap + ScrollTrigger + Lenis are dynamically imported inside
+ * initScroll()/registerReveal() instead of at module top. This keeps
+ * module evaluation cheap (~0 work) so first-render Total Blocking Time
+ * stays under the 200ms Lighthouse CI cap (Lighthouse TBT 720/213/392ms →
+ * fixed 2026-08-05). Caller awaits the returned promise and stores the
+ * handle in a ref so teardown() works on async resolution.
  */
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-import Lenis from "lenis";
-
-gsap.registerPlugin(ScrollTrigger);
-
-// Expose on window for tests + dev debugging. GSAP doesn't auto-attach
-// itself in standard bundle mode, and tests/kind-i.spec.ts assert against
-// `window.ScrollTrigger.getAll().length` to verify cleanup. Without this,
-// the test silently returns 0 because `?.` short-circuits on undefined.
-if (typeof window !== "undefined") {
-  (window as unknown as { ScrollTrigger: typeof ScrollTrigger }).ScrollTrigger = ScrollTrigger;
-}
-
 export interface ScrollHandle {
-  lenis: Lenis | null;
+  lenis: unknown | null;
   reduced: boolean;
   teardown: () => void;
 }
 
-export function initScroll(): ScrollHandle {
+export async function initScroll(): Promise<ScrollHandle> {
+  const { default: gsap } = await import("gsap");
+  const { ScrollTrigger } = await import("gsap/ScrollTrigger");
+  gsap.registerPlugin(ScrollTrigger);
+
+  // Expose on window for tests + dev debugging. GSAP doesn't auto-attach
+  // itself in standard bundle mode, and tests/kind-i.spec.ts assert against
+  // `window.ScrollTrigger.getAll().length` to verify cleanup. Without this,
+  // the test silently returns 0 because `?.` short-circuits on undefined.
+  if (typeof window !== "undefined") {
+    (window as unknown as { ScrollTrigger: typeof ScrollTrigger }).ScrollTrigger = ScrollTrigger;
+  }
+
   const reduced =
     typeof window !== "undefined" &&
     window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   if (reduced) {
-    // BRIEF §5: reduced-motion users get normal document flow, no pin/scrub.
     ScrollTrigger.normalizeScroll(false);
     return {
       lenis: null,
@@ -43,6 +44,7 @@ export function initScroll(): ScrollHandle {
     };
   }
 
+  const { default: Lenis } = await import("lenis");
   const lenis = new Lenis({
     duration: 1.2,
     easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
@@ -72,10 +74,12 @@ export function initScroll(): ScrollHandle {
  * Register a scroll-triggered reveal on one section element.
  * Animates transform+opacity only (04_do_dont.md Use #1 / CC1 in forbidden_patterns.json).
  */
-export function registerReveal(
+export async function registerReveal(
   el: HTMLElement,
   opts: { distance?: string; duration?: number; ease?: string } = {}
 ) {
+  const { default: gsap } = await import("gsap");
+  const { ScrollTrigger } = await import("gsap/ScrollTrigger");
   const distance = opts.distance ?? "var(--motion-distance-md)";
   const duration = opts.duration ?? 0.22; // motion.duration.base
   const ease = opts.ease ?? "power2.out"; // approximates motion.easing.enter

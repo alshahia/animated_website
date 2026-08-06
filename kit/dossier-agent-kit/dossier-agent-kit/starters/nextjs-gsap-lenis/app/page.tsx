@@ -1,6 +1,6 @@
 "use client";
-import { useEffect } from "react";
-import { initScroll } from "@/lib/scroll-setup";
+import { useEffect, useRef } from "react";
+import { initScroll, ScrollHandle } from "@/lib/scroll-setup";
 import { ScrollScene } from "@/components/ScrollScene";
 import { HoverCard } from "@/components/HoverCard";
 import { AmbientCanvas } from "@/components/AmbientCanvas";
@@ -14,9 +14,34 @@ import { LottieIcon } from "@/components/LottieIcon";
 const SECTIONS = ["hero", "features", "how-it-works", "pricing", "testimonials", "cta"];
 
 export default function Home() {
+  const handleRef = useRef<ScrollHandle | null>(null);
+
   useEffect(() => {
-    const handle = initScroll();
-    return () => handle.teardown();
+    let cancelled = false;
+    // Ponytail: wrap init in requestIdleCallback so module-level
+    // gsap/ScrollTrigger/Lenis dynamic imports (which block the main
+    // thread between FCP and TTI) run AFTER the browser is idle.
+    // requestIdleCallback timeout=200ms falls back to setTimeout on
+    // Safari. Fixes Lighthouse TBT 720/213/392ms (CI cap 200ms).
+    const ric = (cb: () => void) =>
+      typeof window !== "undefined" && window.requestIdleCallback
+        ? window.requestIdleCallback(cb, { timeout: 200 })
+        : setTimeout(cb, 200) as unknown as number;
+    const id = ric(() => {
+      initScroll().then((h) => {
+        if (cancelled) { h.teardown(); return; }
+        handleRef.current = h;
+      });
+    });
+    return () => {
+      cancelled = true;
+      if (typeof window !== "undefined" && window.cancelIdleCallback) {
+        window.cancelIdleCallback(id);
+      } else {
+        clearTimeout(id as unknown as ReturnType<typeof setTimeout>);
+      }
+      handleRef.current?.teardown();
+    };
   }, []);
 
   return (

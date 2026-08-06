@@ -36,7 +36,7 @@ pnpm-debug.log*
 *.bundle.css
 
 # Test artifacts (Playwright + Lighthouse CI)
-/test-results/
-/playwright-report/
-/playwright/.cache/
-/.lighthouseci/
+test-results/
+playwright-report/
+playwright/.cache/
+.lighthouseci/
