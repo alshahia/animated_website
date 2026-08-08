@@ -4,7 +4,7 @@ import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const OUT = join(__dirname, 'output');
+const OUT = join(__dirname, 'prompts');
 const MD_DIR = join(OUT, 'prompts');
 const SUPABASE_BASE = 'https://xgdzyqfalbibzelpdpvr.supabase.co';
 const SITE = 'https://motionsites.ai';

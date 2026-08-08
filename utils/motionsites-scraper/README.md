@@ -16,7 +16,7 @@ npx playwright install chromium
 npm run scrape
 ```
 
-Output goes to `output/`:
+Output goes to `prompts/`:
 - `prompts.json` — full array, one entry per prompt
 - `<slug>.md` — one Markdown file per prompt
 
