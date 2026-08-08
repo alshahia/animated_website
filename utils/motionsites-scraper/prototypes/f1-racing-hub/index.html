@@ -1,0 +1,585 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>F1 Racing Hub — Lewis Hamilton / Silverstone F1 Hero</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Albert+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body { font-family: "Albert Sans", sans-serif; background: #0a0e1c; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+
+  .hero { position: relative; width: 100%; min-height: 100vh; overflow: hidden; background: #0a0e1c; }
+  .hero-bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; }
+  .hero-overlay { position: absolute; inset: 0; background: rgba(0, 0, 0, 0.7); z-index: 1; }
+
+  .phones-md { display: none; }
+  @media (min-width: 768px) {
+    .phones-md { display: flex; position: relative; z-index: 2; width: 100%; height: 100vh; align-items: center; justify-content: center; padding: 24px 0; }
+  }
+  .phones-md-row { display: flex; align-items: flex-end; justify-content: center; gap: 2vw; }
+  .phones-sm { display: flex; position: relative; z-index: 2; flex-direction: column; align-items: center; gap: 50px; padding: 20px; }
+  @media (min-width: 768px) { .phones-sm { display: none; } }
+
+  .phone { display: flex; flex-direction: column; align-items: center; }
+  @media (min-width: 768px) { .phone-mid { margin-bottom: -24px; } }
+  .phone-frame { position: relative; aspect-ratio: 390/844; width: clamp(200px, 75vw, 340px); background: #000; padding: clamp(6px, 1vw, 12px); border-radius: clamp(30px, 4vw, 54px); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6); }
+  @media (min-width: 768px) { .phone-frame { width: min(25vw, 42vh); } }
+  @media (min-width: 1280px) { .phone-frame { width: min(28vw, 48vh, 430px); } }
+  .phone-ring { position: absolute; inset: 0; border-radius: clamp(30px, 4vw, 54px); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.15); pointer-events: none; }
+  .phone-screen { position: relative; width: 100%; height: 100%; border-radius: clamp(24px, 3.2vw, 44px); overflow: hidden; background: #0a0e1c; }
+  .phone-content { position: relative; transform-origin: top left; }
+  .island { position: absolute; top: 3%; left: 50%; transform: translateX(-50%); width: 30%; height: 4%; background: #000; border-radius: 999px; z-index: 50; }
+  .side { position: absolute; background: #404040; border-radius: 3px; }
+  .side-l1 { left: 2px; top: 19%; width: 3px; height: 4.5%; }
+  .side-l2 { left: 2px; top: 26%; width: 3px; height: 7.3%; }
+  .side-l3 { left: 2px; top: 35.5%; width: 3px; height: 7.3%; }
+  .side-r { right: 2px; top: 30.8%; width: 3px; height: 11.4%; }
+
+  .screen { position: relative; width: 100%; height: 100%; overflow: hidden; }
+  .screen-hero { display: flex; flex-direction: column; padding: 76px 20px 0; }
+  .screen-stats { display: flex; flex-direction: column; padding: 76px 20px 32px; }
+  .screen-bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .screen-dim { position: absolute; inset: 0; background: rgba(0, 0, 0, 0.6); }
+
+  .phone-nav { position: absolute; top: 0; left: 0; right: 0; z-index: 30; display: flex; align-items: center; justify-content: space-between; height: 56px; margin-top: 20px; padding: 0 20px; }
+  .nav-logo { height: 28px; width: auto; object-fit: contain; }
+  .nav-btns { display: flex; gap: 10px; }
+  .nav-btn { width: 56px; height: 56px; padding: 0; border: 0; border-radius: 0; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+  .nav-btn-white { background: #fff; }
+  .nav-profile { width: 20px; height: 20px; object-fit: contain; }
+  .nav-btn-glass { flex-direction: column; gap: 5px; background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+  .bar { display: block; height: 2px; border-radius: 999px; background: #fff; }
+  .bar-l { width: 21px; }
+  .bar-s { width: 10px; }
+
+  .loc { position: relative; z-index: 10; display: flex; flex-direction: column; gap: 10px; }
+  .loc-hero { margin-top: 16px; margin-bottom: 8px; }
+  .loc-stats { margin-bottom: 16px; }
+  .loc-row { display: flex; align-items: center; gap: 8px; }
+  .loc-flag { width: 24px; height: 24px; object-fit: cover; }
+  .loc-text { color: rgba(255, 255, 255, 0.6); font-size: 16px; }
+  .loc-title { color: #fff; font-weight: 400; font-size: 48px; line-height: 0.95; letter-spacing: -0.05em; }
+
+  .driver { position: absolute; inset: 0; z-index: 5; display: flex; align-items: flex-end; justify-content: center; }
+  .driver-img { width: calc(140% - 5px); max-width: none; height: auto; object-fit: contain; transform-origin: bottom; }
+  .driver-blur { position: absolute; bottom: 0; left: 0; right: 0; height: 50%; pointer-events: none; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); mask: linear-gradient(to bottom, transparent 0%, #000 50%); -webkit-mask: linear-gradient(to bottom, transparent 0%, #000 50%); }
+  .bottom { position: absolute; bottom: 0; left: 0; right: 0; z-index: 10; display: flex; flex-direction: column; padding: 0 20px 20px; }
+  .strip { height: 48px; width: auto; object-fit: contain; align-self: flex-start; margin-bottom: 12px; }
+  .name { color: #fff; font-weight: 600; font-size: 64px; line-height: 0.82; letter-spacing: -0.05em; }
+
+  .circuit { position: relative; z-index: 10; flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center; margin: 0 -20px; padding: 0 8px; }
+  .circuit-img { width: 100%; height: 100%; object-fit: contain; }
+  .stats { position: relative; z-index: 10; margin-top: auto; padding-top: 16px; }
+  .stats-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+  .stats-icon { width: 24px; height: 24px; object-fit: contain; }
+  .stats-label { color: rgba(255, 255, 255, 0.6); font-size: 16px; }
+  .stat-num { font-weight: 600; font-size: 110px; line-height: 0.72; letter-spacing: -0.06em; }
+  .stat-grad { background: linear-gradient(to bottom, #fff 0%, rgba(255, 255, 255, 0.4) 50%, transparent 85%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .stat-gold { color: #EDB40B; }
+
+  .team { position: absolute; top: 100px; left: 20px; z-index: 10; }
+  .chassis { position: absolute; top: 245px; left: 20px; z-index: 10; }
+  .t-row { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+  .t-icon { width: 20px; height: 20px; object-fit: contain; }
+  .t-label { color: rgba(255, 255, 255, 0.6); font-size: 15px; }
+  .t-title { color: #fff; font-weight: 400; font-size: 52px; line-height: 0.83; letter-spacing: -0.08em; }
+  .c-num { color: #EDB40B; font-weight: 600; font-size: 120px; line-height: 0.79; letter-spacing: -0.08em; }
+  .car { position: absolute; top: 390px; left: 12px; right: 12px; z-index: 10; width: calc(100% - 24px); height: auto; object-fit: contain; }
+  .cards { position: absolute; bottom: 0; left: 0; right: 0; z-index: 10; display: flex; }
+  .card { width: 50%; height: 200px; padding: 12px; border-radius: 16px 16px 0 0; background: rgba(20, 20, 30, 0.8); border: 1px solid rgba(255, 255, 255, 0.1); border-bottom: none; backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); display: flex; flex-direction: column; }
+  .card-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+  .card-avatar { width: 16px; height: 16px; object-fit: contain; opacity: 0.6; }
+  .card-name { color: rgba(255, 255, 255, 0.6); font-size: 13px; }
+  .card-stats { height: 20px; width: auto; object-fit: contain; align-self: flex-start; margin-bottom: 8px; }
+  .card-num { margin-top: auto; color: #fff; font-weight: 600; font-size: 110px; line-height: 0.79; letter-spacing: -0.08em; }
+
+  .menu { position: absolute; inset: 0; z-index: 50; background: linear-gradient(160deg, #1a0000 0%, #8B0000 40%, #E10600 100%); opacity: 0; visibility: hidden; transition: opacity 0.4s ease, visibility 0.4s ease; }
+  .menu.open { opacity: 1; visibility: visible; }
+  .menu-close { position: absolute; top: 20px; right: 20px; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; padding: 0; border: 0; background: none; color: #fff; cursor: pointer; }
+  .menu-links { position: absolute; top: 50%; left: 20px; transform: translateY(-50%); display: flex; flex-direction: column; gap: 20px; }
+  .menu-link { color: #fff; font-size: 30px; font-weight: 700; letter-spacing: -0.025em; text-decoration: none; opacity: 0; transform: translateX(-20px); transition: color 0.2s; }
+  .menu.open .menu-link { animation: menuIn 0.9s cubic-bezier(0.16, 1, 0.3, 1) both; }
+  .menu-link:hover { color: #EDB40B; }
+  .menu-signin { position: absolute; bottom: 20px; left: 20px; right: 20px; height: 52px; border: 0; border-radius: 999px; background: #fff; color: #0a0e1c; font-family: inherit; font-size: 16px; font-weight: 600; cursor: pointer; }
+
+  .fade-slide-up { animation: fadeSlideUp 0.9s cubic-bezier(0.16, 1, 0.3, 1) both; }
+  .fade-slide-down { animation: fadeSlideDown 0.7s cubic-bezier(0.16, 1, 0.3, 1) both; }
+  .fade-slide-left { animation: fadeSlideLeft 0.9s cubic-bezier(0.16, 1, 0.3, 1) both; }
+  .fade-slide-right { animation: fadeSlideRight 0.9s cubic-bezier(0.16, 1, 0.3, 1) both; }
+  .scale-in { animation: scaleIn 1s cubic-bezier(0.16, 1, 0.3, 1) both; }
+  .fade-in { animation: fadeIn 0.8s ease-out both; }
+  .speed-reveal { animation: speedReveal 0.8s cubic-bezier(0.16, 1, 0.3, 1) both; }
+
+  @keyframes fadeSlideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes fadeSlideDown { from { transform: translateY(-20px); } to { transform: translateY(0); } }
+  @keyframes fadeSlideLeft { from { opacity: 0; transform: translateX(40px); } to { opacity: 1; transform: translateX(0); } }
+  @keyframes fadeSlideRight { from { opacity: 0; transform: translateX(-40px); } to { opacity: 1; transform: translateX(0); } }
+  @keyframes scaleIn { from { opacity: 0; transform: scale(0.92); } to { opacity: 1; transform: scale(1); } }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes speedReveal { 0% { opacity: 0; transform: translateX(-100%) skewX(-8deg); filter: blur(8px); } 60% { opacity: 1; transform: translateX(4%) skewX(-2deg); filter: blur(0); } 100% { transform: translateX(0) skewX(0); filter: blur(0); } }
+  @keyframes raceLineLeft { from { transform: scaleX(0); transform-origin: left; } 60% { transform: scaleX(1.1); } to { transform: scaleX(1); } }
+  @keyframes menuIn { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
+
+  .delay-100 { animation-delay: 0.1s; } .delay-200 { animation-delay: 0.2s; } .delay-300 { animation-delay: 0.3s; } .delay-400 { animation-delay: 0.4s; }
+  .delay-500 { animation-delay: 0.5s; } .delay-600 { animation-delay: 0.6s; } .delay-700 { animation-delay: 0.7s; } .delay-800 { animation-delay: 0.8s; }
+  .delay-900 { animation-delay: 0.9s; } .delay-1000 { animation-delay: 1s; } .delay-1100 { animation-delay: 1.1s; } .delay-1200 { animation-delay: 1.2s; }
+  .delay-1300 { animation-delay: 1.3s; } .delay-1400 { animation-delay: 1.4s; } .delay-1500 { animation-delay: 1.5s; } .delay-1600 { animation-delay: 1.6s; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .phone, .fade-slide-up, .fade-slide-down, .fade-slide-left, .fade-slide-right, .scale-in, .fade-in, .speed-reveal, .menu-link { animation: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<main class="hero">
+  <img class="hero-bg" src="https://images.higgs.ai/?default=1&output=webp&url=https%3A%2F%2Fd8j0ntlcm91z4.cloudfront.net%2Fuser_38xzZboKViGWJOttwIXH07lWA1P%2Fhf_20260709_152331_bd312d1a-1f20-46b9-9b68-12bcdcf6d53e.png&w=1280&q=85" alt="" />
+  <div class="hero-overlay"></div>
+
+  <div class="phones-md">
+    <div class="phones-md-row">
+      <div class="phone fade-slide-up delay-300">
+        <div class="phone-frame">
+          <div class="phone-ring"></div>
+          <div class="phone-screen">
+            <div class="phone-content">
+              <div class="screen screen-hero">
+                <img class="screen-bg" src="https://images.higgs.ai/?default=1&output=webp&url=https%3A%2F%2Fd8j0ntlcm91z4.cloudfront.net%2Fuser_38xzZboKViGWJOttwIXH07lWA1P%2Fhf_20260709_152331_bd312d1a-1f20-46b9-9b68-12bcdcf6d53e.png&w=1280&q=85" alt="" />
+                <div class="screen-dim"></div>
+                <nav class="phone-nav">
+                  <img class="nav-logo" src="https://framerusercontent.com/images/NZPITJ6zDBvxVT7rc1NH2sOU.png" alt="" />
+                  <div class="nav-btns">
+                    <button class="nav-btn nav-btn-white" type="button" aria-label="Profile">
+                      <img class="nav-profile" src="https://framerusercontent.com/images/JIl4japgQlMAQRvh1gDHszRvkUY.png?width=92&height=92" alt="" />
+                    </button>
+                    <button class="nav-btn nav-btn-glass" type="button" data-menu-open aria-label="Open menu">
+                      <span class="bar bar-l"></span>
+                      <span class="bar bar-s"></span>
+                    </button>
+                  </div>
+                </nav>
+                <div class="loc loc-hero fade-slide-up delay-300">
+                  <div class="loc-row">
+                    <img class="loc-flag" src="https://framerusercontent.com/images/pqUTggaeyOivtzDImRzkBRdww.png" alt="" />
+                    <span class="loc-text">United Kingdom</span>
+                  </div>
+                  <h2 class="loc-title">Silverstone<br />England</h2>
+                </div>
+                <div class="driver">
+                  <img class="driver-img scale-in delay-500" src="https://framerusercontent.com/images/m5IyHuJeOQ5P0GOvWx1xv0IR9Y.png" alt="Lewis Hamilton" />
+                  <div class="driver-blur"></div>
+                </div>
+                <div class="bottom">
+                  <img class="strip fade-slide-up delay-700" src="https://framerusercontent.com/images/dAAdqktZVxBDjPKk97YCjZjsE.png" alt="" />
+                  <div class="name speed-reveal delay-800">Lewis<br />Hamilton</div>
+                </div>
+                <div class="menu" data-menu>
+                  <button class="menu-close" type="button" data-menu-close aria-label="Close menu">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                  </button>
+                  <nav class="menu-links">
+                    <a class="menu-link" href="#" style="animation-delay:0.1s">Biography</a>
+                    <a class="menu-link" href="#" style="animation-delay:0.18s">Statistics</a>
+                    <a class="menu-link" href="#" style="animation-delay:0.26s">Career</a>
+                  </nav>
+                  <button class="menu-signin" type="button">Sign in</button>
+                </div>
+              </div>
+            </div>
+            <div class="island"></div>
+          </div>
+          <span class="side side-l1"></span>
+          <span class="side side-l2"></span>
+          <span class="side side-l3"></span>
+          <span class="side side-r"></span>
+        </div>
+      </div>
+
+      <div class="phone phone-mid fade-slide-up delay-500">
+        <div class="phone-frame">
+          <div class="phone-ring"></div>
+          <div class="phone-screen">
+            <div class="phone-content">
+              <div class="screen screen-stats">
+                <img class="screen-bg" src="https://images.higgs.ai/?default=1&output=webp&url=https%3A%2F%2Fd8j0ntlcm91z4.cloudfront.net%2Fuser_38xzZboKViGWJOttwIXH07lWA1P%2Fhf_20260709_152331_bd312d1a-1f20-46b9-9b68-12bcdcf6d53e.png&w=1280&q=85" alt="" />
+                <div class="screen-dim"></div>
+                <nav class="phone-nav">
+                  <img class="nav-logo" src="https://framerusercontent.com/images/NZPITJ6zDBvxVT7rc1NH2sOU.png" alt="" />
+                  <div class="nav-btns">
+                    <button class="nav-btn nav-btn-white" type="button" aria-label="Profile">
+                      <img class="nav-profile" src="https://framerusercontent.com/images/JIl4japgQlMAQRvh1gDHszRvkUY.png?width=92&height=92" alt="" />
+                    </button>
+                    <button class="nav-btn nav-btn-glass" type="button" data-menu-open aria-label="Open menu">
+                      <span class="bar bar-l"></span>
+                      <span class="bar bar-s"></span>
+                    </button>
+                  </div>
+                </nav>
+                <div class="loc loc-stats fade-slide-up delay-400">
+                  <div class="loc-row">
+                    <img class="loc-flag" src="https://framerusercontent.com/images/pqUTggaeyOivtzDImRzkBRdww.png" alt="" />
+                    <span class="loc-text">United Kingdom</span>
+                  </div>
+                  <h2 class="loc-title">Silverstone<br />England</h2>
+                </div>
+                <div class="circuit scale-in delay-600">
+                  <img class="circuit-img" src="https://framerusercontent.com/images/raKAG2bJP9xeqi118VMniPLvbAA.png" alt="Silverstone circuit" />
+                </div>
+                <div class="stats fade-slide-up delay-800">
+                  <div class="stats-row">
+                    <img class="stats-icon" src="https://framerusercontent.com/images/pIXUcwyAF0xzCIaKjtNLahHpasQ.png" alt="" />
+                    <span class="stats-label">Season Points</span>
+                  </div>
+                  <div class="stat-num stat-grad delay-800" data-count="227" data-delay="0.8">0</div>
+                  <div class="stat-num stat-grad delay-1000" data-count="374" data-delay="1">0</div>
+                  <div class="stat-num stat-gold delay-1200" data-count="4987" data-delay="1.2">0</div>
+                </div>
+                <div class="menu" data-menu>
+                  <button class="menu-close" type="button" data-menu-close aria-label="Close menu">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                  </button>
+                  <nav class="menu-links">
+                    <a class="menu-link" href="#" style="animation-delay:0.1s">Biography</a>
+                    <a class="menu-link" href="#" style="animation-delay:0.18s">Statistics</a>
+                    <a class="menu-link" href="#" style="animation-delay:0.26s">Career</a>
+                  </nav>
+                  <button class="menu-signin" type="button">Sign in</button>
+                </div>
+              </div>
+            </div>
+            <div class="island"></div>
+          </div>
+          <span class="side side-l1"></span>
+          <span class="side side-l2"></span>
+          <span class="side side-l3"></span>
+          <span class="side side-r"></span>
+        </div>
+      </div>
+
+      <div class="phone fade-slide-up delay-700">
+        <div class="phone-frame">
+          <div class="phone-ring"></div>
+          <div class="phone-screen">
+            <div class="phone-content">
+              <div class="screen">
+                <img class="screen-bg" src="https://images.higgs.ai/?default=1&output=webp&url=https%3A%2F%2Fd8j0ntlcm91z4.cloudfront.net%2Fuser_38xzZboKViGWJOttwIXH07lWA1P%2Fhf_20260709_152331_bd312d1a-1f20-46b9-9b68-12bcdcf6d53e.png&w=1280&q=85" alt="" />
+                <div class="screen-dim"></div>
+                <nav class="phone-nav">
+                  <img class="nav-logo" src="https://framerusercontent.com/images/NZPITJ6zDBvxVT7rc1NH2sOU.png" alt="" />
+                  <div class="nav-btns">
+                    <button class="nav-btn nav-btn-white" type="button" aria-label="Profile">
+                      <img class="nav-profile" src="https://framerusercontent.com/images/JIl4japgQlMAQRvh1gDHszRvkUY.png?width=92&height=92" alt="" />
+                    </button>
+                    <button class="nav-btn nav-btn-glass" type="button" data-menu-open aria-label="Open menu">
+                      <span class="bar bar-l"></span>
+                      <span class="bar bar-s"></span>
+                    </button>
+                  </div>
+                </nav>
+                <div class="team fade-slide-up delay-300">
+                  <div class="t-row">
+                    <img class="t-icon" src="https://framerusercontent.com/images/sUDhzMuxKIOvqjSH5U1fn0QSXqI.png" alt="" />
+                    <span class="t-label">Team Name</span>
+                  </div>
+                  <div class="t-title">Scuderia<br />Ferrari</div>
+                </div>
+                <div class="chassis fade-slide-up delay-500">
+                  <div class="t-row">
+                    <img class="t-icon" src="https://framerusercontent.com/images/zIA1tYDOAdZo3k6IXX9gBC5FGbY.png" alt="" />
+                    <span class="t-label">Chassis</span>
+                  </div>
+                  <div class="c-num">SF-26</div>
+                </div>
+                <img class="car fade-slide-left delay-700" src="https://framerusercontent.com/images/MzKCSYB4uVt9psQq4jRwQNRDjc.png" alt="Scuderia Ferrari SF-26" />
+                <div class="cards fade-slide-up delay-900">
+                  <div class="card">
+                    <div class="card-row">
+                      <img class="card-avatar" src="https://framerusercontent.com/images/JIl4japgQlMAQRvh1gDHszRvkUY.png?width=92&height=92" alt="" />
+                      <span class="card-name">Charles Leclerc</span>
+                    </div>
+                    <img class="card-stats" src="https://framerusercontent.com/images/MJfqhcmEoIBnfimJNhKqoZpq0.png" alt="" />
+                    <div class="card-num">16</div>
+                  </div>
+                  <div class="card">
+                    <div class="card-row">
+                      <img class="card-avatar" src="https://framerusercontent.com/images/JIl4japgQlMAQRvh1gDHszRvkUY.png?width=92&height=92" alt="" />
+                      <span class="card-name">Lewis Hamilton</span>
+                    </div>
+                    <img class="card-stats" src="https://framerusercontent.com/images/3EwXxC1QutaGnlNDZMlAN66ZmTU.png" alt="" />
+                    <div class="card-num">44</div>
+                  </div>
+                </div>
+                <div class="menu" data-menu>
+                  <button class="menu-close" type="button" data-menu-close aria-label="Close menu">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                  </button>
+                  <nav class="menu-links">
+                    <a class="menu-link" href="#" style="animation-delay:0.1s">Biography</a>
+                    <a class="menu-link" href="#" style="animation-delay:0.18s">Statistics</a>
+                    <a class="menu-link" href="#" style="animation-delay:0.26s">Career</a>
+                  </nav>
+                  <button class="menu-signin" type="button">Sign in</button>
+                </div>
+              </div>
+            </div>
+            <div class="island"></div>
+          </div>
+          <span class="side side-l1"></span>
+          <span class="side side-l2"></span>
+          <span class="side side-l3"></span>
+          <span class="side side-r"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="phones-sm">
+    <div class="phone fade-slide-up delay-300">
+      <div class="phone-frame">
+        <div class="phone-ring"></div>
+        <div class="phone-screen">
+          <div class="phone-content">
+            <div class="screen screen-hero">
+              <img class="screen-bg" src="https://images.higgs.ai/?default=1&output=webp&url=https%3A%2F%2Fd8j0ntlcm91z4.cloudfront.net%2Fuser_38xzZboKViGWJOttwIXH07lWA1P%2Fhf_20260709_152331_bd312d1a-1f20-46b9-9b68-12bcdcf6d53e.png&w=1280&q=85" alt="" />
+              <div class="screen-dim"></div>
+              <nav class="phone-nav">
+                <img class="nav-logo" src="https://framerusercontent.com/images/NZPITJ6zDBvxVT7rc1NH2sOU.png" alt="" />
+                <div class="nav-btns">
+                  <button class="nav-btn nav-btn-white" type="button" aria-label="Profile">
+                    <img class="nav-profile" src="https://framerusercontent.com/images/JIl4japgQlMAQRvh1gDHszRvkUY.png?width=92&height=92" alt="" />
+                  </button>
+                  <button class="nav-btn nav-btn-glass" type="button" data-menu-open aria-label="Open menu">
+                    <span class="bar bar-l"></span>
+                    <span class="bar bar-s"></span>
+                  </button>
+                </div>
+              </nav>
+              <div class="loc loc-hero fade-slide-up delay-300">
+                <div class="loc-row">
+                  <img class="loc-flag" src="https://framerusercontent.com/images/pqUTggaeyOivtzDImRzkBRdww.png" alt="" />
+                  <span class="loc-text">United Kingdom</span>
+                </div>
+                <h2 class="loc-title">Silverstone<br />England</h2>
+              </div>
+              <div class="driver">
+                <img class="driver-img scale-in delay-500" src="https://framerusercontent.com/images/m5IyHuJeOQ5P0GOvWx1xv0IR9Y.png" alt="Lewis Hamilton" />
+                <div class="driver-blur"></div>
+              </div>
+              <div class="bottom">
+                <img class="strip fade-slide-up delay-700" src="https://framerusercontent.com/images/dAAdqktZVxBDjPKk97YCjZjsE.png" alt="" />
+                <div class="name speed-reveal delay-800">Lewis<br />Hamilton</div>
+              </div>
+              <div class="menu" data-menu>
+                <button class="menu-close" type="button" data-menu-close aria-label="Close menu">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+                <nav class="menu-links">
+                  <a class="menu-link" href="#" style="animation-delay:0.1s">Biography</a>
+                  <a class="menu-link" href="#" style="animation-delay:0.18s">Statistics</a>
+                  <a class="menu-link" href="#" style="animation-delay:0.26s">Career</a>
+                </nav>
+                <button class="menu-signin" type="button">Sign in</button>
+              </div>
+            </div>
+          </div>
+          <div class="island"></div>
+        </div>
+        <span class="side side-l1"></span>
+        <span class="side side-l2"></span>
+        <span class="side side-l3"></span>
+        <span class="side side-r"></span>
+      </div>
+    </div>
+
+    <div class="phone fade-slide-up delay-500">
+      <div class="phone-frame">
+        <div class="phone-ring"></div>
+        <div class="phone-screen">
+          <div class="phone-content">
+            <div class="screen screen-stats">
+              <img class="screen-bg" src="https://images.higgs.ai/?default=1&output=webp&url=https%3A%2F%2Fd8j0ntlcm91z4.cloudfront.net%2Fuser_38xzZboKViGWJOttwIXH07lWA1P%2Fhf_20260709_152331_bd312d1a-1f20-46b9-9b68-12bcdcf6d53e.png&w=1280&q=85" alt="" />
+              <div class="screen-dim"></div>
+              <nav class="phone-nav">
+                <img class="nav-logo" src="https://framerusercontent.com/images/NZPITJ6zDBvxVT7rc1NH2sOU.png" alt="" />
+                <div class="nav-btns">
+                  <button class="nav-btn nav-btn-white" type="button" aria-label="Profile">
+                    <img class="nav-profile" src="https://framerusercontent.com/images/JIl4japgQlMAQRvh1gDHszRvkUY.png?width=92&height=92" alt="" />
+                  </button>
+                  <button class="nav-btn nav-btn-glass" type="button" data-menu-open aria-label="Open menu">
+                    <span class="bar bar-l"></span>
+                    <span class="bar bar-s"></span>
+                  </button>
+                </div>
+              </nav>
+              <div class="loc loc-stats fade-slide-up delay-400">
+                <div class="loc-row">
+                  <img class="loc-flag" src="https://framerusercontent.com/images/pqUTggaeyOivtzDImRzkBRdww.png" alt="" />
+                  <span class="loc-text">United Kingdom</span>
+                </div>
+                <h2 class="loc-title">Silverstone<br />England</h2>
+              </div>
+              <div class="circuit scale-in delay-600">
+                <img class="circuit-img" src="https://framerusercontent.com/images/raKAG2bJP9xeqi118VMniPLvbAA.png" alt="Silverstone circuit" />
+              </div>
+              <div class="stats fade-slide-up delay-800">
+                <div class="stats-row">
+                  <img class="stats-icon" src="https://framerusercontent.com/images/pIXUcwyAF0xzCIaKjtNLahHpasQ.png" alt="" />
+                  <span class="stats-label">Season Points</span>
+                </div>
+                <div class="stat-num stat-grad delay-800" data-count="227" data-delay="0.8">0</div>
+                <div class="stat-num stat-grad delay-1000" data-count="374" data-delay="1">0</div>
+                <div class="stat-num stat-gold delay-1200" data-count="4987" data-delay="1.2">0</div>
+              </div>
+              <div class="menu" data-menu>
+                <button class="menu-close" type="button" data-menu-close aria-label="Close menu">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+                <nav class="menu-links">
+                  <a class="menu-link" href="#" style="animation-delay:0.1s">Biography</a>
+                  <a class="menu-link" href="#" style="animation-delay:0.18s">Statistics</a>
+                  <a class="menu-link" href="#" style="animation-delay:0.26s">Career</a>
+                </nav>
+                <button class="menu-signin" type="button">Sign in</button>
+              </div>
+            </div>
+          </div>
+          <div class="island"></div>
+        </div>
+        <span class="side side-l1"></span>
+        <span class="side side-l2"></span>
+        <span class="side side-l3"></span>
+        <span class="side side-r"></span>
+      </div>
+    </div>
+
+    <div class="phone fade-slide-up delay-700">
+      <div class="phone-frame">
+        <div class="phone-ring"></div>
+        <div class="phone-screen">
+          <div class="phone-content">
+            <div class="screen">
+              <img class="screen-bg" src="https://images.higgs.ai/?default=1&output=webp&url=https%3A%2F%2Fd8j0ntlcm91z4.cloudfront.net%2Fuser_38xzZboKViGWJOttwIXH07lWA1P%2Fhf_20260709_152331_bd312d1a-1f20-46b9-9b68-12bcdcf6d53e.png&w=1280&q=85" alt="" />
+              <div class="screen-dim"></div>
+              <nav class="phone-nav">
+                <img class="nav-logo" src="https://framerusercontent.com/images/NZPITJ6zDBvxVT7rc1NH2sOU.png" alt="" />
+                <div class="nav-btns">
+                  <button class="nav-btn nav-btn-white" type="button" aria-label="Profile">
+                    <img class="nav-profile" src="https://framerusercontent.com/images/JIl4japgQlMAQRvh1gDHszRvkUY.png?width=92&height=92" alt="" />
+                  </button>
+                  <button class="nav-btn nav-btn-glass" type="button" data-menu-open aria-label="Open menu">
+                    <span class="bar bar-l"></span>
+                    <span class="bar bar-s"></span>
+                  </button>
+                </div>
+              </nav>
+              <div class="team fade-slide-up delay-300">
+                <div class="t-row">
+                  <img class="t-icon" src="https://framerusercontent.com/images/sUDhzMuxKIOvqjSH5U1fn0QSXqI.png" alt="" />
+                  <span class="t-label">Team Name</span>
+                </div>
+                <div class="t-title">Scuderia<br />Ferrari</div>
+              </div>
+              <div class="chassis fade-slide-up delay-500">
+                <div class="t-row">
+                  <img class="t-icon" src="https://framerusercontent.com/images/zIA1tYDOAdZo3k6IXX9gBC5FGbY.png" alt="" />
+                  <span class="t-label">Chassis</span>
+                </div>
+                <div class="c-num">SF-26</div>
+              </div>
+              <img class="car fade-slide-left delay-700" src="https://framerusercontent.com/images/MzKCSYB4uVt9psQq4jRwQNRDjc.png" alt="Scuderia Ferrari SF-26" />
+              <div class="cards fade-slide-up delay-900">
+                <div class="card">
+                  <div class="card-row">
+                    <img class="card-avatar" src="https://framerusercontent.com/images/JIl4japgQlMAQRvh1gDHszRvkUY.png?width=92&height=92" alt="" />
+                    <span class="card-name">Charles Leclerc</span>
+                  </div>
+                  <img class="card-stats" src="https://framerusercontent.com/images/MJfqhcmEoIBnfimJNhKqoZpq0.png" alt="" />
+                  <div class="card-num">16</div>
+                </div>
+                <div class="card">
+                  <div class="card-row">
+                    <img class="card-avatar" src="https://framerusercontent.com/images/JIl4japgQlMAQRvh1gDHszRvkUY.png?width=92&height=92" alt="" />
+                    <span class="card-name">Lewis Hamilton</span>
+                  </div>
+                  <img class="card-stats" src="https://framerusercontent.com/images/3EwXxC1QutaGnlNDZMlAN66ZmTU.png" alt="" />
+                  <div class="card-num">44</div>
+                </div>
+              </div>
+              <div class="menu" data-menu>
+                <button class="menu-close" type="button" data-menu-close aria-label="Close menu">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+                <nav class="menu-links">
+                  <a class="menu-link" href="#" style="animation-delay:0.1s">Biography</a>
+                  <a class="menu-link" href="#" style="animation-delay:0.18s">Statistics</a>
+                  <a class="menu-link" href="#" style="animation-delay:0.26s">Career</a>
+                </nav>
+                <button class="menu-signin" type="button">Sign in</button>
+              </div>
+            </div>
+          </div>
+          <div class="island"></div>
+        </div>
+        <span class="side side-l1"></span>
+        <span class="side side-l2"></span>
+        <span class="side side-l3"></span>
+        <span class="side side-r"></span>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script>
+  function easeOutCubic(t) { return 1 - Math.pow(1 - t, 3); }
+
+  document.querySelectorAll('.phone-screen').forEach(function (screen) {
+    var content = screen.querySelector('.phone-content');
+    function fit() {
+      var w = screen.clientWidth;
+      var h = screen.clientHeight;
+      if (!w || !h) return;
+      var scale = w / 390;
+      content.style.width = '390px';
+      content.style.height = (h / scale) + 'px';
+      content.style.transform = 'scale(' + scale + ')';
+    }
+    if (typeof ResizeObserver !== 'undefined') new ResizeObserver(fit).observe(screen);
+    fit();
+  });
+
+  document.querySelectorAll('[data-menu-open]').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var menu = btn.closest('.phone-content').querySelector('[data-menu]');
+      if (menu) menu.classList.add('open');
+    });
+  });
+
+  document.querySelectorAll('[data-menu-close]').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var menu = btn.closest('[data-menu]');
+      if (menu) menu.classList.remove('open');
+    });
+  });
+
+  document.querySelectorAll('[data-count]').forEach(function (el) {
+    var target = parseFloat(el.dataset.count);
+    var delay = parseFloat(el.dataset.delay || 0) * 1000;
+    var duration = 2200;
+    var start = null;
+    function tick(now) {
+      if (start === null) start = now;
+      var t = (now - start - delay) / duration;
+      if (t < 0) { requestAnimationFrame(tick); return; }
+      if (t >= 1) { el.textContent = String(Math.round(target)); return; }
+      el.textContent = String(Math.round(easeOutCubic(t) * target));
+      requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  });
+</script>
+</body>
+</html>

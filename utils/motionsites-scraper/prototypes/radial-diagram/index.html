@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Our Comprehensive Branding Approach</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css?family=DM+Sans:500,400&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body { font-family: 'DM Sans', sans-serif; background: #0f0f0f; color: #fff; overflow-x: hidden; }
+
+  .section { overflow-x: hidden; background: #0f0f0f; color: #fff; font-family: 'DM Sans', sans-serif; }
+  .wrap { margin: 0 auto; max-width: 80rem; padding: 96px 24px; }
+  @media (min-width: 640px)  { .wrap { padding: 96px 40px; } }
+  @media (min-width: 1024px) { .wrap { padding: 128px 64px; } }
+
+  /* ── Header ─────────────────────────── */
+  .head { display: flex; align-items: flex-start; gap: 16px; margin-bottom: 80px; }
+  .head-lines { font-weight: 300; font-size: clamp(2rem, 3.4vw, 2.6rem); line-height: 1.18; letter-spacing: -0.01em; }
+  .head-l1 { color: #6e6e6e; }
+  .head-l2 { color: #fff; }
+  .plus-btn { flex-shrink: 0; margin-left: auto; width: 28px; height: 28px; border: 1px solid rgba(255, 255, 255, 0.2); background: none; border-radius: 4px; color: rgba(255, 255, 255, 0.7); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: background 200ms, color 200ms; }
+  .plus-btn:hover { background: rgba(255, 255, 255, 0.1); color: #fff; }
+  .plus-btn svg { width: 12px; height: 12px; }
+
+  /* ── Content row ────────────────────── */
+  .row { display: flex; flex-direction: column; gap: 48px; }
+  @media (min-width: 1024px) { .row { flex-direction: row; align-items: flex-start; gap: 40px; } }
+
+  .left { display: flex; flex-direction: column; gap: 32px; min-width: 0; flex: 1; }
+  @media (min-width: 640px) { .left { flex-direction: row; align-items: flex-start; gap: 40px; } }
+
+  /* ── Glitch portrait ────────────────── */
+  .portrait { position: relative; flex-shrink: 0; width: 250px; height: 310px; }
+  .portrait img { width: 100%; height: 100%; object-fit: cover; display: block; position: relative; z-index: 1; }
+  .glitch-block { position: absolute; background: #fff; z-index: 2; }
+
+  /* ── Testimonial ────────────────────── */
+  .testi { min-width: 0; max-width: 420px; }
+  .quote-mark { font-family: Georgia, 'Times New Roman', serif; color: #555; font-size: 3.2rem; line-height: 0.7; }
+  .quote { margin-top: 18px; color: rgba(255, 255, 255, 0.9); font-size: clamp(1.05rem, 1.5vw, 1.28rem); font-weight: 400; line-height: 1.58; }
+  .attrib { margin-top: 40px; }
+  .attrib-name { font-size: 1.15rem; font-weight: 500; letter-spacing: 0.01em; color: #fff; }
+  .attrib-title { margin-top: 4px; font-size: 0.85rem; letter-spacing: 0.02em; color: #6e6e6e; }
+
+  /* ── Circle diagram ─────────────────── */
+  .diagram { width: 100%; max-width: 360px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; align-self: center; }
+  @media (min-width: 640px)  { .diagram { max-width: 400px; } }
+  @media (min-width: 1024px) { .diagram { max-width: 440px; } }
+  .diagram-inner { position: relative; aspect-ratio: 1 / 1; width: 100%; }
+  .diagram svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .diagram svg .base-line { stroke: #fff; stroke-width: 0.18; opacity: 0.45; transition: stroke-width 0.3s, opacity 0.3s; }
+  .diagram svg .base-line.hl { stroke-width: 0.6; opacity: 1; }
+  .label { position: absolute; transform: translate(-50%, -50%); font-size: clamp(1.25rem, 2.8vw, 2.4rem); letter-spacing: -0.01em; color: #fff; white-space: nowrap; font-weight: 300; cursor: pointer; transition: font-weight 0.25s; user-select: none; }
+  .label.hl { font-weight: 700; }
+
+  /* ── Reveal animation (easing [0.22,1,0.36,1]) ── */
+  .rv { opacity: 0; }
+  .rv.dur { transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1), transform 0.7s cubic-bezier(0.22, 1, 0.36, 1); }
+  .rv.in { opacity: 1; transform: none; }
+  .rv.y20 { transform: translateY(20px); }
+  .rv.y24 { transform: translateY(24px); }
+  .rv.y14 { transform: translateY(14px); }
+  .rv.y16 { transform: translateY(16px); }
+  .rv.scale { transform: scale(0.8); }
+  .block-rv { opacity: 0; transform: scale(0); transition: opacity 0.35s cubic-bezier(0.22, 1, 0.36, 1), transform 0.35s cubic-bezier(0.22, 1, 0.36, 1); }
+  .block-rv.in { opacity: 0.9; transform: scale(1); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .rv, .block-rv { opacity: 1 !important; transform: none !important; transition: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<section class="section">
+  <div class="wrap">
+
+    <!-- header -->
+    <div class="head">
+      <div>
+        <div class="head-lines head-l1 rv dur y20" style="transition-delay:0s">Our Comprehensive</div>
+        <div class="head-lines head-l2 rv dur y20" style="transition-delay:0.1s">Branding Approach</div>
+      </div>
+      <button class="plus-btn rv dur scale" style="transition-delay:0.25s" aria-label="Add">
+        <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M6 1v10" /><path d="M1 6h10" /></svg>
+      </button>
+    </div>
+
+    <!-- content row -->
+    <div class="row">
+
+      <!-- left: portrait + testimonial -->
+      <div class="left">
+        <div class="portrait rv dur y24" style="transition-delay:0.2s">
+          <img src="https://images.pexels.com/photos/3778212/pexels-photo-3778212.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Portrait" />
+          <div id="glitchBlocks"></div>
+        </div>
+
+        <div class="testi">
+          <div class="quote-mark rv dur y14" style="transition-delay:0.3s">&ldquo;</div>
+          <p class="quote rv dur y20" style="transition-delay:0.4s">We kept seeing the same pattern &mdash; brands with potential lost between messy processes, scattered visuals, and forgettable websites. This studio exists to align it all into one clear, consistent story.</p>
+          <div class="attrib rv dur y14" style="transition-delay:0.55s">
+            <div class="attrib-name">Alex West</div>
+            <div class="attrib-title">Founder &amp; Creative Director</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- right: circle diagram -->
+      <div class="diagram">
+        <div class="diagram-inner rv dur" style="transition-delay:0.4s;transition-duration:0.8s">
+          <svg viewBox="0 0 100 100" preserveAspectRatio="none">
+            <circle cx="50" cy="50" r="30" fill="none" stroke="#fff" stroke-width="0.18" opacity="0.45" />
+            <g id="diagramLines"></g>
+          </svg>
+          <div id="diagramLabels"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<script>
+  // Glitch blocks — exact spec positions (x%, y%, w px, h px)
+  const blocks = [
+    [2, -3, 22, 22], [12, -5, 14, 10], [28, -2, 10, 10],
+    [82, 22, 8, 8], [-4, 75, 16, 12], [8, 82, 10, 10],
+    [-2, 88, 18, 16], [56, 82, 12, 14], [70, 90, 10, 10],
+    [42, 94, 8, 6],
+  ];
+  const port = document.querySelector('.portrait');
+  const glitch = document.getElementById('glitchBlocks');
+  blocks.forEach((b, i) => {
+    const el = document.createElement('div');
+    el.className = 'glitch-block block-rv';
+    el.style.left = b[0] + '%';
+    el.style.top = b[1] + '%';
+    el.style.width = b[2] + 'px';
+    el.style.height = b[3] + 'px';
+    el.style.transitionDelay = (0.5 + i * 0.05) + 's';
+    glitch.appendChild(el);
+  });
+
+  // Circle diagram geometry: angles → points on radius r from (50,50)
+  const items = [
+    { label: 'websites', angle: 215 },
+    { label: 'brands', angle: 335 },
+    { label: 'ui/ux design', angle: 110 },
+  ];
+  const svgNS = 'http://www.w3.org/2000/svg';
+  const pt = (angle, r) => {
+    const a = angle * Math.PI / 180;
+    return { x: 50 + r * Math.cos(a), y: 50 + r * Math.sin(a) };
+  };
+  const lines = document.getElementById('diagramLines');
+  const labels = document.getElementById('diagramLabels');
+  items.forEach((it, i) => {
+    const p = pt(it.angle, 36);
+    const line = document.createElementNS(svgNS, 'line');
+    line.setAttribute('x1', 50); line.setAttribute('y1', 50);
+    line.setAttribute('x2', p.x); line.setAttribute('y2', p.y);
+    line.setAttribute('class', 'base-line');
+    line.setAttribute('data-label', it.label);
+    lines.appendChild(line);
+
+    const lp = pt(it.angle, 46);
+    const lab = document.createElement('div');
+    lab.className = 'label';
+    lab.textContent = it.label;
+    lab.style.left = (lp.x * 100 / 100) + '%';
+    lab.style.top = (lp.y * 100 / 100) + '%';
+    lab.dataset.label = it.label;
+    labels.appendChild(lab);
+
+    lab.addEventListener('mouseenter', () => setHl(it.label, true));
+    lab.addEventListener('mouseleave', () => setHl(it.label, false));
+  });
+
+  function setHl(name, on) {
+    document.querySelectorAll('.base-line[data-label="' + name + '"]').forEach(l => l.classList.toggle('hl', on));
+    document.querySelectorAll('.label[data-label="' + name + '"]').forEach(l => l.classList.toggle('hl', on));
+  }
+
+  // Reveal on scroll (once, -60px margin, easing [0.22,1,0.36,1])
+  const io = new IntersectionObserver((entries) => {
+    for (const e of entries) {
+      if (e.isIntersecting) {
+        e.target.classList.add('in');
+        io.unobserve(e.target);
+      }
+    }
+  }, { threshold: 0, rootMargin: '-60px' });
+  document.querySelectorAll('.rv, .block-rv').forEach(el => io.observe(el));
+</script>
+</body>
+</html>

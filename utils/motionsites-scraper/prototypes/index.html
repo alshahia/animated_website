@@ -1,0 +1,382 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Prototypes Index — motionsites.ai prompts</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+  :root {
+    --bg: #0a0a0a;
+    --card: #141414;
+    --card-hover: #171717;
+    --text: #f0f0f0;
+    --muted: #888;
+    --accent: #c87a3a;
+    --border: rgba(255,255,255,0.06);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 60px 24px 80px;
+  }
+
+  .container { max-width: 1180px; margin: 0 auto; }
+
+  header { text-align: center; margin-bottom: 40px; }
+
+  h1 { font-size: 42px; font-weight: 700; letter-spacing: -0.04em; margin-bottom: 12px; }
+  h1 span { color: var(--accent); }
+
+  .subtitle { font-size: 16px; color: var(--muted); max-width: 520px; margin: 0 auto; line-height: 1.5; }
+
+  .count {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 6px 16px;
+    border-radius: 999px;
+    background: rgba(200,122,58,0.12);
+    color: var(--accent);
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  /* ── Controls (search / filter / sort) ── */
+  .controls {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-bottom: 36px;
+  }
+
+  .control {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 14px;
+    padding: 10px 16px;
+    outline: none;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .control:hover { border-color: rgba(255,255,255,0.14); }
+  .control:focus { border-color: var(--accent); }
+
+  #search { flex: 1; min-width: 220px; max-width: 340px; }
+
+  select.control {
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23888' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 32px;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+  }
+
+  .empty {
+    grid-column: 1 / -1;
+    text-align: center;
+    color: var(--muted);
+    padding: 60px 0;
+    font-size: 15px;
+  }
+
+  /* ── Card ─────────────────────────── */
+  .card {
+    position: relative;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    text-decoration: none;
+    color: var(--text);
+    transition: background 0.25s, border-color 0.25s, transform 0.25s, box-shadow 0.25s;
+    display: flex;
+    flex-direction: column;
+  }
+  .card:hover {
+    background: var(--card-hover);
+    border-color: rgba(200,122,58,0.35);
+    transform: translateY(-3px);
+    box-shadow: 0 14px 40px rgba(0,0,0,0.5);
+  }
+
+  /* live mini preview */
+  .preview {
+    position: relative;
+    height: 168px;
+    background:
+      radial-gradient(120% 120% at 50% 0%, rgba(200,122,58,0.08), transparent 60%),
+      repeating-linear-gradient(45deg, #101010 0 12px, #0d0d0d 12px 24px);
+    overflow: hidden;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+  }
+  .preview .ph {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 30px; color: rgba(255,255,255,0.18); font-weight: 600;
+    letter-spacing: 0.04em; text-transform: uppercase;
+    transition: opacity 0.3s;
+  }
+  .preview iframe {
+    position: absolute; top: 0; left: 0;
+    width: 1280px; height: 720px;
+    transform-origin: top left;
+    transform: scale(0.131);
+    border: 0;
+    opacity: 0;
+    transition: opacity 0.4s;
+    pointer-events: none;
+  }
+  .preview.loaded iframe { opacity: 1; }
+  .preview.loaded .ph { opacity: 0; }
+  .preview-hint {
+    position: absolute; left: 10px; bottom: 8px;
+    font-size: 10px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--muted);
+    background: rgba(0,0,0,0.55);
+    padding: 3px 8px;
+    border-radius: 6px;
+    opacity: 0;
+    transition: opacity 0.3s;
+    pointer-events: none;
+  }
+  .card:hover .preview-hint { opacity: 1; }
+
+  .card-body { padding: 18px 20px 20px; display: flex; flex-direction: column; gap: 10px; flex: 1; }
+
+  .card-name { font-size: 18px; font-weight: 600; letter-spacing: -0.02em; }
+
+  .card-meta { font-size: 13px; color: var(--muted); display: flex; gap: 8px; flex-wrap: wrap; }
+
+  .tag {
+    padding: 3px 10px;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.05);
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--muted);
+  }
+  .tag.cat { background: rgba(200,122,58,0.1); color: var(--accent); }
+
+  .arrow {
+    margin-top: auto;
+    font-size: 13px;
+    color: var(--accent);
+    opacity: 0;
+    transition: opacity 0.25s;
+  }
+  .card:hover .arrow { opacity: 1; }
+
+  footer {
+    text-align: center;
+    margin-top: 80px;
+    padding-top: 32px;
+    border-top: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 13px;
+  }
+
+  @media (max-width: 640px) {
+    .preview { height: 150px; }
+    .preview-hint { display: none; }
+    #search { max-width: none; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>Prototypes <span>Index</span></h1>
+    <p class="subtitle">Single-file HTML prototypes built from motionsites.ai prompts. Hover a card for a live mini preview.</p>
+    <span class="count" id="count">0 prototypes</span>
+  </header>
+
+  <div class="controls">
+    <input class="control" id="search" type="search" placeholder="Search by name or tag…" autocomplete="off" />
+    <select class="control" id="catFilter" aria-label="Filter by category"></select>
+    <select class="control" id="sort" aria-label="Sort prototypes">
+      <option value="az">Name A → Z</option>
+      <option value="za">Name Z → A</option>
+      <option value="new">Newest first</option>
+    </select>
+  </div>
+
+  <div class="grid" id="grid"></div>
+
+  <footer>
+    Built from <strong>motionsites.ai</strong> free prompts · 134 total prompts available
+  </footer>
+</div>
+
+<script>
+  // Single source of truth — one entry per prototype, no duplicates.
+  // Order in the array = "newest" sort order (later = added later).
+  const PROTOTYPES = [
+    { slug: '3d-jack-portfolio',  name: '3D Jack Portfolio',  cat: 'Portfolio',     tags: ['3D', 'marquee'] },
+    { slug: 'agent-grove',        name: 'Agent Grove',        cat: 'SaaS',          tags: ['glassmorphism', 'video'] },
+    { slug: 'coffee-rewards',     name: 'Coffee Rewards',     cat: 'Loyalty App',   tags: ['glassmorphism', 'phone mockup'] },
+    { slug: 'contact-cybernetic', name: 'Contact Cybernetic', cat: 'Hero',          tags: ['typewriter', 'video scrub', 'multi-select'] },
+    { slug: 'daisy-wild',         name: 'Daisy Wild',         cat: 'Product',       tags: ['split layout', 'video'] },
+    { slug: 'dot',                name: 'Dot',                cat: 'Hero Section',  tags: ['nokia', 'typing'] },
+    { slug: 'email-landing-page', name: 'Email Landing Page', cat: 'Landing Page',  tags: ['email', 'liquid-glass', 'inbox mockup'] },
+    { slug: 'immersive-ocean',    name: 'Immersive Ocean',    cat: 'Hero',          tags: ['video', 'fullscreen'] },
+    { slug: 'impact-ventures',    name: 'Impact Ventures',    cat: 'Hero',          tags: ['venture', 'video'] },
+    { slug: 'intelligentx',       name: 'IntelligentX',       cat: 'Hero',          tags: ['glassmorphism', 'video', 'search'] },
+    { slug: 'lumina',             name: 'Lumina',             cat: 'Footer Section',tags: ['liquid-glass', 'video'] },
+    { slug: 'network-hero',       name: 'Network Hero',       cat: 'Hero',          tags: ['typewriter', 'orbits'] },
+    { slug: 'nike-hover',         name: 'Nike Hover',         cat: 'Features',      tags: ['spotlight', 'cursor reveal', 'video'] },
+    { slug: 'radial-diagram',     name: 'Radial Diagram',     cat: 'Testimonials',  tags: ['branding', 'glitch'] },
+    { slug: 'subscription-agency',name: 'Subscription Agency',cat: 'Hero',          tags: ['agency', 'marquee'] },
+    { slug: 'skybridge-404',      name: 'Skybridge 404',      cat: '404',           tags: ['video', 'fullscreen', 'mono'] },
+    { slug: 'mostar-guide',       name: 'Mostar Guide',       cat: 'Travel',        tags: ['parallax', 'scroll story'] },
+    { slug: 'f1-racing-hub',      name: 'F1 Racing Hub',      cat: 'Sports App',    tags: ['phone mockup', 'f1', 'count-up'] },
+    { slug: 'forecast-center',    name: 'Forecast Center',    cat: 'Dashboard',     tags: ['liquid-glass', 'weather', 'chart'] },
+    { slug: 'sparkform',          name: 'Sparkform',          cat: 'Creative',      tags: ['layered type', 'sticky scroll', 'marquee'] },
+  ];
+
+  const grid = document.getElementById('grid');
+  const countEl = document.getElementById('count');
+  const searchEl = document.getElementById('search');
+  const catEl = document.getElementById('catFilter');
+  const sortEl = document.getElementById('sort');
+
+  // category dropdown built from the data (no hardcoded lists)
+  const cats = [...new Set(PROTOTYPES.map(p => p.cat))].sort((a, b) => a.localeCompare(b));
+  catEl.innerHTML = '<option value="">All categories</option>' +
+    cats.map(c => '<option value="' + c + '">' + c + '</option>').join('');
+
+  function matches(p, q) {
+    if (!q) return true;
+    q = q.toLowerCase();
+    return p.name.toLowerCase().includes(q) ||
+      p.cat.toLowerCase().includes(q) ||
+      p.tags.some(t => t.toLowerCase().includes(q));
+  }
+
+  function render() {
+    const q = searchEl.value.trim();
+    const cat = catEl.value;
+    const sort = sortEl.value;
+
+    let list = PROTOTYPES.filter(p => (!cat || p.cat === cat) && matches(p, q));
+
+    if (sort === 'az') list.sort((a, b) => a.name.localeCompare(b.name));
+    else if (sort === 'za') list.sort((a, b) => b.name.localeCompare(a.name));
+    else if (sort === 'new') list = [...list].reverse();
+
+    countEl.textContent = list.length === PROTOTYPES.length
+      ? PROTOTYPES.length + ' prototype' + (PROTOTYPES.length === 1 ? '' : 's')
+      : list.length + ' of ' + PROTOTYPES.length + ' prototypes';
+
+    grid.innerHTML = '';
+    if (!list.length) {
+      grid.innerHTML = '<div class="empty">No prototypes match your filters.</div>';
+      return;
+    }
+
+    for (const p of list) {
+      // dedupe tags (case-insensitive) — never repeat a tag per card
+      const seen = new Set([p.cat.toLowerCase()]);
+      const tags = [p.cat, ...p.tags.filter(t => {
+        const k = t.toLowerCase();
+        if (seen.has(k)) return false;
+        seen.add(k);
+        return true;
+      })];
+
+      const card = document.createElement('a');
+      card.className = 'card';
+      card.href = './' + p.slug + '/index.html';
+      card.setAttribute('data-slug', p.slug);
+
+      card.innerHTML =
+        '<div class="preview"><span class="ph">' + p.name.charAt(0) + '</span>' +
+        '<span class="preview-hint">Live preview</span></div>' +
+        '<div class="card-body">' +
+          '<span class="card-name"></span>' +
+          '<div class="card-meta">' + tags.map((t, i) =>
+            '<span class="tag' + (i === 0 ? ' cat' : '') + '">' + t + '</span>').join('') +
+          '</div>' +
+          '<span class="arrow">Open prototype →</span>' +
+        '</div>';
+      card.querySelector('.card-name').textContent = p.name;
+      grid.appendChild(card);
+    }
+  }
+
+  searchEl.addEventListener('input', render);
+  catEl.addEventListener('change', render);
+  sortEl.addEventListener('change', render);
+
+  // Hover = live mini preview. Only one iframe mounted at a time (lazy, unloaded on leave).
+  // Delegated on the grid so re-renders need no re-binding.
+  const loaded = new Map();
+
+  function mountPreview(card) {
+    const box = card.querySelector('.preview');
+    if (loaded.get(card.dataset.slug)) return;
+    const frame = document.createElement('iframe');
+    frame.src = './' + card.dataset.slug + '/index.html';
+    frame.title = 'Preview of ' + card.querySelector('.card-name').textContent;
+    box.appendChild(frame);
+    loaded.set(card.dataset.slug, box);
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => box.classList.add('loaded'));
+    });
+  }
+
+  function unmountPreview(card) {
+    const box = loaded.get(card.dataset.slug);
+    if (!box) return;
+    const frame = box.querySelector('iframe');
+    if (frame) frame.remove();
+    box.classList.remove('loaded');
+    loaded.delete(card.dataset.slug);
+  }
+
+  let activeCard = null;
+  grid.addEventListener('mouseover', e => {
+    const card = e.target.closest('.card');
+    if (!card || card === activeCard) return;
+    if (activeCard) unmountPreview(activeCard);
+    activeCard = card;
+    mountPreview(card);
+  });
+  grid.addEventListener('mouseout', e => {
+    const card = e.target.closest('.card');
+    if (!card || card !== activeCard) return;
+    setTimeout(() => {
+      if (activeCard === card) { unmountPreview(card); activeCard = null; }
+    }, 300);
+  });
+
+  // keep previews aligned to their card width on resize
+  window.addEventListener('resize', () => {
+    document.querySelectorAll('.preview.loaded').forEach(box => {
+      const card = box.closest('.card');
+      const w = card.getBoundingClientRect().width;
+      const s = w / 1280;
+      box.querySelector('iframe').style.transform = 'scale(' + s + ')';
+    });
+  });
+
+  render();
+</script>
+</body>
+</html>

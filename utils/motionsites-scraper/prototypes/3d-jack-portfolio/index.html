@@ -1,0 +1,453 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Jack — 3D Creator Portfolio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0C0C0C;
+    --text: #D7E2EA;
+    --accent: #B600A8;
+    --white: #fff;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Kanit', sans-serif;
+    background: var(--bg); color: var(--text);
+    -webkit-font-smoothing: antialiased;
+    overflow-x: clip;
+  }
+  ::selection { background: var(--accent); color: #fff; }
+
+  .hero-heading {
+    background: linear-gradient(180deg, #646973 0%, #BBCCD7 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* ── Hero Section ─────────────────────── */
+  .hero {
+    height: 100vh; display: flex; flex-direction: column;
+    overflow-x: clip; position: relative;
+  }
+
+  .hero-nav {
+    display: flex; justify-content: space-between;
+    padding: 24px 24px 0;
+  }
+  @media (min-width: 768px) { .hero-nav { padding: 32px 40px 0; } }
+  .hero-nav a {
+    color: var(--text); text-decoration: none; font-weight: 500;
+    text-transform: uppercase; letter-spacing: 0.1em;
+    font-size: clamp(12px, 2vw, 22px);
+    opacity: 0; animation: fadeUp 0.7s cubic-bezier(0.25,0.1,0.25,1) both;
+    transition: opacity 0.2s;
+  }
+  .hero-nav a:hover { opacity: 0.7; }
+  .hero-nav a:nth-child(1) { animation-delay: 0s; }
+  .hero-nav a:nth-child(2) { animation-delay: 0.05s; }
+  .hero-nav a:nth-child(3) { animation-delay: 0.1s; }
+  .hero-nav a:nth-child(4) { animation-delay: 0.15s; }
+
+  .hero-title-wrap {
+    flex: 1; display: flex; align-items: center; justify-content: center;
+    overflow: hidden; margin-top: -20px;
+  }
+  .hero-title {
+    font-size: clamp(80px, 17.5vw, 280px);
+    font-weight: 900; text-transform: uppercase;
+    letter-spacing: -0.04em; line-height: 1; white-space: nowrap;
+    opacity: 0; animation: fadeUp 0.7s cubic-bezier(0.25,0.1,0.25,1) 0.15s both;
+  }
+
+  .hero-bottom {
+    display: flex; justify-content: space-between; align-items: flex-end;
+    padding: 0 24px 40px;
+  }
+  @media (min-width: 768px) { .hero-bottom { padding: 0 40px 48px; } }
+  .hero-desc {
+    max-width: clamp(160px, 22vw, 260px);
+    font-weight: 300; text-transform: uppercase;
+    letter-spacing: 0.05em; line-height: 1.4;
+    font-size: clamp(12px, 1.4vw, 24px);
+    opacity: 0; animation: fadeUp 0.7s cubic-bezier(0.25,0.1,0.25,1) 0.35s both;
+  }
+  .contact-btn {
+    display: inline-block; padding: clamp(12px, 2vw, 16px) clamp(32px, 4vw, 48px);
+    border-radius: 999px; font-weight: 500; text-transform: uppercase;
+    letter-spacing: 0.12em; color: #fff; text-decoration: none;
+    background: linear-gradient(123deg, #18011F 7%, #B600A8 37%, #7621B0 72%, #BE4C00 100%);
+    box-shadow: 0px 4px 4px rgba(181,1,167,0.25), inset 4px 4px 12px #7721B1;
+    outline: 2px solid #fff; outline-offset: -3px;
+    font-size: clamp(10px, 1.2vw, 16px);
+    opacity: 0; animation: fadeUp 0.7s cubic-bezier(0.25,0.1,0.25,1) 0.5s both;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .contact-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(181,1,167,0.35); }
+
+  .hero-portrait {
+    position: absolute; left: 50%; transform: translateX(-50%); z-index: 10;
+    width: clamp(280px, 40vw, 520px);
+    opacity: 0; animation: fadeUp 0.7s cubic-bezier(0.25,0.1,0.25,1) 0.6s both;
+  }
+  .hero-portrait img { width: 100%; height: auto; display: block; border-radius: 12px; }
+  @media (max-width: 639px) {
+    .hero-portrait { top: 50%; transform: translate(-50%, -50%); }
+  }
+  @media (min-width: 640px) {
+    .hero-portrait { bottom: 0; transform: translateX(-50%); }
+  }
+
+  /* ── Marquee ─────────────────────── */
+  .marquee-section {
+    background: var(--bg); padding: 96px 0 40px;
+  }
+  @media (min-width: 640px) { .marquee-section { padding: 128px 0 40px; } }
+  @media (min-width: 768px) { .marquee-section { padding: 160px 0 40px; } }
+
+  .marquee-row {
+    display: flex; gap: 12px; margin-bottom: 12px;
+    will-change: transform;
+  }
+  .marquee-row.reverse { flex-direction: row-reverse; }
+  .marquee-tile {
+    width: 420px; height: 270px; border-radius: 16px;
+    object-fit: cover; flex-shrink: 0; background: #1a1a1a;
+  }
+
+  /* ── About ─────────────────────── */
+  .about-section {
+    min-height: 100vh; display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    padding: 80px 20px; position: relative;
+  }
+  .about-heading {
+    font-size: clamp(48px, 12vw, 160px);
+    font-weight: 900; text-transform: uppercase;
+    letter-spacing: -0.04em; line-height: 1;
+    text-align: center; margin-bottom: clamp(40px, 8vw, 64px);
+  }
+  .about-text {
+    max-width: 560px; text-align: center;
+    font-weight: 500; line-height: 1.7;
+    font-size: clamp(16px, 2vw, 22px);
+    color: var(--text); margin-bottom: clamp(64px, 12vw, 96px);
+  }
+  .about-text .char { opacity: 0.2; transition: opacity 0.1s; }
+  .about-text .char.lit { opacity: 1; }
+
+  .about-decor {
+    position: absolute; pointer-events: none;
+  }
+  .about-decor img { width: 100%; height: auto; display: block; }
+
+  /* ── Services ─────────────────────── */
+  .services-section {
+    background: var(--white); color: var(--bg);
+    border-radius: 60px 60px 0 0;
+    padding: 80px 20px;
+  }
+  @media (min-width: 640px) { .services-section { padding: 96px 32px; border-radius: 50px 50px 0 0; } }
+  @media (min-width: 768px) { .services-section { padding: 128px 40px; border-radius: 60px 60px 0 0; } }
+
+  .services-heading {
+    font-size: clamp(48px, 12vw, 160px);
+    font-weight: 900; text-transform: uppercase;
+    letter-spacing: -0.04em; line-height: 1; text-align: center;
+    margin-bottom: clamp(64px, 14vw, 112px);
+  }
+
+  .service-item {
+    display: flex; gap: clamp(16px, 4vw, 48px);
+    padding: clamp(32px, 6vw, 48px) 0;
+    border-bottom: 1px solid rgba(12,12,12,0.15);
+    max-width: 1024px; margin: 0 auto;
+    align-items: flex-start;
+  }
+  .service-num {
+    font-weight: 900; font-size: clamp(48px, 10vw, 140px);
+    line-height: 1; flex-shrink: 0; min-width: 80px;
+  }
+  .service-info { flex: 1; }
+  .service-name {
+    font-weight: 500; text-transform: uppercase;
+    font-size: clamp(16px, 2.2vw, 34px); margin-bottom: 8px;
+  }
+  .service-desc {
+    font-weight: 300; line-height: 1.6; opacity: 0.6;
+    font-size: clamp(14px, 1.6vw, 20px); max-width: 640px;
+  }
+
+  /* ── Projects ─────────────────────── */
+  .projects-section {
+    background: var(--bg); color: var(--text);
+    border-radius: 60px 60px 0 0;
+    padding: 80px 20px 120px;
+    margin-top: -40px; position: relative; z-index: 10;
+  }
+  @media (min-width: 640px) { .projects-section { padding: 96px 32px 120px; margin-top: -48px; border-radius: 50px 50px 0 0; } }
+  @media (min-width: 768px) { .projects-section { padding: 128px 40px 120px; margin-top: -56px; border-radius: 60px 60px 0 0; } }
+
+  .projects-heading {
+    font-size: clamp(48px, 12vw, 160px);
+    font-weight: 900; text-transform: uppercase;
+    letter-spacing: -0.04em; line-height: 1; text-align: center;
+    margin-bottom: clamp(40px, 8vw, 80px);
+  }
+
+  .project-card {
+    position: sticky; border: 2px solid var(--text);
+    border-radius: clamp(40px, 6vw, 60px);
+    background: var(--bg); padding: clamp(16px, 3vw, 32px);
+    margin-bottom: 28px; will-change: transform;
+  }
+  .project-card:nth-child(1) { top: 96px; }
+  .project-card:nth-child(2) { top: 124px; }
+  .project-card:nth-child(3) { top: 152px; }
+
+  .project-top {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    flex-wrap: wrap; gap: 16px; margin-bottom: 24px;
+  }
+  .project-num {
+    font-weight: 900; font-size: clamp(48px, 8vw, 100px); line-height: 1;
+  }
+  .project-meta { text-align: right; }
+  .project-category {
+    font-size: 13px; opacity: 0.5; text-transform: uppercase;
+    letter-spacing: 0.1em; margin-bottom: 4px;
+  }
+  .project-name {
+    font-weight: 600; font-size: clamp(16px, 2vw, 24px);
+  }
+  .live-btn {
+    display: inline-block; padding: 10px 24px; border: 2px solid var(--text);
+    border-radius: 999px; color: var(--text); text-decoration: none;
+    font-size: 13px; font-weight: 500; text-transform: uppercase;
+    letter-spacing: 0.12em; transition: background 0.2s;
+  }
+  .live-btn:hover { background: rgba(215,226,234,0.1); }
+
+  .project-images {
+    display: grid; grid-template-columns: 2fr 3fr; gap: 12px;
+  }
+  .project-images .col-left { display: flex; flex-direction: column; gap: 12px; }
+  .project-images img {
+    width: 100%; border-radius: clamp(40px, 5vw, 60px);
+    object-fit: cover; background: #1a1a1a;
+  }
+  .project-images .col-left img:first-child { height: clamp(130px, 16vw, 230px); }
+  .project-images .col-left img:last-child { height: clamp(160px, 22vw, 340px); }
+  .project-images .col-right img { height: 100%; min-height: 300px; }
+
+  /* ── Animations ─────────────────────── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .reveal { opacity: 0; transform: translateY(30px); transition: opacity 0.7s cubic-bezier(0.25,0.1,0.25,1), transform 0.7s cubic-bezier(0.25,0.1,0.25,1); }
+  .reveal.in { opacity: 1; transform: translateY(0); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero-nav a, .hero-title, .hero-desc, .contact-btn, .hero-portrait {
+      animation: none; opacity: 1; transform: none;
+    }
+    .reveal { transition: none; opacity: 1; transform: none; }
+    .about-text .char { opacity: 1; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Hero -->
+<section class="hero">
+  <nav class="hero-nav">
+    <a href="#about">About</a>
+    <a href="#projects">Price</a>
+    <a href="#projects">Projects</a>
+    <a href="#contact">Contact</a>
+  </nav>
+
+  <div class="hero-title-wrap">
+    <h1 class="hero-title hero-heading">Hi, i'm jack</h1>
+  </div>
+
+  <div class="hero-bottom">
+    <p class="hero-desc">a 3d creator driven by crafting striking and unforgettable projects</p>
+    <a href="#contact" class="contact-btn">Contact Me</a>
+  </div>
+
+  <div class="hero-portrait">
+    <img src="https://images.higgs.ai/?default=1&output=webp&url=https%3A%2F%2Fshrug-person-78902957.figma.site%2F_components%2Fv2%2Fd24c01ad3a56fc65e942a1f501eb73db42d7cf9a%2FRectangle_40443.81459862.png&w=800&q=85" alt="Jack portrait" />
+  </div>
+</section>
+
+<!-- Marquee -->
+<section class="marquee-section" id="marqueeSection">
+  <div class="marquee-row" id="marqueeRow1"></div>
+  <div class="marquee-row reverse" id="marqueeRow2"></div>
+</section>
+
+<!-- About -->
+<section class="about-section" id="about">
+  <h2 class="about-heading hero-heading reveal">About me</h2>
+  <p class="about-text reveal" id="aboutText"></p>
+  <a href="#contact" class="contact-btn reveal">Contact Me</a>
+</section>
+
+<!-- Services -->
+<section class="services-section" id="services">
+  <h2 class="services-heading reveal">Services</h2>
+  <div id="servicesList"></div>
+</section>
+
+<!-- Projects -->
+<section class="projects-section" id="projects">
+  <h2 class="projects-heading hero-heading reveal">Project</h2>
+  <div id="projectsList"></div>
+</section>
+
+<script>
+  // Marquee
+  const gifs = [
+    'https://motionsites.ai/assets/hero-space-voyage-preview-eECLH3Yc.gif',
+    'https://motionsites.ai/assets/hero-codenest-preview-Cgppc2qV.gif',
+    'https://motionsites.ai/assets/hero-vex-ventures-preview-BczMFIiw.gif',
+    'https://motionsites.ai/assets/hero-stellar-ai-v2-preview-DjvxjG3C.gif',
+    'https://motionsites.ai/assets/hero-asme-preview-B_nGDnTP.gif',
+    'https://motionsites.ai/assets/hero-transform-data-preview-Cx5OU29N.gif',
+    'https://motionsites.ai/assets/hero-vitara-preview-Cjz2QYyU.gif',
+    'https://motionsites.ai/assets/hero-terra-preview-BFjrCr7T.gif',
+    'https://motionsites.ai/assets/hero-skyelite-preview-DHaZIgUv.gif',
+    'https://motionsites.ai/assets/hero-aethera-preview-DknSlcTa.gif',
+    'https://motionsites.ai/assets/hero-designpro-preview-D8c5_een.gif',
+    'https://motionsites.ai/assets/hero-stellar-ai-preview-D3HL6bw1.gif',
+    'https://motionsites.ai/assets/hero-xportfolio-preview-D4A8maiC.gif',
+    'https://motionsites.ai/assets/hero-orbit-web3-preview-BXt4OttD.gif',
+    'https://motionsites.ai/assets/hero-nexora-preview-cx5HmUgo.gif',
+    'https://motionsites.ai/assets/hero-evr-ventures-preview-DZxeVFEX.gif',
+    'https://motionsites.ai/assets/hero-planet-orbit-preview-DWAP8Z1P.gif',
+    'https://motionsites.ai/assets/hero-new-era-preview-CocuDUm9.gif',
+    'https://motionsites.ai/assets/hero-wealth-preview-B70idl_u.gif',
+    'https://motionsites.ai/assets/hero-luminex-preview-CxOP7ce6.gif',
+    'https://motionsites.ai/assets/hero-celestia-preview-0yO3jXO8.gif',
+  ];
+
+  function makeTiles(arr) {
+    return [...arr, ...arr, ...arr].map(src =>
+      `<img class="marquee-tile" src="${src}" loading="lazy" alt="Project preview" />`
+    ).join('');
+  }
+  document.getElementById('marqueeRow1').innerHTML = makeTiles(gifs.slice(0, 11));
+  document.getElementById('marqueeRow2').innerHTML = makeTiles(gifs.slice(11));
+
+  // Scroll-driven marquee
+  const row1 = document.getElementById('marqueeRow1');
+  const row2 = document.getElementById('marqueeRow2');
+  const marqueeSection = document.getElementById('marqueeSection');
+
+  function updateMarquee() {
+    const rect = marqueeSection.getBoundingClientRect();
+    const offset = (window.innerHeight - rect.top) * 0.3;
+    row1.style.transform = `translateX(${offset - 200}px)`;
+    row2.style.transform = `translateX(${-(offset - 200)}px)`;
+    requestAnimationFrame(updateMarquee);
+  }
+  requestAnimationFrame(updateMarquee);
+
+  // About text char animation
+  const aboutText = "With more than five years of experience in design, i focus on branding, web design, and user experience, i truly enjoy working with businesses that aim to stand out and present their best image. Let's build something incredible together!";
+  const aboutEl = document.getElementById('aboutText');
+  aboutEl.innerHTML = aboutText.split('').map(c =>
+    c === ' ' ? ' ' : `<span class="char">${c}</span>`
+  ).join('');
+
+  function updateAboutChars() {
+    const rect = aboutEl.getBoundingClientRect();
+    const viewH = window.innerHeight;
+    const start = viewH * 0.8;
+    const end = viewH * 0.2;
+    const progress = Math.max(0, Math.min(1, (start - rect.top) / (start - end)));
+    const chars = aboutEl.querySelectorAll('.char');
+    const litCount = Math.floor(progress * chars.length);
+    chars.forEach((ch, i) => ch.classList.toggle('lit', i < litCount));
+  }
+  window.addEventListener('scroll', updateAboutChars, { passive: true });
+  updateAboutChars();
+
+  // Services
+  const services = [
+    { num: '01', name: '3D Modeling', desc: 'Creation of detailed objects, characters, or environments tailored to specific client needs, ideal for games, products, and visualizations.' },
+    { num: '02', name: 'Rendering', desc: 'High-quality, photorealistic renders that showcase designs with custom lighting, textures, and materials to bring concepts to life.' },
+    { num: '03', name: 'Motion Design', desc: 'Dynamic animations and motion graphics that add energy and storytelling to brands, products, and digital experiences.' },
+    { num: '04', name: 'Branding', desc: 'Crafting cohesive visual identities — from logos to full brand systems — that communicate a clear and memorable presence.' },
+    { num: '05', name: 'Web Design', desc: 'Designing clean, modern, and conversion-focused websites with attention to layout, typography, and user experience.' },
+  ];
+  document.getElementById('servicesList').innerHTML = services.map((s, i) =>
+    `<div class="service-item reveal" style="transition-delay:${i * 0.1}s">
+      <div class="service-num">${s.num}</div>
+      <div class="service-info">
+        <div class="service-name">${s.name}</div>
+        <div class="service-desc">${s.desc}</div>
+      </div>
+    </div>`
+  ).join('');
+
+  // Projects
+  const projects = [
+    { num: '01', category: 'Client', name: 'Nextlevel Studio',
+      imgs: [
+        'https://images.higgs.ai/?default=1&output=webp&url=https%3A%2F%2Fd8j0ntlcm91z4.cloudfront.net%2Fuser_38xzZboKViGWJOttwIXH07lWA1P%2Fhf_20260412_055344_5eff02e0-87a5-41ce-b64f-eb08da8f33db.png&w=800&q=85',
+        'https://images.higgs.ai/?default=1&output=webp&url=https%3A%2F%2Fd8j0ntlcm91z4.cloudfront.net%2Fuser_38xzZboKViGWJOttwIXH07lWA1P%2Fhf_20260412_055431_11d841fd-8b41-46a5-82e4-b04f2407a7d8.png&w=800&q=85',
+        'https://images.higgs.ai/?default=1&output=webp&url=https%3A%2F%2Fd8j0ntlcm91z4.cloudfront.net%2Fuser_38xzZboKViGWJOttwIXH07lWA1P%2Fhf_20260412_055451_e317bf2d-28d4-48cc-86b0-6f72f25b6327.png&w=800&q=85',
+      ]},
+    { num: '02', category: 'Personal', name: 'Aura Brand Identity',
+      imgs: [
+        'https://images.higgs.ai/?default=1&output=webp&url=https%3A%2F%2Fd8j0ntlcm91z4.cloudfront.net%2Fuser_38xzZboKViGWJOttwIXH07lWA1P%2Fhf_20260412_055654_911201c5-36d9-4bc6-bac7-331adfce159f.png&w=800&q=85',
+        'https://images.higgs.ai/?default=1&output=webp&url=https%3A%2F%2Fd8j0ntlcm91z4.cloudfront.net%2Fuser_38xzZboKViGWJOttwIXH07lWA1P%2Fhf_20260412_055723_5ceda0b8-d9c2-4665-b2e3-83ba19ba76d1.png&w=800&q=85',
+        'https://images.higgs.ai/?default=1&output=webp&url=https%3A%2F%2Fd8j0ntlcm91z4.cloudfront.net%2Fuser_38xzZboKViGWJOttwIXH07lWA1P%2Fhf_20260412_055753_adc5dcbd-a8e6-49c0-b43a-9b030d835cea.png&w=800&q=85',
+      ]},
+    { num: '03', category: 'Client', name: 'Solaris Digital',
+      imgs: [
+        'https://images.higgs.ai/?default=1&output=webp&url=https%3A%2F%2Fd8j0ntlcm91z4.cloudfront.net%2Fuser_38xzZboKViGWJOttwIXH07lWA1P%2Fhf_20260412_055759_963cfb0b-4bd1-4b0f-9d0a-09bd6cf95b2f.png&w=800&q=85',
+        'https://images.higgs.ai/?default=1&output=webp&url=https%3A%2F%2Fd8j0ntlcm91z4.cloudfront.net%2Fuser_38xzZboKViGWJOttwIXH07lWA1P%2Fhf_20260412_060108_438f781a-9846-4dcc-89ab-c4e6cb830f5b.png&w=800&q=85',
+        'https://images.higgs.ai/?default=1&output=webp&url=https%3A%2F%2Fd8j0ntlcm91z4.cloudfront.net%2Fuser_38xzZboKViGWJOttwIXH07lWA1P%2Fhf_20260412_055818_9d062121-ad7e-46b9-999a-1a6a692ef1ee.png&w=800&q=85',
+      ]},
+  ];
+  document.getElementById('projectsList').innerHTML = projects.map(p =>
+    `<div class="project-card">
+      <div class="project-top">
+        <div class="project-num hero-heading">${p.num}</div>
+        <div class="project-meta">
+          <div class="project-category">${p.category}</div>
+          <div class="project-name">${p.name}</div>
+        </div>
+        <a href="#" class="live-btn">Live Project</a>
+      </div>
+      <div class="project-images">
+        <div class="col-left">
+          <img src="${p.imgs[0]}" alt="${p.name}" loading="lazy" />
+          <img src="${p.imgs[1]}" alt="${p.name}" loading="lazy" />
+        </div>
+        <div class="col-right">
+          <img src="${p.imgs[2]}" alt="${p.name}" loading="lazy" />
+        </div>
+      </div>
+    </div>`
+  ).join('');
+
+  // Scroll reveal
+  const reveals = document.querySelectorAll('.reveal');
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); } });
+  }, { threshold: 0.15 });
+  reveals.forEach(el => io.observe(el));
+</script>
+</body>
+</html>

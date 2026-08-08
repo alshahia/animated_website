@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Nike Hover — Spotlight reveal showcase</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --font-sans: 'Manrope', sans-serif;
+    --font-serif: 'Instrument Serif', serif;
+    --red: #DA3A16;
+    --black: #000;
+    --white: #fff;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; overflow: hidden; }
+  body {
+    font-family: var(--font-sans);
+    background: var(--black); color: var(--white);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── Section Container ─────────────────────── */
+  .section {
+    position: relative; width: 100%; height: 100dvh;
+    overflow: hidden; background: var(--black);
+    box-shadow: 0 -20px 50px rgba(0,0,0,0.5);
+  }
+
+  /* ── Spotlight Layer ─────────────────────── */
+  .spotlight-layer {
+    position: absolute; inset: 0; width: 100%; height: 100%;
+    z-index: 0; pointer-events: none; overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  .spotlight-video {
+    position: absolute; inset: 0; width: 100%; height: 100%;
+    object-fit: cover;
+  }
+
+  .spotlight-svg {
+    position: absolute; inset: 0; width: 100%; height: 100%;
+  }
+
+  /* ── Hover Zones ─────────────────────── */
+  .hover-zone {
+    position: absolute; z-index: 30;
+    cursor: default;
+  }
+  .hover-zone-right {
+    right: calc(8% + 100px); bottom: 12%;
+    width: calc(50% - 50px); height: calc(50% + 230px);
+  }
+  .hover-zone-left {
+    left: calc(8% + 200px); top: calc(20% + 190px);
+    width: calc(15% + 250px); height: calc(22.5% + 130px);
+    transform: translateY(-100%);
+  }
+
+  /* ── Stats Card ─────────────────────── */
+  .stats-card {
+    position: absolute; left: calc(8% + 200px); top: 20%; z-index: 20;
+    width: 320px;
+    background: rgba(0,0,0,0.16);
+    backdrop-filter: blur(80px);
+    -webkit-backdrop-filter: blur(80px);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 2px;
+    padding: 24px 32px;
+  }
+  .stat-row { display: flex; align-items: flex-end; gap: 12px; margin-bottom: 12px; }
+  .stat-number {
+    font-family: var(--font-serif); font-style: italic;
+    font-size: 72px; line-height: 80px; letter-spacing: -0.02em;
+    color: var(--red);
+  }
+  .stat-chart { width: 160px; height: 80px; flex-shrink: 0; }
+  .stat-title {
+    font-family: var(--font-serif); color: var(--white);
+    font-size: 15px; letter-spacing: 0.02em; text-transform: uppercase;
+    margin-bottom: 4px; line-height: 1.2;
+  }
+  .stat-subtitle {
+    font-family: var(--font-serif); color: rgba(255,255,255,0.6);
+    font-size: 13px;
+  }
+
+  /* ── Headline ─────────────────────── */
+  .headline {
+    position: absolute; left: 8%; bottom: 12%; z-index: 20;
+    max-width: 500px;
+  }
+  .headline h2 {
+    font-size: 44px; line-height: 1.05; letter-spacing: -0.02em;
+    display: flex; flex-direction: column;
+  }
+  .headline .sans { font-family: var(--font-sans); font-weight: 500; }
+  .headline .serif { font-family: var(--font-serif); font-weight: 400; }
+  .headline .italic { font-style: italic; }
+  .headline .pt { padding-top: 4px; }
+
+  /* ── CTA Block ─────────────────────── */
+  .cta-block {
+    position: absolute; right: calc(8% + 100px); bottom: 12%; z-index: 20;
+    display: flex; flex-direction: column; align-items: center;
+  }
+  .cta-top {
+    width: 180px; background: var(--white); padding: 6px 0;
+    text-align: center;
+    font-family: var(--font-serif); font-size: 10px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.08em;
+    color: var(--black); line-height: 16px;
+  }
+  .cta-bottom {
+    width: 180px; height: 100px; background: var(--red);
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  /* ── Mobile ─────────────────────── */
+  @media (max-width: 640px) {
+    .stats-card { left: 16px; top: 15%; width: 280px; padding: 16px 20px; }
+    .stat-number { font-size: 48px; line-height: 56px; }
+    .stat-chart { width: 120px; height: 60px; }
+    .headline { left: 16px; bottom: 30%; max-width: 90%; }
+    .headline h2 { font-size: 24px; }
+    .cta-block { right: 16px; bottom: 8%; }
+    .cta-top, .cta-bottom { width: 140px; }
+    .cta-bottom { height: 80px; }
+    .hover-zone-right, .hover-zone-left { display: none; }
+  }
+  @media (min-width: 641px) and (max-width: 1024px) {
+    .stats-card { left: 5%; top: 18%; }
+    .headline { left: 5%; bottom: 8%; }
+    .headline h2 { font-size: 32px; }
+    .cta-block { right: 5%; }
+  }
+</style>
+</head>
+<body>
+
+<section class="section" id="heroSection">
+  <!-- Spotlight Background -->
+  <div class="spotlight-layer">
+    <video class="spotlight-video" id="spotlightVideo" muted loop playsinline
+      src="https://pikaso.cdnpk.net/private/production/4024859125/d070ae9c-55df-47aa-acbe-4ee66337855c-0.mp4?token=exp=1777075200~hmac=4202c1d0ec90137eb6dffa8e0db93ed7569a68b2016165d8b1b567f888869ff5">
+    </video>
+    <svg class="spotlight-svg" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="holeGrad">
+          <stop offset="0%" stop-color="black" stop-opacity="1"/>
+          <stop offset="60%" stop-color="black" stop-opacity="0.8"/>
+          <stop offset="100%" stop-color="black" stop-opacity="0"/>
+        </radialGradient>
+        <mask id="spotlightMask" maskContentUnits="userSpaceOnUse" x="0" y="0" width="100%" height="100%">
+          <rect width="100%" height="100%" fill="white"/>
+          <circle id="trail-0" cx="-1000" cy="-1000" r="520" fill="url(#holeGrad)" opacity="1"/>
+          <circle id="trail-1" cx="-1000" cy="-1000" r="485" fill="url(#holeGrad)" opacity="0.85"/>
+          <circle id="trail-2" cx="-1000" cy="-1000" r="450" fill="url(#holeGrad)" opacity="0.7"/>
+          <circle id="trail-3" cx="-1000" cy="-1000" r="415" fill="url(#holeGrad)" opacity="0.55"/>
+          <circle id="trail-4" cx="-1000" cy="-1000" r="380" fill="url(#holeGrad)" opacity="0.4"/>
+          <circle id="trail-5" cx="-1000" cy="-1000" r="345" fill="url(#holeGrad)" opacity="0.25"/>
+        </mask>
+      </defs>
+      <image href="https://images.higgs.ai/?default=1&output=webp&url=https%3A%2F%2Fgithub.com%2FdsMagnatov%2FAcreage-landing-assets%2Fblob%2Fmain%2F02604201313.png%3Fraw%3Dtrue&w=1920&q=85"
+        width="100%" height="100%" preserveAspectRatio="xMidYMid slice" mask="url(#spotlightMask)"/>
+    </svg>
+  </div>
+
+  <!-- Hover Zones -->
+  <div class="hover-zone hover-zone-right" id="hoverRight"></div>
+  <div class="hover-zone hover-zone-left" id="hoverLeft"></div>
+
+  <!-- Stats Card -->
+  <div class="stats-card">
+    <div class="stat-row">
+      <span class="stat-number">78%</span>
+      <svg class="stat-chart" viewBox="0 0 289 138" fill="none">
+        <g filter="url(#shadow)">
+          <path d="M22.5 48.73C39.78 48.73 49.34 54.94 63.17 69.3C77 83.65 86.55 110.5 103.83 110.5C121.12 110.5 130.67 84.29 144.5 59.29C158.33 34.28 167.88 19.56 185.17 19.56C202.45 19.56 208.55 57.67 225.83 57.67C243.12 57.67 249.22 19.5 266.5 19.5" stroke="#DA3A16" stroke-width="2"/>
+        </g>
+        <defs>
+          <filter id="shadow" x="0" y="0" width="289" height="138" filterUnits="userSpaceOnUse">
+            <feFlood flood-opacity="0" result="bg"/>
+            <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hard"/>
+            <feOffset dy="4"/>
+            <feGaussianBlur stdDeviation="11.25"/>
+            <feComposite in2="hard" operator="out"/>
+            <feColorMatrix type="matrix" values="0 0 0 0 0.855 0 0 0 0 0.227 0 0 0 0 0.086 0 0 0 1 0"/>
+            <feBlend mode="normal" in2="bg"/>
+            <feBlend mode="normal" in="SourceGraphic"/>
+          </filter>
+        </defs>
+      </svg>
+    </div>
+    <div class="stat-title">NEXT-GEN CUSHIONING ARCHITECTURE</div>
+    <div class="stat-subtitle">Impact Absorption & Energy Return Dynamics</div>
+  </div>
+
+  <!-- Headline -->
+  <div class="headline">
+    <h2>
+      <span class="sans">Bringing Aerospace-</span>
+      <span class="sans">Grade Infrastructure</span>
+      <span class="serif pt"><span class="not-italic">Directly To Your </span><span class="italic">Everyday</span></span>
+      <span class="serif italic">Urban Exploration</span>
+    </h2>
+  </div>
+
+  <!-- CTA Block -->
+  <div class="cta-block">
+    <div class="cta-top">THE SCIENCE OF IMPACT CONTROL</div>
+    <div class="cta-bottom">
+      <svg width="86" viewBox="135.5 361.38 420.32 149.8" fill="white">
+        <path d="m181.86 511.11c-12.524-0.49755-22.77-3.9244-30.782-10.289-1.529-1.2159-5.1725-4.8616-6.3949-6.3992-3.2489-4.0853-5.4578-8.0611-6.931-12.472-4.5334-13.579-2.2002-31.397 6.6737-50.953 7.5979-16.742 19.322-33.347 39.776-56.344 3.013-3.384 11.986-13.281 12.043-13.281 0.0216 0-0.46749 0.84706-1.083 1.8786-5.3183 8.9082-9.8689 19.401-12.348 28.485-3.9823 14.576-3.502 27.085 1.4068 36.784 3.3862 6.6822 9.1913 12.47 15.719 15.67 11.428 5.5993 28.159 6.0625 48.592 1.3554 1.4068-0.32599 71.116-18.831 154.91-41.123 83.794-22.294 152.36-40.52 152.37-40.505 0.0237 0.0193-194.68 83.333-295.75 126.56-16.007 6.8431-20.287 8.5715-27.812 11.214-19.236 6.7551-36.467 9.9783-50.396 9.4251z"/>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<script>
+  // Spotlight cursor tracking
+  const NUM_TRAILS = 6;
+  const video = document.getElementById('spotlightVideo');
+  let targetX = window.innerWidth / 2;
+  let targetY = window.innerHeight / 2;
+  const points = Array.from({ length: NUM_TRAILS }, () => ({ x: -1000, y: -1000 }));
+
+  document.addEventListener('mousemove', (e) => {
+    targetX = e.clientX;
+    targetY = e.clientY;
+  });
+
+  // Touch support
+  document.addEventListener('touchmove', (e) => {
+    targetX = e.touches[0].clientX;
+    targetY = e.touches[0].clientY;
+  }, { passive: true });
+
+  function animate() {
+    points[0].x += (targetX - points[0].x) * 0.2;
+    points[0].y += (targetY - points[0].y) * 0.2;
+    for (let i = 1; i < points.length; i++) {
+      points[i].x += (points[i - 1].x - points[i].x) * 0.35;
+      points[i].y += (points[i - 1].y - points[i].y) * 0.35;
+    }
+    for (let i = 0; i < points.length; i++) {
+      const circle = document.getElementById(`trail-${i}`);
+      if (circle) {
+        circle.setAttribute('cx', points[i].x.toString());
+        circle.setAttribute('cy', points[i].y.toString());
+      }
+    }
+    requestAnimationFrame(animate);
+  }
+  animate();
+
+  // Hover zones toggle video
+  let isPlaying = false;
+  const hoverRight = document.getElementById('hoverRight');
+  const hoverLeft = document.getElementById('hoverLeft');
+
+  function startVideo() {
+    if (!isPlaying) { isPlaying = true; video.play().catch(() => {}); }
+  }
+  function stopVideo() {
+    if (isPlaying) { isPlaying = false; video.pause(); }
+  }
+
+  hoverRight.addEventListener('mouseenter', startVideo);
+  hoverRight.addEventListener('mouseleave', stopVideo);
+  hoverLeft.addEventListener('mouseenter', startVideo);
+  hoverLeft.addEventListener('mouseleave', stopVideo);
+
+  // Mobile: auto-play
+  if (window.innerWidth < 1024) {
+    video.play().catch(() => {});
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>dot. — Short notes. Daily calm.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@100..900&display=swap" rel="stylesheet">
+<style>
+  @import url('https://db.onlinewebfonts.com/c/440b53b1a1c65037f944ff19259d8014?family=Nokia+Cellphone+FC+Small');
+
+  :root {
+    --font-instrument: "Instrument Serif", serif;
+    --font-serif: "Instrument Serif", serif;
+    --font-sans: "Inter", sans-serif;
+    --font-nokia: "Nokia Cellphone FC Small", monospace;
+    --ink: #1a1a1a;
+    --blue: #0871E7;
+    --cream: #F3F4ED;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body { font-family: var(--font-sans); -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+
+  /* ── Navbar ─────────────────────────── */
+  .nav { position: fixed; top: 24px; left: 50%; transform: translateX(-50%); width: 95%; max-width: 64rem; z-index: 50; pointer-events: none; animation: drop 0.8s cubic-bezier(0.16, 1, 0.3, 1) both; }
+  .nav-pill { pointer-events: auto; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 10px 12px 10px 24px; border-radius: 999px; background: rgba(255, 255, 255, 0.55); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border: 1px solid rgba(0, 0, 0, 0.1); }
+  .logo { font-family: var(--font-instrument); font-size: 28px; letter-spacing: -0.02em; color: var(--ink); line-height: 1; }
+  .nav-links { display: none; gap: 40px; }
+  @media (min-width: 768px) { .nav-links { display: flex; } }
+  .nav-links a { font-size: 14px; color: var(--ink); text-decoration: none; opacity: 0.8; transition: opacity 200ms; }
+  .nav-links a:hover { opacity: 0.45; }
+  .btn-link { position: relative; display: inline-flex; align-items: center; justify-content: center; background: var(--blue); color: #fff; font-family: var(--font-sans); font-size: 14px; font-weight: 500; padding: 10px 22px; border: none; border-radius: 999px; cursor: pointer; outline: 1px solid var(--blue); outline-offset: -1px; box-shadow: inset 0 -4px 4px rgba(255, 255, 255, 0.39); overflow: hidden; transition: filter 200ms; }
+  .btn-link:hover { filter: brightness(1.06); }
+  .btn-link .glint { position: absolute; width: 80%; height: 16px; left: 10%; top: 1px; background: linear-gradient(to bottom, #DEF0FC, transparent); border-radius: 12px; transition: transform 300ms; }
+  .btn-link:hover .glint { transform: scaleX(1.05); }
+
+  @keyframes drop { from { opacity: 0; transform: translate(-50%, -16px); } to { opacity: 1; transform: translate(-50%, 0); } }
+
+  /* ── Hero ─────────────────────────── */
+  .hero { position: relative; min-height: 100vh; background: var(--cream); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 96px 24px 48px; overflow: hidden; }
+  .hero-video { position: absolute; inset: 0; z-index: 0; }
+  .hero-video video { width: 100%; height: 100%; object-fit: cover; }
+  .hero-video::after { content: ''; position: absolute; inset: 0; background: rgba(255, 255, 255, 0.05); }
+  .hero-inner { position: relative; z-index: 2; text-align: center; pointer-events: none; max-width: 100%; }
+
+  h1 { font-family: var(--font-instrument); font-size: 38px; line-height: 0.85; letter-spacing: -0.02em; color: var(--ink); margin-bottom: 24px; animation: hero-in 1.5s cubic-bezier(0.16, 1, 0.3, 1) both; }
+  @media (min-width: 768px) { h1 { font-size: 56px; } }
+  @media (min-width: 1024px) { h1 { font-size: 72px; } }
+  @keyframes hero-in { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+
+  .sub { font-size: 16px; color: rgba(26, 26, 26, 0.7); line-height: 1.6; font-weight: 400; max-width: 36rem; margin: 0 auto; animation: sub-in 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.3s both; }
+  @media (min-width: 768px) { .sub { font-size: 18px; } }
+  @keyframes sub-in { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* ── Typing messages (on phone in video) ── */
+  .typing { position: absolute; left: 48.5%; transform: translateX(-50%); bottom: 32%; z-index: 30; width: 110px; text-align: left; pointer-events: none; }
+  @media (min-width: 640px)  { .typing { width: 130px; } }
+  @media (min-width: 768px)  { .typing { left: 47.5%; } }
+  @media (min-width: 1024px) { .typing { left: 48.5%; } }
+  .typing-text { font-family: var(--font-nokia); color: #2A3616; font-size: 10px; line-height: 1.3; word-break: break-word; min-height: 1.5em; }
+  @media (min-width: 640px) { .typing-text { font-size: 14px; } }
+  .cursor { display: inline-block; width: 6px; height: 12px; background: #2A3616; margin-left: 4px; vertical-align: middle; animation: blink 0.8s linear infinite; }
+  @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+  @media (prefers-reduced-motion: reduce) {
+    .nav, h1, .sub, .cursor { animation: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-pill">
+    <div class="logo">dot.</div>
+    <div class="nav-links">
+      <a href="#">Philosophy</a>
+      <a href="#">Trust</a>
+      <a href="#">Access</a>
+      <a href="#">Tribe</a>
+    </div>
+    <button class="btn-link"><span class="glint"></span>Link up</button>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="hero-video">
+    <video autoplay loop muted playsinline>
+      <source src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260427_054418_a6d194f0-ac86-4df9-abe5-ded73e596d7c.mp4" type="video/mp4" />
+    </video>
+  </div>
+
+  <div class="hero-inner">
+    <h1>Short notes.<br />Daily calm.</h1>
+    <p class="sub">Linked with a single anonymous peer. One message every day. A quiet rhythm in the digital noise.</p>
+  </div>
+
+  <div class="typing">
+    <span class="typing-text" id="typingText"></span><span class="cursor" id="cursor"></span>
+  </div>
+</header>
+
+<script>
+  // Nokia-style typing cycle: ["Are you here?", "Yes, I am.", "Speak soon."]
+  const messages = ['Are you here?', 'Yes, I am.', 'Speak soon.'];
+  const el = document.getElementById('typingText');
+  let mi = 0, ci = 0, deleting = false, timer;
+
+  function tick() {
+    const msg = messages[mi];
+    el.textContent = msg.slice(0, ci);
+    if (!deleting) {
+      if (ci < msg.length) { ci++; timer = setTimeout(tick, 100); }
+      else { deleting = true; timer = setTimeout(tick, 2000); }
+    } else {
+      if (ci > 0) { ci--; timer = setTimeout(tick, 50); }
+      else { deleting = false; mi = (mi + 1) % messages.length; timer = setTimeout(tick, 300); }
+    }
+  }
+  setTimeout(tick, 800);
+</script>
+</body>
+</html>

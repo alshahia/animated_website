@@ -1,0 +1,798 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Weather Forecast — Central Jakarta</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Inter+Tight:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --u: min(100vw / 1357, 100dvh / 871);
+    --ink: #ffffff;
+    --glass: rgba(255,255,255,.155);
+    --glass-line: rgba(255,255,255,.20);
+    --e-out: cubic-bezier(.16,1,.3,1);
+    --e-soft: cubic-bezier(.22,.61,.36,1);
+    --e-pen: cubic-bezier(.37,.01,.2,1);
+  }
+  @supports not (height: 100dvh) {
+    :root { --u: min(100vw / 1357, 100vh / 871); }
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body {
+    background: #04121b;
+    color: var(--ink);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    font-feature-settings: "kern" 1;
+    overflow: hidden;
+  }
+  svg { display: block; }
+  button, a { color: inherit; }
+  button { font: inherit; background: none; border: none; cursor: pointer; }
+  *:focus-visible { outline: calc(2*var(--u)) solid #fff; outline-offset: calc(2*var(--u)); }
+
+  .stage {
+    position: fixed;
+    inset: 0;
+    overflow: hidden;
+  }
+  .stage::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(120% 62% at 22% 18%, rgba(32,56,66,.62) 0%, rgba(9,21,28,0) 62%),
+      radial-gradient(110% 58% at 76% 10%, rgba(28,52,62,.66) 0%, rgba(9,21,28,0) 58%),
+      radial-gradient(150% 50% at 50% 34%, rgba(24,46,54,.5) 0%, transparent 66%),
+      linear-gradient(180deg, rgba(13,34,42,0) 0%, rgba(13,34,42,0) 60%, rgba(21,58,44,.55) 84%, rgba(10,40,30,.96) 100%),
+      linear-gradient(180deg, #040d13 0%, #081820 40%, #0e2730 66%, #163530 84%, #0f2e24 100%);
+    background-size: cover;
+    background-position: center 25%;
+    background-repeat: no-repeat;
+  }
+  .stage::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 2;
+    background:
+      linear-gradient(105deg, rgba(4,16,24,.34) 0%, rgba(4,16,24,.20) 40%, rgba(4,16,24,.06) 78%, transparent 100%),
+      linear-gradient(180deg, rgba(4,16,24,.12) 0%, transparent 22%),
+      linear-gradient(0deg, rgba(4,16,24,.07), rgba(4,16,24,.07));
+  }
+  .storm {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  .sidebar {
+    position: absolute;
+    left: calc(16*var(--u));
+    top: calc(14*var(--u));
+    bottom: calc(7*var(--u));
+    width: calc(72*var(--u));
+    z-index: 4;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: calc(22*var(--u));
+    padding-bottom: calc(52*var(--u));
+    border-radius: calc(26*var(--u));
+    background: linear-gradient(180deg,
+      rgba(255,255,255,.125) 0%,
+      rgba(255,255,255,.135) 13%,
+      rgba(255,255,255,.098) 34%,
+      rgba(255,255,255,.092) 100%);
+    backdrop-filter: blur(calc(18*var(--u))) saturate(115%);
+    -webkit-backdrop-filter: blur(calc(18*var(--u))) saturate(115%);
+    animation: slideL .92s var(--e-soft) .05s both;
+  }
+  .pip {
+    position: absolute;
+    left: calc(-2*var(--u));
+    top: calc(131*var(--u));
+    width: calc(5*var(--u));
+    height: calc(29*var(--u));
+    border-radius: calc(3*var(--u));
+    background: #fff;
+    box-shadow: 0 0 calc(10*var(--u)) rgba(255,255,255,.55);
+    transform-origin: top;
+    animation: growY .50s var(--e-soft) .68s both;
+  }
+  .logo {
+    width: calc(40*var(--u));
+    height: calc(40*var(--u));
+    animation: popIn .70s var(--e-soft) .26s both;
+  }
+  .sidebar nav {
+    margin-top: calc(57.5*var(--u));
+    display: flex;
+    flex-direction: column;
+    gap: calc(43*var(--u));
+  }
+  .sidebar nav a {
+    display: block;
+    width: calc(23*var(--u));
+    height: calc(23*var(--u));
+    color: #fff;
+    opacity: .8;
+    transition: opacity 200ms, transform 200ms;
+    animation: riseIn .60s var(--e-soft) .36s both;
+  }
+  .sidebar nav a:nth-child(2) { animation-delay: .41s; }
+  .sidebar nav a:nth-child(3) { animation-delay: .46s; }
+  .sidebar nav a:nth-child(4) { animation-delay: .51s; }
+  .sidebar nav a:nth-child(5) { animation-delay: .56s; }
+  .sidebar nav a:hover { opacity: 1; transform: translateY(calc(-1*var(--u))); }
+  .sidebar nav a svg { width: 100%; height: 100%; }
+  .out {
+    margin-top: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: calc(7*var(--u));
+    color: rgba(255,255,255,.82);
+    text-decoration: none;
+    font-size: calc(10.5*var(--u));
+    font-weight: 500;
+    letter-spacing: .04em;
+    animation: riseIn .60s var(--e-soft) .70s both;
+  }
+  .out svg { width: calc(23*var(--u)); height: calc(23*var(--u)); }
+  .out:hover { opacity: 1; }
+
+  .header {
+    position: absolute;
+    top: calc(22*var(--u));
+    left: calc(126*var(--u));
+    right: calc(37*var(--u));
+    height: calc(52*var(--u));
+    z-index: 4;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+  }
+  .hello {
+    font-size: calc(16*var(--u));
+    font-weight: 400;
+    color: rgba(255,255,255,.93);
+    animation: riseIn .70s var(--e-soft) .14s both;
+  }
+  .who {
+    margin-top: calc(13*var(--u));
+    font-size: calc(19.5*var(--u));
+    font-weight: 700;
+    letter-spacing: calc(-.35*var(--u));
+    animation: riseIn .80s var(--e-soft) .22s both;
+  }
+  .tools {
+    display: flex;
+    align-items: center;
+    gap: calc(16*var(--u));
+  }
+  .tool {
+    width: calc(52*var(--u));
+    height: calc(52*var(--u));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255,255,255,.15);
+    backdrop-filter: blur(calc(16*var(--u))) saturate(115%);
+    -webkit-backdrop-filter: blur(calc(16*var(--u))) saturate(115%);
+    transition: background 200ms;
+    animation: popIn .58s var(--e-soft) .30s both;
+  }
+  .tools .tool:nth-child(2) { animation-delay: .365s; }
+  .tools .tool:nth-child(3) { animation-delay: .43s; }
+  .tool:hover { background: rgba(255,255,255,.24); }
+  .tool svg { width: calc(23*var(--u)); height: calc(23*var(--u)); }
+  .avatar {
+    width: calc(52*var(--u));
+    height: calc(52*var(--u));
+    position: relative;
+    animation: popIn .58s var(--e-soft) .495s both;
+  }
+  .avatar svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: rgba(255,255,255,.15);
+    backdrop-filter: blur(calc(16*var(--u))) saturate(115%);
+    -webkit-backdrop-filter: blur(calc(16*var(--u))) saturate(115%);
+  }
+  .avatar img {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+
+  .hero {
+    position: absolute;
+    left: calc(126*var(--u));
+    top: calc(136*var(--u));
+    max-width: calc(560*var(--u));
+    z-index: 4;
+  }
+  .chip {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: calc(36*var(--u));
+    padding: 0 calc(15*var(--u));
+    border-radius: calc(18*var(--u));
+    background: rgba(255,255,255,.175);
+    backdrop-filter: blur(calc(16*var(--u))) saturate(115%);
+    -webkit-backdrop-filter: blur(calc(16*var(--u))) saturate(115%);
+    font-size: calc(13*var(--u));
+    font-weight: 500;
+    letter-spacing: .02em;
+    overflow: hidden;
+    animation: wipeRight .80s var(--e-soft) .44s both;
+  }
+  h1 {
+    margin-top: calc(26*var(--u));
+    font-family: 'Inter Tight', 'Inter', sans-serif;
+    font-weight: 500;
+    font-size: calc(63*var(--u));
+    line-height: calc(78*var(--u));
+    letter-spacing: calc(.25*var(--u));
+    text-transform: none;
+  }
+  .ln { display: block; overflow: hidden; }
+  .ln > span { display: block; }
+  .ln:nth-child(1) > span { animation: lineUp 1.05s var(--e-soft) .56s both; }
+  .ln:nth-child(2) > span { animation: lineUp 1.05s var(--e-soft) .67s both; }
+  .blurb {
+    margin-top: calc(26*var(--u));
+    width: calc(480*var(--u));
+    font-size: calc(15.2*var(--u));
+    line-height: calc(24*var(--u));
+    font-weight: 500;
+    letter-spacing: calc(-.3*var(--u));
+    color: rgba(255,255,255,.95);
+    animation: wipeDown .90s var(--e-soft) .90s both;
+  }
+
+  .forecast {
+    position: absolute;
+    left: calc(126*var(--u));
+    right: calc(396*var(--u));
+    bottom: calc(99*var(--u));
+    z-index: 4;
+  }
+  .temps {
+    display: flex;
+    justify-content: space-between;
+  }
+  .temp {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: calc(9*var(--u));
+  }
+  .temp svg { width: calc(26*var(--u)); height: calc(26*var(--u)); }
+  .temp span {
+    font-size: calc(37*var(--u));
+    font-weight: 400;
+    letter-spacing: calc(-.7*var(--u));
+    line-height: 1;
+  }
+  .temp { animation: riseIn .60s var(--e-soft) 1.26s both; }
+  .temps .temp:nth-child(2) { animation-delay: 1.33s; }
+  .temps .temp:nth-child(3) { animation-delay: 1.40s; }
+  .temps .temp:nth-child(4) { animation-delay: 1.47s; }
+  .temps .temp:nth-child(5) { animation-delay: 1.54s; }
+  .temps .temp:nth-child(6) { animation-delay: 1.61s; }
+
+  .chart {
+    width: 100%;
+    height: calc(230*var(--u));
+    margin-top: calc(43*var(--u));
+    display: block;
+  }
+  .wr {
+    transform-box: fill-box;
+    transform-origin: 0 0;
+    animation: wipeX 1.42s var(--e-pen) 1.72s both;
+  }
+  .wline {
+    fill: none;
+    stroke-dasharray: 1;
+    animation: drawLine 1.60s var(--e-pen) 1.50s both;
+  }
+  .days {
+    display: flex;
+    justify-content: space-between;
+    margin-top: calc(-31*var(--u));
+  }
+  .day {
+    font-size: calc(18*var(--u));
+    font-weight: 500;
+    color: rgba(255,255,255,.88);
+    animation: riseIn .60s var(--e-soft) 2.10s both;
+  }
+  .days .day:nth-child(2) { animation-delay: 2.155s; }
+  .days .day:nth-child(3) { animation-delay: 2.21s; }
+  .days .day:nth-child(4) { animation-delay: 2.265s; }
+  .days .day:nth-child(5) { animation-delay: 2.32s; }
+  .days .day:nth-child(6) { animation-delay: 2.375s; }
+  .days .day:nth-child(7) { animation-delay: 2.43s; }
+  .day.on { color: #fff; font-weight: 600; }
+
+  .rail {
+    position: absolute;
+    right: calc(38*var(--u));
+    top: calc(134*var(--u));
+    bottom: calc(95*var(--u));
+    width: calc(310*var(--u));
+    z-index: 4;
+    display: flex;
+    flex-direction: column;
+    gap: calc(20*var(--u));
+  }
+  .card {
+    position: relative;
+    overflow: hidden;
+    border-radius: calc(24*var(--u));
+    background: linear-gradient(180deg,
+      rgba(255,255,255,.20) 0%,
+      rgba(255,255,255,.258) 24%,
+      rgba(255,255,255,.252) 78%,
+      rgba(255,255,255,.232) 100%);
+    backdrop-filter: blur(calc(26*var(--u))) saturate(118%);
+    -webkit-backdrop-filter: blur(calc(26*var(--u))) saturate(118%);
+  }
+  .card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 38%;
+    pointer-events: none;
+    background: linear-gradient(100deg, transparent 0%, rgba(255,255,255,.17) 50%, transparent 100%);
+    transform: skewX(-18deg);
+    animation: sheen 1.15s var(--e-soft) 2.55s 1 both;
+  }
+  .card > * { position: relative; z-index: 1; }
+  .card.big {
+    border-radius: calc(26*var(--u));
+    padding: calc(26*var(--u));
+    animation: slideR .95s var(--e-soft) .80s both;
+  }
+  .place {
+    display: flex;
+    align-items: center;
+    gap: calc(7*var(--u));
+    font-size: calc(18.5*var(--u));
+    font-weight: 600;
+    letter-spacing: calc(-.2*var(--u));
+    animation: riseIn .60s var(--e-soft) 1.04s both;
+  }
+  .place svg { width: calc(17*var(--u)); height: calc(17*var(--u)); }
+  .big-temp {
+    margin-top: calc(14*var(--u));
+    font-size: calc(92*var(--u));
+    font-weight: 500;
+    letter-spacing: calc(-4.4*var(--u));
+    line-height: 1;
+    animation: riseIn .60s var(--e-soft) 1.16s both;
+  }
+  .big-temp i {
+    font-style: normal;
+    font-size: calc(46*var(--u));
+    letter-spacing: 0;
+    margin-left: calc(7*var(--u));
+  }
+  .metrics {
+    margin-top: calc(22*var(--u));
+    display: flex;
+    justify-content: space-between;
+    animation: riseIn .60s var(--e-soft) 1.28s both;
+  }
+  .metric { display: flex; flex-direction: column; gap: calc(4*var(--u)); }
+  .metric svg { width: calc(20*var(--u)); height: calc(20*var(--u)); opacity: .95; }
+  .metric .mv { font-size: calc(15*var(--u)); font-weight: 600; letter-spacing: calc(-.2*var(--u)); }
+  .metric .ml { font-size: calc(10*var(--u)); font-weight: 400; color: rgba(255,255,255,.66); }
+  .card.row {
+    height: calc(120*var(--u));
+    padding: calc(22*var(--u)) calc(24*var(--u));
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    animation: slideR .95s var(--e-soft) .92s both;
+  }
+  .rail .card.row:nth-of-type(3) { animation-delay: 1.03s; }
+  .rail .card.row:nth-of-type(4) { animation-delay: 1.14s; }
+  .rc { display: flex; flex-direction: column; gap: calc(4*var(--u)); }
+  .rc .cty { font-size: calc(11.5*var(--u)); font-weight: 400; color: rgba(255,255,255,.62); }
+  .rc .nm { font-size: calc(16.5*var(--u)); font-weight: 600; letter-spacing: calc(-.3*var(--u)); }
+  .rc .cd { font-size: calc(12*var(--u)); font-weight: 400; color: rgba(255,255,255,.82); }
+  .rc { animation: riseIn .60s var(--e-soft) 1.22s both; }
+  .rail .card.row:nth-of-type(3) .rc { animation-delay: 1.30s; }
+  .rail .card.row:nth-of-type(4) .rc { animation-delay: 1.36s; }
+  .rt {
+    display: flex;
+    align-items: center;
+    gap: calc(8*var(--u));
+    animation: riseIn .60s var(--e-soft) 1.22s both;
+  }
+  .rail .card.row:nth-of-type(3) .rt { animation-delay: 1.30s; }
+  .rail .card.row:nth-of-type(4) .rt { animation-delay: 1.36s; }
+  .rt svg { width: calc(26*var(--u)); height: calc(26*var(--u)); }
+  .rt .rv { font-size: calc(26*var(--u)); font-weight: 500; letter-spacing: calc(-1*var(--u)); }
+
+  @keyframes riseIn { from { opacity: 0; transform: translateY(var(--ry, 14px)); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes slideL { from { opacity: 0; transform: translateX(calc(-26*var(--u))); } to { opacity: 1; transform: translateX(0); } }
+  @keyframes slideR { from { opacity: 0; transform: translateX(calc(30*var(--u))) scale(.985); } to { opacity: 1; transform: translateX(0) scale(1); } }
+  @keyframes popIn { from { opacity: 0; transform: scale(.7); } to { opacity: 1; transform: scale(1); } }
+  @keyframes growY { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+  @keyframes lineUp { from { transform: translateY(115%); } to { transform: translateY(0); } }
+  @keyframes wipeDown { from { clip-path: inset(0 0 100% 0); } to { clip-path: inset(0 0 0 0); } }
+  @keyframes wipeRight { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }
+  @keyframes drawLine { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+  @keyframes wipeX { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+  @keyframes sheen { from { transform: translate3d(-150%, 0, 0) skewX(-18deg); } to { transform: translate3d(260%, 0, 0) skewX(-18deg); } }
+
+  @media (max-width: 860px) {
+    :root { --u: min(100vw / 430, 1.22px); }
+    html, body { height: auto; overflow: auto; }
+    .stage {
+      position: relative;
+      inset: auto;
+      min-height: 100dvh;
+      overflow: visible;
+      display: flex;
+      flex-direction: column;
+      padding: 0 calc(16*var(--u)) calc(92*var(--u));
+    }
+    .stage::before { position: fixed; inset: 0; }
+    .storm { position: fixed; inset: 0; width: 100%; height: 100%; }
+    .sidebar {
+      order: 5;
+      position: fixed;
+      left: 0;
+      right: 0;
+      top: auto;
+      bottom: calc(10*var(--u));
+      margin: 0 auto;
+      width: max-content;
+      height: calc(64*var(--u));
+      flex-direction: row;
+      align-items: center;
+      gap: calc(36*var(--u));
+      padding: 0 calc(22*var(--u));
+      border-radius: calc(26*var(--u));
+      animation-name: riseIn;
+    }
+    .sidebar .logo, .sidebar .pip, .sidebar .out { display: none; }
+    .sidebar nav { margin-top: 0; flex-direction: row; gap: calc(36*var(--u)); }
+    .header { order: 1; position: relative; top: auto; left: auto; right: auto; height: auto; margin-top: calc(16*var(--u)); }
+    .hero { order: 2; position: relative; top: auto; left: auto; margin-top: calc(40*var(--u)); max-width: 100%; }
+    .forecast { order: 3; position: relative; left: auto; right: auto; bottom: auto; width: 100%; margin-top: calc(52*var(--u)); }
+    .rail { order: 4; position: relative; right: auto; top: auto; bottom: auto; width: 100%; margin-top: calc(28*var(--u)); }
+    .sidebar, .card { animation-name: riseIn; }
+    .tools { gap: calc(10*var(--u)); }
+    .tool, .avatar { width: calc(44*var(--u)); height: calc(44*var(--u)); }
+    .tool svg { width: calc(20*var(--u)); height: calc(20*var(--u)); }
+    .who { font-size: calc(17*var(--u)); }
+    .hello { font-size: calc(14*var(--u)); }
+    .hero h1 { font-size: calc(46*var(--u)); line-height: calc(56*var(--u)); letter-spacing: calc(.2*var(--u)); }
+    .blurb { width: 100%; }
+    .chart { height: calc(190*var(--u)); }
+    .temp svg { width: calc(22*var(--u)); height: calc(22*var(--u)); }
+    .temp span { font-size: calc(30*var(--u)); }
+    .card.big { padding: calc(22*var(--u)); }
+    .big-temp { font-size: calc(72*var(--u)); }
+    .big-temp i { font-size: calc(36*var(--u)); }
+    .card.row { height: auto; }
+  }
+  @media (max-width: 420px) {
+    :root { --u: calc(100vw / 430); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+    .card::after, .chip::after { display: none; }
+    .wline { stroke-dashoffset: 0 !important; }
+    .wr { transform: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<svg class="storm" viewBox="0 0 1357 871" preserveAspectRatio="none" aria-hidden="true">
+  <defs>
+    <filter id="bolt-glow" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="7" result="b" />
+      <feMerge>
+        <feMergeNode in="b" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+  </defs>
+  <polygon points="196,0 108,160 160,166 90,352 244,224 182,220 282,0" fill="rgba(240,250,255,.95)" filter="url(#bolt-glow)" />
+  <polygon points="1148,0 1084,104 1124,108 1072,224 1202,148 1158,146 1230,0" fill="rgba(225,240,250,.72)" filter="url(#bolt-glow)" />
+</svg>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-grid" viewBox="0 0 24 24">
+      <rect x="3" y="3" width="7" height="7" rx="1.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+      <rect x="14" y="3" width="7" height="7" rx="1.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+      <rect x="3" y="14" width="7" height="7" rx="1.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+      <rect x="14" y="14" width="7" height="7" rx="1.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="i-chart" viewBox="0 0 24 24">
+      <path d="M3 3v18h18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M8 17v-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      <path d="M13 17V7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      <path d="M18 17v-9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="i-globe" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/>
+      <path d="M3 12h18" fill="none" stroke="currentColor" stroke-width="2"/>
+      <path d="M12 3c2.5 2.6 3.9 5.7 3.9 9s-1.4 6.4-3.9 9c-2.5-2.6-3.9-5.7-3.9-9S9.5 5.6 12 3z" fill="none" stroke="currentColor" stroke-width="2"/>
+    </symbol>
+    <symbol id="i-cal" viewBox="0 0 24 24">
+      <rect x="3" y="4.5" width="18" height="16" rx="2.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+      <path d="M3 9.5h18" fill="none" stroke="currentColor" stroke-width="2"/>
+      <path d="M8 2.5v4M16 2.5v4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="i-gear" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="3.2" fill="none" stroke="currentColor" stroke-width="2"/>
+      <path d="M12 2.8v3M12 18.2v3M2.8 12h3M18.2 12h3M5.5 5.5l2.1 2.1M16.4 16.4l2.1 2.1M18.5 5.5l-2.1 2.1M7.6 16.4l-2.1 2.1" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="i-out" viewBox="0 0 24 24">
+      <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M16 17l5-5-5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M21 12H9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24">
+      <path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="i-search" viewBox="0 0 24 24">
+      <circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/>
+      <path d="M21 21l-4.3-4.3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="i-bell" viewBox="0 0 24 24">
+      <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M10.3 21a2 2 0 0 0 3.4 0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="i-pin" viewBox="0 0 24 24">
+      <path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 0 1 16 0z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+      <circle cx="12" cy="10" r="3" fill="none" stroke="currentColor" stroke-width="2"/>
+    </symbol>
+    <symbol id="i-wind" viewBox="0 0 24 24">
+      <path d="M17.7 7.7a2.5 2.5 0 1 1 1.8 4.3H2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M9.6 4.6A2 2 0 1 1 11 8H2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M12.6 19.4A2 2 0 1 0 14 16H2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="i-drop" viewBox="0 0 24 24">
+      <path d="M12 2.7s6.5 6.9 6.5 11.3a6.5 6.5 0 0 1-13 0C5.5 9.6 12 2.7 12 2.7z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="i-gust" viewBox="0 0 24 24">
+      <path d="M4 9h12M4 13h16M7 17h10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      <path d="M16 7l3 2-3 2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M19 11l2.5 2-2.5 2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="i-cloud" viewBox="0 0 24 24">
+      <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="i-cloud2" viewBox="0 0 24 24">
+      <circle cx="17.5" cy="6.5" r="2.5" fill="none" stroke="currentColor" stroke-width="2"/>
+      <path d="M17.5 1.8v1.8M17.5 9.4v1.8M12.8 6.5h1.8M20.4 6.5h1.8M14.3 3.3l1.3 1.3M19.4 8.4l1.3 1.3M20.7 3.3l-1.3 1.3M15.6 8.4l-1.3 1.3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="i-hail" viewBox="0 0 24 24">
+      <path d="M17.5 18H9a6.5 6.5 0 1 1 6.2-8.4h2.3a4.2 4.2 0 1 1 0 8.4Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+      <circle cx="8.5" cy="21" r="1.1" fill="currentColor"/>
+      <circle cx="13.5" cy="21" r="1.1" fill="currentColor"/>
+      <circle cx="18.5" cy="21" r="1.1" fill="currentColor"/>
+    </symbol>
+    <symbol id="i-sun" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="4.5" fill="none" stroke="currentColor" stroke-width="2"/>
+      <path d="M12 2.5v2.5M12 19v2.5M2.5 12H5M19 12h2.5M5 5l1.8 1.8M17.2 17.2L19 19M19 5l-1.8 1.8M6.8 17.2L5 19" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="i-avatar" viewBox="0 0 24 24">
+      <circle cx="12" cy="9" r="4" fill="none" stroke="currentColor" stroke-width="2"/>
+      <path d="M4.5 21a7.5 7.5 0 0 1 15 0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+    </symbol>
+  </defs>
+</svg>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <linearGradient id="wg" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#fff" stop-opacity="0"/>
+      <stop offset="0.18" stop-color="#fff" stop-opacity="1"/>
+      <stop offset="0.82" stop-color="#fff" stop-opacity="1"/>
+      <stop offset="1" stop-color="#fff" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="wf" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fff" stop-opacity=".42"/>
+      <stop offset="1" stop-color="#fff" stop-opacity=".1"/>
+    </linearGradient>
+    <linearGradient id="wfade" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fff" stop-opacity="1"/>
+      <stop offset="0.72" stop-color="#fff" stop-opacity="1"/>
+      <stop offset="1" stop-color="#fff" stop-opacity="0"/>
+    </linearGradient>
+    <mask id="wfmask">
+      <rect x="0" y="0" width="835" height="230" fill="url(#wfade)"/>
+    </mask>
+    <clipPath id="wclip">
+      <rect x="0" y="0" width="835" height="230"/>
+    </clipPath>
+    <clipPath id="wclipr">
+      <rect class="wr" x="0" y="0" width="835" height="230"/>
+    </clipPath>
+  </defs>
+</svg>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <clipPath id="logo-clip">
+      <circle cx="20" cy="20" r="13"/>
+    </clipPath>
+  </defs>
+</svg>
+
+<main class="stage">
+
+  <aside class="sidebar">
+    <span class="pip"></span>
+    <svg class="logo" viewBox="0 0 40 40" aria-hidden="true">
+      <rect x="1" y="1" width="38" height="38" rx="12" fill="none" stroke="#fff" stroke-width="2"/>
+      <g clip-path="url(#logo-clip)">
+        <path d="M6 10Q9.5 7.5 13 10T20 10T27 10T34 10" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/>
+        <path d="M6 14.5Q9.5 12 13 14.5T20 14.5T27 14.5T34 14.5" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/>
+        <path d="M6 19Q9.5 16.5 13 19T20 19T27 19T34 19" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/>
+        <path d="M6 23.5Q9.5 21 13 23.5T20 23.5T27 23.5T34 23.5" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/>
+        <path d="M6 28Q9.5 25.5 13 28T20 28T27 28T34 28" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/>
+        <path d="M6 32.5Q9.5 30 13 32.5T20 32.5T27 32.5T34 32.5" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/>
+        <path d="M6 37Q9.5 34.5 13 37T20 37T27 37T34 37" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/>
+      </g>
+    </svg>
+    <nav>
+      <a href="#" aria-label="Dashboard" aria-current="page"><svg><use href="#i-grid"/></svg></a>
+      <a href="#" aria-label="Reports"><svg><use href="#i-chart"/></svg></a>
+      <a href="#" aria-label="Explore regions"><svg><use href="#i-globe"/></svg></a>
+      <a href="#" aria-label="Calendar"><svg><use href="#i-cal"/></svg></a>
+      <a href="#" aria-label="Settings"><svg><use href="#i-gear"/></svg></a>
+    </nav>
+    <a class="out" href="#" aria-label="Sign out">
+      <svg><use href="#i-out"/></svg>
+      <span>Sign out</span>
+    </a>
+  </aside>
+
+  <header class="header">
+    <div>
+      <p class="hello">Welcome</p>
+      <p class="who">Calfin Danang</p>
+    </div>
+    <div class="tools">
+      <button class="tool" aria-label="Add location"><svg><use href="#i-plus"/></svg></button>
+      <button class="tool" aria-label="Search"><svg><use href="#i-search"/></svg></button>
+      <button class="tool" aria-label="Notifications"><svg><use href="#i-bell"/></svg></button>
+      <span class="avatar">
+        <svg aria-hidden="true"><use href="#i-avatar"/></svg>
+        <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=160&h=160&fit=crop&crop=faces&q=80&auto=format" alt="Calfin Danang" loading="eager" decoding="async" onerror="this.remove()" />
+      </span>
+    </div>
+  </header>
+
+  <section class="hero">
+    <span class="chip">Weather Forecast</span>
+    <h1>
+      <span class="ln"><span>Strom</span></span>
+      <span class="ln"><span>with Heavy Rain</span></span>
+    </h1>
+    <p class="blurb">Partly cloudy with occasional snow showers. High around 50°F.<br />Wind from the east 11 to 21 mph. Snow chance is 40%, with<br />rainfall expected to be less than an inch.</p>
+  </section>
+
+  <section class="forecast">
+    <div class="temps">
+      <div class="temp"><svg><use href="#i-cloud"/></svg><span>11°</span></div>
+      <div class="temp"><svg><use href="#i-cloud2"/></svg><span>13°</span></div>
+      <div class="temp"><svg><use href="#i-cloud2"/></svg><span>14°</span></div>
+      <div class="temp"><svg><use href="#i-hail"/></svg><span>10°</span></div>
+      <div class="temp"><svg><use href="#i-sun"/></svg><span>19°</span></div>
+      <div class="temp"><svg><use href="#i-cloud"/></svg><span>12°</span></div>
+    </div>
+    <svg class="chart" viewBox="0 0 835 230" preserveAspectRatio="none" aria-hidden="true">
+      <path class="wfill" d="M0,79 C40,60 80,44 120,48 C170,54 200,90 250,96 C300,102 340,70 390,62 C440,54 480,66 520,80 C570,98 620,110 670,104 C720,98 770,78 800,74 L835,86 L835,230 L0,230 Z" fill="url(#wf)" mask="url(#wfmask)" clip-path="url(#wclipr)"/>
+      <path class="wline" d="M0,79 C40,60 80,44 120,48 C170,54 200,90 250,96 C300,102 340,70 390,62 C440,54 480,66 520,80 C570,98 620,110 670,104 C720,98 770,78 800,74 L835,86" pathLength="1" stroke="#fff" stroke-width="6.2" opacity=".17"/>
+      <path class="wline" d="M0,79 C40,60 80,44 120,48 C170,54 200,90 250,96 C300,102 340,70 390,62 C440,54 480,66 520,80 C570,98 620,110 670,104 C720,98 770,78 800,74 L835,86" pathLength="1" stroke="#fff" stroke-width="4.6" opacity=".26"/>
+      <path class="wline" d="M0,79 C40,60 80,44 120,48 C170,54 200,90 250,96 C300,102 340,70 390,62 C440,54 480,66 520,80 C570,98 620,110 670,104 C720,98 770,78 800,74 L835,86" pathLength="1" stroke="url(#wg)" stroke-width="3.4" opacity="1"/>
+    </svg>
+    <div class="days">
+      <span class="day">Sunday</span>
+      <span class="day">Monday</span>
+      <span class="day">Tuesday</span>
+      <span class="day on">Wednesday</span>
+      <span class="day">Thursday</span>
+      <span class="day">Friday</span>
+      <span class="day">Saturday</span>
+    </div>
+  </section>
+
+  <section class="rail">
+    <div class="card big">
+      <div class="place">
+        <svg><use href="#i-pin"/></svg>
+        <span>Central Jakarta</span>
+      </div>
+      <div class="big-temp">10°<i>C</i></div>
+      <div class="metrics">
+        <div class="metric">
+          <svg><use href="#i-wind"/></svg>
+          <span class="mv">19 mph</span>
+          <span class="ml">wind</span>
+        </div>
+        <div class="metric">
+          <svg><use href="#i-drop"/></svg>
+          <span class="mv">40%</span>
+          <span class="ml">drop</span>
+        </div>
+        <div class="metric">
+          <svg><use href="#i-gust"/></svg>
+          <span class="mv">15km/h</span>
+          <span class="ml">gust</span>
+        </div>
+      </div>
+    </div>
+    <div class="card row">
+      <div class="rc">
+        <span class="cty">Indonesia</span>
+        <span class="nm">North Jakarta</span>
+        <span class="cd">Mostly Sunny</span>
+      </div>
+      <div class="rt">
+        <span class="rv">12°</span>
+        <svg><use href="#i-cloud"/></svg>
+      </div>
+    </div>
+    <div class="card row">
+      <div class="rc">
+        <span class="cty">Indonesia</span>
+        <span class="nm">Bandung</span>
+        <span class="cd">Cloudy</span>
+      </div>
+      <div class="rt">
+        <span class="rv">10°</span>
+        <svg><use href="#i-cloud"/></svg>
+      </div>
+    </div>
+    <div class="card row">
+      <div class="rc">
+        <span class="cty">Indonesia</span>
+        <span class="nm">South Jakarta</span>
+        <span class="cd">Sunny</span>
+      </div>
+      <div class="rt">
+        <span class="rv">14°</span>
+        <svg><use href="#i-cloud2"/></svg>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+</body>
+</html>

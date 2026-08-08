@@ -1,0 +1,596 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Coffee Rewards — Loyalty app profile showcase</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+  :root {
+    --bg: #180a06;
+    --card: rgba(255, 255, 255, 0.06);
+    --text: #ede4d8;
+    --muted: rgba(235, 220, 205, 0.55);
+    --radius-card: 24px;
+    --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; overflow: hidden; }
+
+  body {
+    font-family: 'Inter', -apple-system, SF Pro Display, Inter, Segoe UI, Roboto, sans-serif;
+    color: var(--text);
+    background: #070402;
+    background-image:
+      radial-gradient(ellipse 65% 55% at 15% 52%, rgba(168, 78, 10, 0.22)),
+      radial-gradient(ellipse 52% 48% at 83% 26%, rgba(122, 52, 8, 0.17)),
+      radial-gradient(ellipse 44% 52% at 56% 92%, rgba(98, 36, 5, 0.14)),
+      radial-gradient(ellipse 30% 30% at 72% 75%, rgba(60, 20, 5, 0.10));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+  }
+
+  /* ── Phone Frame ─────────────────────── */
+  .phone-frame {
+    position: relative;
+    width: 390px;
+    height: 844px;
+    transform: scale(0.78);
+    transform-origin: center center;
+    background: #000;
+    border-radius: 44px;
+    overflow: hidden;
+    box-shadow:
+      0 0 0 2px rgba(255,255,255,0.08),
+      0 25px 80px rgba(0,0,0,0.6),
+      0 8px 32px rgba(0,0,0,0.4);
+  }
+
+  .screen {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background: var(--bg);
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: none;
+  }
+  .screen::-webkit-scrollbar { display: none; }
+
+  /* ── Hero Section ─────────────────────── */
+  .hero-section {
+    position: relative;
+    width: 100%;
+    height: 430px;
+    overflow: hidden;
+  }
+
+  .hero-video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center top;
+    animation: heroReveal 1.9s var(--ease) both;
+  }
+
+  .hero-gradient {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 100%;
+    background: linear-gradient(to bottom, transparent 52%, var(--bg) 100%);
+    pointer-events: none;
+  }
+
+  /* Top Bar */
+  .top-bar {
+    position: absolute;
+    top: 18px;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: space-between;
+    padding: 0 20px;
+    z-index: 10;
+  }
+
+  .glass-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 22px;
+    border: none;
+    background: rgba(255,255,255,0.03);
+    backdrop-filter: blur(2px) saturate(1.3);
+    -webkit-backdrop-filter: blur(2px) saturate(1.3);
+    box-shadow:
+      inset 0 0.5px 0 rgba(255,255,255,0.08),
+      inset 0 -0.5px 0 rgba(255,255,255,0.04);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.2s;
+    animation: dropIn 0.7s var(--ease) both;
+  }
+  .glass-btn:nth-child(1) { animation-delay: 0.35s; }
+  .glass-btn:nth-child(2) { animation-delay: 0.42s; }
+  .glass-btn:active { transform: scale(0.92); }
+  .glass-btn svg { width: 20px; height: 20px; stroke: var(--text); fill: none; stroke-width: 1.8; }
+
+  /* ── Identity Section ─────────────────────── */
+  .identity {
+    position: relative;
+    margin-top: -112px;
+    text-align: center;
+    padding: 0 20px;
+    z-index: 5;
+    animation: fadeRise 0.7s var(--ease) 0.5s both;
+  }
+
+  .name-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 6px;
+  }
+
+  .laurel {
+    width: 36px;
+    height: 73px;
+    object-fit: contain;
+    opacity: 0.6;
+    animation: fadeIn 0.8s ease-out 0.5s both;
+  }
+
+  .user-name {
+    font-size: 28px;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+  }
+
+  .subtitle {
+    font-size: 15px;
+    color: var(--muted);
+    animation: fadeRise 0.7s var(--ease) 0.58s both;
+  }
+
+  /* ── Achievements Pill ─────────────────────── */
+  .achievements {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin: 30px auto 0;
+    width: 225px;
+    height: 54px;
+    border-radius: 27px;
+    background: rgba(255,255,255,0.03);
+    backdrop-filter: blur(2px) saturate(1.3);
+    -webkit-backdrop-filter: blur(2px) saturate(1.3);
+    box-shadow:
+      inset 0 0.5px 0 rgba(255,255,255,0.08),
+      inset 0 -0.5px 0 rgba(255,255,255,0.04);
+    cursor: pointer;
+    transition: transform 0.2s;
+    animation: fadeRise 0.7s var(--ease) 0.66s both;
+  }
+  .achievements:active { transform: scale(0.96); }
+  .trophy-icon { font-size: 18px; }
+  .achievements-text { font-size: 18px; font-weight: 500; }
+
+  /* ── Stats Grid ─────────────────────── */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    padding: 26px 16px 0;
+  }
+
+  .stat-card {
+    background: var(--card);
+    border-radius: var(--radius-card);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px 8px;
+    animation: fadeRise 0.7s var(--ease) both;
+  }
+  .stat-card:nth-child(1) { animation-delay: 0.74s; }
+  .stat-card:nth-child(2) { animation-delay: 0.80s; }
+  .stat-card:nth-child(3) { animation-delay: 0.86s; }
+
+  .stat-icon {
+    width: 84px;
+    height: 84px;
+    border-radius: 16px;
+    object-fit: cover;
+    margin-bottom: 12px;
+  }
+
+  .stat-number {
+    font-size: 25px;
+    font-weight: 500;
+    line-height: 1;
+  }
+
+  .stat-label {
+    font-size: 13px;
+    color: #BAAA9A8C;
+    margin-top: 4px;
+    text-align: center;
+  }
+
+  /* ── Favorite Card ─────────────────────── */
+  .favorite-card {
+    margin: 12px 16px 0;
+    background: var(--card);
+    border-radius: var(--radius-card);
+    height: 110px;
+    display: flex;
+    align-items: center;
+    padding: 16px;
+    gap: 16px;
+    animation: fadeRise 0.7s var(--ease) 0.94s both;
+  }
+
+  .fav-image {
+    width: 108px;
+    height: 108px;
+    border-radius: 16px;
+    object-fit: contain;
+    flex-shrink: 0;
+  }
+
+  .fav-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .fav-label {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--muted);
+  }
+
+  .fav-name {
+    font-size: 19px;
+    font-weight: 500;
+  }
+
+  .fav-count {
+    font-size: 13px;
+    color: #BAAA9A8C;
+  }
+
+  .shuffle-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 22px;
+    border: none;
+    background: rgba(255,255,255,0.03);
+    backdrop-filter: blur(2px) saturate(1.3);
+    -webkit-backdrop-filter: blur(2px) saturate(1.3);
+    box-shadow:
+      inset 0 0.5px 0 rgba(255,255,255,0.08),
+      inset 0 -0.5px 0 rgba(255,255,255,0.04);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.2s;
+    flex-shrink: 0;
+  }
+  .shuffle-btn:active { transform: scale(0.92); }
+  .shuffle-btn svg { width: 19px; height: 19px; stroke: var(--text); fill: none; stroke-width: 1.8; }
+
+  /* ── Partial Next Card ─────────────────────── */
+  .next-card-teaser {
+    margin: 12px 16px 0;
+    background: var(--card);
+    border-radius: var(--radius-card) var(--radius-card) 0 0;
+    height: 34px;
+    animation: fadeIn 0.7s ease-out 1.02s both;
+  }
+
+  /* ── Liquid Glass Effect ─────────────────────── */
+  .liquid-glass {
+    position: relative;
+  }
+
+  .liquid-glass::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: linear-gradient(
+      135deg,
+      rgba(255,255,255,0.12) 0%,
+      rgba(255,255,255,0.03) 40%,
+      rgba(255,255,255,0.08) 60%,
+      rgba(255,255,255,0.02) 100%
+    );
+    pointer-events: none;
+  }
+
+  /* ── Animations ─────────────────────── */
+  @keyframes heroReveal {
+    from { opacity: 0; transform: scale(1.01); }
+    to { opacity: 1; transform: scale(1); }
+  }
+
+  @keyframes dropIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes fadeRise {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    .hero-video,
+    .glass-btn,
+    .laurel,
+    .identity,
+    .subtitle,
+    .achievements,
+    .stat-card,
+    .favorite-card,
+    .next-card-teaser {
+      animation: none !important;
+      opacity: 1 !important;
+      transform: none !important;
+    }
+  }
+
+  /* ── Responsive ─────────────────────── */
+  @media (max-width: 440px) {
+    .phone-frame { transform: scale(0.6); }
+  }
+
+  @media (max-width: 900px) {
+    body { flex-wrap: wrap; }
+  }
+
+  /* ── Ambient Particles ─────────────────────── */
+  .particles {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+  }
+
+  .particle {
+    position: absolute;
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    background: rgba(168, 78, 10, 0.3);
+    animation: float linear infinite;
+  }
+
+  @keyframes float {
+    0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+  }
+
+  /* ── Brand Watermark ─────────────────────── */
+  .watermark {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 11px;
+    color: rgba(235, 220, 205, 0.2);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    z-index: 1;
+  }
+</style>
+</head>
+<body>
+
+<div class="particles" id="particles"></div>
+
+<div class="phone-frame">
+  <div class="screen">
+
+    <!-- Hero -->
+    <section class="hero-section">
+      <video class="hero-video" autoplay muted loop playsinline>
+        <source src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260707_003042_3d2380a6-1ce6-4407-a2e2-cfec46546407.mp4" type="video/mp4" />
+      </video>
+      <div class="hero-gradient"></div>
+
+      <div class="top-bar">
+        <button class="glass-btn liquid-glass" aria-label="Edit profile">
+          <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        </button>
+        <button class="glass-btn liquid-glass" aria-label="Close">
+          <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+    </section>
+
+    <!-- Identity -->
+    <div class="identity">
+      <div class="name-row">
+        <svg class="laurel" viewBox="0 0 40 80" fill="none" xmlns="http://www.w3.org/2000/svg" style="animation-delay:0.5s">
+          <path d="M35 75C25 65 15 50 18 30C20 15 30 5 38 2" stroke="rgba(235,220,205,0.4)" stroke-width="1.5" fill="none"/>
+          <path d="M32 70C22 62 14 48 16 32C18 18 27 10 34 8" stroke="rgba(235,220,205,0.3)" stroke-width="1" fill="none"/>
+          <ellipse cx="28" cy="20" rx="8" ry="4" transform="rotate(-30 28 20)" fill="rgba(235,220,205,0.15)"/>
+          <ellipse cx="24" cy="35" rx="7" ry="3.5" transform="rotate(-20 24 35)" fill="rgba(235,220,205,0.12)"/>
+          <ellipse cx="22" cy="50" rx="6" ry="3" transform="rotate(-15 22 50)" fill="rgba(235,220,205,0.1)"/>
+        </svg>
+        <span class="user-name">Dasha</span>
+        <svg class="laurel" viewBox="0 0 40 80" fill="none" xmlns="http://www.w3.org/2000/svg" style="transform: scaleX(-1); animation-delay:0.5s">
+          <path d="M35 75C25 65 15 50 18 30C20 15 30 5 38 2" stroke="rgba(235,220,205,0.4)" stroke-width="1.5" fill="none"/>
+          <path d="M32 70C22 62 14 48 16 32C18 18 27 10 34 8" stroke="rgba(235,220,205,0.3)" stroke-width="1" fill="none"/>
+          <ellipse cx="28" cy="20" rx="8" ry="4" transform="rotate(-30 28 20)" fill="rgba(235,220,205,0.15)"/>
+          <ellipse cx="24" cy="35" rx="7" ry="3.5" transform="rotate(-20 24 35)" fill="rgba(235,220,205,0.12)"/>
+          <ellipse cx="22" cy="50" rx="6" ry="3" transform="rotate(-15 22 50)" fill="rgba(235,220,205,0.1)"/>
+        </svg>
+      </div>
+      <div class="subtitle">Plum Parfait Latte</div>
+    </div>
+
+    <!-- Achievements -->
+    <div class="achievements liquid-glass">
+      <span class="trophy-icon">🏆</span>
+      <span class="achievements-text">12 achievements</span>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-grid">
+      <div class="stat-card liquid-glass">
+        <svg class="stat-icon" viewBox="0 0 84 84" fill="none">
+          <rect width="84" height="84" rx="16" fill="rgba(255,255,255,0.04)"/>
+          <circle cx="42" cy="38" r="14" stroke="rgba(235,220,205,0.3)" stroke-width="2" fill="none"/>
+          <path d="M34 52h16" stroke="rgba(235,220,205,0.3)" stroke-width="2" stroke-linecap="round"/>
+          <path d="M36 56h12" stroke="rgba(235,220,205,0.2)" stroke-width="1.5" stroke-linecap="round"/>
+          <path d="M30 38c0-8 5-14 12-14s12 6 12 14" stroke="rgba(168,78,10,0.5)" stroke-width="1.5" fill="none"/>
+          <path d="M42 24v-4" stroke="rgba(235,220,205,0.2)" stroke-width="1.5" stroke-linecap="round"/>
+          <circle cx="42" cy="18" r="2" fill="rgba(168,78,10,0.4)"/>
+        </svg>
+        <span class="stat-number">154</span>
+        <span class="stat-label">drinks consumed</span>
+      </div>
+      <div class="stat-card liquid-glass">
+        <svg class="stat-icon" viewBox="0 0 84 84" fill="none">
+          <rect width="84" height="84" rx="16" fill="rgba(255,255,255,0.04)"/>
+          <rect x="24" y="30" width="36" height="24" rx="4" stroke="rgba(235,220,205,0.3)" stroke-width="2" fill="none"/>
+          <path d="M24 40h36" stroke="rgba(235,220,205,0.2)" stroke-width="1.5"/>
+          <circle cx="34" cy="48" r="3" fill="rgba(168,78,10,0.3)"/>
+          <circle cx="50" cy="48" r="3" fill="rgba(168,78,10,0.3)"/>
+          <path d="M30 30v-4a4 4 0 0 1 4-4h16a4 4 0 0 1 4 4v4" stroke="rgba(235,220,205,0.2)" stroke-width="1.5" fill="none"/>
+        </svg>
+        <span class="stat-number">36</span>
+        <span class="stat-label">sandwiches eaten</span>
+      </div>
+      <div class="stat-card liquid-glass">
+        <svg class="stat-icon" viewBox="0 0 84 84" fill="none">
+          <rect width="84" height="84" rx="16" fill="rgba(255,255,255,0.04)"/>
+          <path d="M26 58V34l16-10 16 10v24" stroke="rgba(235,220,205,0.3)" stroke-width="2" fill="none"/>
+          <rect x="36" y="46" width="12" height="12" rx="2" stroke="rgba(168,78,10,0.4)" stroke-width="1.5" fill="none"/>
+          <path d="M42 46v-8" stroke="rgba(235,220,205,0.2)" stroke-width="1.5" stroke-linecap="round"/>
+          <circle cx="42" cy="34" r="3" fill="rgba(168,78,10,0.3)"/>
+        </svg>
+        <span class="stat-number">12</span>
+        <span class="stat-label">cafes visited</span>
+      </div>
+    </div>
+
+    <!-- Favorite -->
+    <div class="favorite-card liquid-glass">
+      <svg class="fav-image" viewBox="0 0 108 108" fill="none">
+        <rect width="108" height="108" rx="16" fill="rgba(255,255,255,0.04)"/>
+        <ellipse cx="54" cy="70" rx="28" ry="8" fill="rgba(168,78,10,0.15)"/>
+        <rect x="38" y="30" width="32" height="40" rx="6" stroke="rgba(235,220,205,0.3)" stroke-width="2" fill="none"/>
+        <path d="M38 42h32" stroke="rgba(235,220,205,0.15)" stroke-width="1"/>
+        <path d="M44 22c0-4 4-8 10-8s10 4 10 8" stroke="rgba(168,78,10,0.4)" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <path d="M54 14v-4" stroke="rgba(235,220,205,0.2)" stroke-width="1.5" stroke-linecap="round"/>
+        <ellipse cx="54" cy="50" rx="8" ry="4" fill="rgba(168,78,10,0.2)"/>
+      </svg>
+      <div class="fav-info">
+        <span class="fav-label">Favorite</span>
+        <span class="fav-name">Latte</span>
+        <span class="fav-count">Ordered 73 times</span>
+      </div>
+      <button class="shuffle-btn liquid-glass" aria-label="Shuffle">
+        <svg viewBox="0 0 24 24"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg>
+      </button>
+    </div>
+
+    <!-- Partial Next Card -->
+    <div class="next-card-teaser"></div>
+
+  </div>
+</div>
+
+<div class="watermark">Coffee Rewards</div>
+
+<script>
+  // Ambient particles
+  (function() {
+    const container = document.getElementById('particles');
+    const count = 15;
+    for (let i = 0; i < count; i++) {
+      const p = document.createElement('div');
+      p.className = 'particle';
+      p.style.left = Math.random() * 100 + '%';
+      p.style.animationDuration = (8 + Math.random() * 12) + 's';
+      p.style.animationDelay = (Math.random() * 8) + 's';
+      p.style.width = (2 + Math.random() * 3) + 'px';
+      p.style.height = p.style.width;
+      p.style.opacity = 0.15 + Math.random() * 0.25;
+      container.appendChild(p);
+    }
+  })();
+
+  // Liquid glass SVG filter
+  (function() {
+    const ns = 'http://www.w3.org/2000/svg';
+    const svg = document.createElementNS(ns, 'svg');
+    svg.setAttribute('width', '0');
+    svg.setAttribute('height', '0');
+    svg.style.position = 'absolute';
+    svg.style.pointerEvents = 'none';
+
+    const defs = document.createElementNS(ns, 'defs');
+
+    const filter = document.createElementNS(ns, 'filter');
+    filter.setAttribute('id', 'liquid-glass-filter');
+    filter.setAttribute('x', '-20%');
+    filter.setAttribute('y', '-20%');
+    filter.setAttribute('width', '140%');
+    filter.setAttribute('height', '140%');
+
+    const turbulence = document.createElementNS(ns, 'feTurbulence');
+    turbulence.setAttribute('type', 'fractalNoise');
+    turbulence.setAttribute('baseFrequency', '0.015');
+    turbulence.setAttribute('numOctaves', '3');
+    turbulence.setAttribute('seed', '42');
+    turbulence.setAttribute('result', 'noise');
+
+    const displacement = document.createElementNS(ns, 'feDisplacementMap');
+    displacement.setAttribute('in', 'SourceGraphic');
+    displacement.setAttribute('in2', 'noise');
+    displacement.setAttribute('scale', '3');
+    displacement.setAttribute('xChannelSelector', 'R');
+    displacement.setAttribute('yChannelSelector', 'G');
+
+    filter.appendChild(turbulence);
+    filter.appendChild(displacement);
+    defs.appendChild(filter);
+    svg.appendChild(defs);
+    document.body.appendChild(svg);
+
+    // Apply subtle displacement to liquid glass elements
+    document.querySelectorAll('.liquid-glass').forEach(el => {
+      el.style.backdropFilter = 'blur(2px) saturate(1.3) url(#liquid-glass-filter)';
+      el.style.webkitBackdropFilter = 'blur(2px) saturate(1.3) url(#liquid-glass-filter)';
+    });
+  })();
+</script>
+</body>
+</html>

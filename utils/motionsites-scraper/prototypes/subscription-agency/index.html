@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Alwayzz — Premium creative alwayzz on demand</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:ital,wght@0,400;0,600;1,400;1,600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #ffffff;
+    --text: #0a0a0a;
+    --muted: #6b6b6b;
+    --button-bg: #0a0a0a;
+    --button-text: #ffffff;
+    --border-soft: rgba(0, 0, 0, 0.08);
+    --green: #17c964;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; background: var(--bg); color: var(--text); font-family: Inter, sans-serif; }
+  body { overflow-x: hidden; }
+
+  /* ── Navbar ─────────────────────────── */
+  .nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: rgba(255,255,255,0.85); backdrop-filter: blur(10px); }
+  .nav-inner { max-width: 1200px; margin: 0 auto; padding: 19px 36px; display: flex; align-items: center; justify-content: space-between; }
+  @media (max-width: 1200px) { .nav-inner { padding: 19px 32px; } }
+  @media (max-width: 810px)  { .nav-inner { padding: 20px 20px; } }
+  .logo { font-family: "Source Serif 4", serif; font-size: 30px; font-weight: 600; font-style: italic; letter-spacing: -0.08em; }
+  .logo sup { font-family: Inter, sans-serif; font-size: 14px; font-weight: 600; vertical-align: super; }
+  .menu-btn { display: inline-flex; align-items: center; gap: 6px; background: var(--button-bg); color: var(--button-text); border: none; border-radius: 999px; padding: 8px 16px; font-size: 14px; font-weight: 500; font-family: Inter, sans-serif; cursor: pointer; }
+  .menu-btn svg { width: 16px; height: 16px; transition: transform 0.3s; }
+  .menu-btn.open svg { transform: rotate(180deg); }
+
+  /* ── Drawer ─────────────────────────── */
+  .drawer { position: fixed; inset: 0; background: #fff; z-index: 99; opacity: 0; pointer-events: none; transition: opacity 0.4s; display: flex; flex-direction: column; padding: 100px 36px 40px; }
+  .drawer.open { opacity: 1; pointer-events: auto; }
+  .drawer-links { display: flex; flex-direction: column; align-items: center; gap: 28px; margin: auto 0; }
+  .drawer-links a { font-size: 48px; font-weight: 500; letter-spacing: -0.04em; color: var(--text); text-decoration: none; }
+  @media (max-width: 1200px) { .drawer-links a { font-size: 40px; } }
+  @media (max-width: 810px)  { .drawer-links a { font-size: 32px; } }
+  .drawer-footer { text-align: center; font-size: 13px; color: var(--muted); }
+
+  /* ── Hero ─────────────────────────── */
+  .hero { position: relative; min-height: 850px; padding: 160px 36px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; overflow: hidden; }
+  .hero::before { content: ""; position: absolute; inset: 0; background: url("https://images.higgs.ai/?default=1&output=webp&url=https%3A%2F%2Fd8j0ntlcm91z4.cloudfront.net%2Fuser_38xzZboKViGWJOttwIXH07lWA1P%2Fhf_20260626_041422_4a459e05-abce-4150-9fb7-4ededc423cd1.png&w=1280&q=85") center/cover no-repeat; z-index: 0; }
+  @media (max-width: 810px) { .hero::before { transform: rotate(90deg); transform-origin: center; } }
+  .hero > * { position: relative; z-index: 1; }
+
+  @media (max-width: 1200px) { .hero { padding: 140px 32px; } }
+  @media (max-width: 810px)  { .hero { min-height: 760px; padding: 120px 24px 96px; } }
+
+  /* curved lines */
+  .lines { position: absolute; inset: 0; pointer-events: none; z-index: 0; }
+  .lines-desktop { display: flex; justify-content: space-between; width: 100%; height: 100%; }
+  .line-col { display: flex; flex-direction: column; justify-content: center; gap: 8px; }
+  .line { width: 60px; height: 120px; border: 2.5px solid #fcfaf8; opacity: 0; animation: line-pulse 5s ease-in-out infinite; }
+  .line-col.left .line { border-left: none; border-radius: 0 80% 80% 0 / 0 80% 80% 0; }
+  .line-col.right .line { border-right: none; border-radius: 80% 0 0 80% / 80% 0 0 80%; }
+  .line-col.right .line { transform: translateX(-100%); }
+  @media (max-width: 810px) { .lines-desktop { display: none; } }
+
+  .lines-mobile { display: none; flex-direction: column; gap: 6px; width: 100%; }
+  .lines-mobile .line { width: 120px; height: 60px; border: 2.5px solid #fcfaf8; border-top: none; border-radius: 0 0 80% 80%; }
+  @media (max-width: 810px) { .lines-mobile { display: flex; } }
+  @keyframes line-pulse {
+    0%   { opacity: 0; transform: scale(1); }
+    15%  { opacity: 0.9; }
+    70%  { opacity: 0.4; }
+    100% { opacity: 0; transform: scale(0.85); }
+  }
+
+  /* ticker */
+  .ticker { max-width: 500px; width: 100%; height: 36px; overflow: hidden; mask-image: linear-gradient(90deg, transparent 0%, black 12%, black 88%, transparent 100%); -webkit-mask-image: linear-gradient(90deg, transparent 0%, black 12%, black 88%, transparent 100%); margin-bottom: 32px; }
+  .ticker-track { display: flex; gap: 8px; animation: marquee-left 30s linear infinite; width: max-content; }
+  .ticker-track .row { display: flex; gap: 8px; padding-right: 8px; }
+  .ticker span { font-size: 13px; font-weight: 500; color: var(--muted); padding: 6px 14px; border-radius: 999px; background: rgb(251, 251, 251); white-space: nowrap; }
+  @keyframes marquee-left { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+  /* title */
+  .title { max-width: 550px; font-size: 82px; line-height: 1.03; letter-spacing: -0.07em; font-weight: 600; margin-bottom: 24px; }
+  .title .serif { font-family: "Source Serif 4", serif; font-style: italic; font-weight: 600; letter-spacing: -0.08em; }
+  .title sup { font-family: Inter, sans-serif; font-size: 24px; font-weight: 600; vertical-align: super; }
+  @media (max-width: 1200px) { .title { font-size: clamp(60px, 8vw, 72px); } }
+  @media (max-width: 810px)  { .title { font-size: clamp(44px, 13vw, 52px); } }
+
+  .subtitle { max-width: 476px; font-size: 17px; line-height: 1.45; font-weight: 400; color: var(--muted); margin-bottom: 32px; }
+  @media (max-width: 810px) { .subtitle { font-size: 15px; } }
+
+  .cta { display: flex; gap: 16px; align-items: center; justify-content: center; flex-wrap: wrap; }
+  @media (max-width: 810px) { .cta { flex-direction: column; } }
+  .btn-primary { height: 56px; padding: 18px 30px; border-radius: 999px; background: var(--button-bg); color: var(--button-text); font-size: 15px; font-weight: 600; border: none; cursor: pointer; transition: transform 200ms, box-shadow 200ms; }
+  .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 20px rgba(0,0,0,0.12); }
+
+  .btn-book { display: flex; align-items: center; gap: 12px; background: #fff; border: 4px solid rgb(248,248,248); border-radius: 999px; padding: 8px 24px 8px 8px; cursor: pointer; }
+  .btn-book img { width: 40px; height: 40px; border-radius: 50%; }
+  .btn-book .stack { display: flex; flex-direction: column; align-items: flex-start; }
+  .btn-book .primary { font-size: 14px; font-weight: 600; color: #000; }
+  .btn-book .secondary { font-size: 12px; font-weight: 500; color: rgb(152,152,152); display: inline-flex; align-items: center; gap: 6px; }
+  .btn-book .dot { width: 8px; height: 8px; border-radius: 50%; background: rgb(29, 204, 93); }
+
+  /* progressive blur */
+  .blur { position: absolute; bottom: 0; left: 0; right: 0; height: 178px; background: linear-gradient(to bottom, transparent, rgba(255,255,255,0.4) 40%, #fff); pointer-events: none; z-index: 2; }
+
+  /* ── TrustedBy ─────────────────────────── */
+  .trusted { padding: 36px; max-width: 1200px; margin: 0 auto; display: flex; align-items: center; gap: 32px; }
+  @media (max-width: 810px) { .trusted { flex-direction: column; align-items: flex-start; } }
+  .trusted-label { max-width: 163px; font-size: 14px; font-weight: 500; color: var(--muted); }
+  .trusted-marquee { flex: 1; overflow: hidden; mask-image: linear-gradient(90deg, transparent 0%, black 12%, black 88%, transparent 100%); -webkit-mask-image: linear-gradient(90deg, transparent 0%, black 12%, black 88%, transparent 100%); }
+  .trusted-track { display: flex; gap: 48px; animation: marquee-left 30s linear infinite; width: max-content; }
+  .trusted-track span { font-size: 16px; font-weight: 600; color: #000; white-space: nowrap; }
+  .trusted-track .c1 { font-family: "Cedarville Cursive", cursive; font-weight: 700; }
+  .trusted-track .c2 { font-family: system-ui, sans-serif; font-weight: 800; }
+  .trusted-track .c3 { font-family: Georgia, serif; font-weight: 500; }
+  .trusted-track .c4 { font-family: Inter, sans-serif; font-weight: 600; }
+  .trusted-track .c5 { font-family: Inter, sans-serif; font-weight: 700; }
+  .trusted-track .c6 { font-family: system-ui, sans-serif; font-weight: 600; }
+  .trusted-track .c7 { font-family: Georgia, serif; font-weight: 700; }
+  .trusted-track .c8 { font-family: system-ui, sans-serif; font-weight: 800; }
+  .trusted-track .c9 { font-family: Inter, sans-serif; font-weight: 600; }
+  .trusted-track .c10 { font-family: "Source Serif 4", serif; font-weight: 600; }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <div class="logo">Alwayzz<sup>®</sup></div>
+    <button class="menu-btn" id="menuBtn">Menu
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"></polyline></svg>
+    </button>
+  </div>
+</nav>
+
+<div class="drawer" id="drawer">
+  <div class="drawer-links">
+    <a href="#">Projects</a>
+    <a href="#">Plans</a>
+    <a href="#">Team</a>
+    <a href="#">FAQs</a>
+    <a href="#">Get in Touch</a>
+  </div>
+  <div class="drawer-footer">© 2026 Alwayzz. All rights reserved.</div>
+</div>
+
+<section class="hero">
+  <div class="lines">
+    <div class="lines-desktop">
+      <div class="line-col left" id="leftLines"></div>
+      <div class="line-col right" id="rightLines"></div>
+    </div>
+    <div class="lines-mobile" id="mobileLines"></div>
+  </div>
+
+  <div class="ticker">
+    <div class="ticker-track">
+      <div class="row"><span>Brand Identity</span><span>App Development</span><span>Visual Design</span><span>Creative Video</span><span>Iconography</span></div>
+      <div class="row"><span>Brand Identity</span><span>App Development</span><span>Visual Design</span><span>Creative Video</span><span>Iconography</span></div>
+      <div class="row"><span>Brand Identity</span><span>App Development</span><span>Visual Design</span><span>Creative Video</span><span>Iconography</span></div>
+      <div class="row"><span>Brand Identity</span><span>App Development</span><span>Visual Design</span><span>Creative Video</span><span>Iconography</span></div>
+    </div>
+  </div>
+
+  <h1 class="title">Premium creative <span class="serif">alwayzz</span><sup>®</sup> on demand.</h1>
+  <p class="subtitle">A flexible design partnership for founders, brands, and agencies who want top craft delivered on their timeline.</p>
+
+  <div class="cta">
+    <button class="btn-primary">View Plans</button>
+    <button class="btn-book">
+      <img src="https://framerusercontent.com/images/hfneFL6CHBi5BnNvCeOaqU9HqE4.png" alt="avatar" />
+      <span class="stack">
+        <span class="primary">Chat for 15 minutes</span>
+        <span class="secondary"><span class="dot"></span>Pick a slot</span>
+      </span>
+    </button>
+  </div>
+
+  <div class="blur"></div>
+</section>
+
+<section class="trusted">
+  <div class="trusted-label">Partnered with top-tier companies globally</div>
+  <div class="trusted-marquee">
+    <div class="trusted-track">
+      <span class="c1">Airbnb</span><span class="c2">Shopify</span><span class="c3">Notion</span><span class="c4">Linear</span><span class="c5">Webflow</span><span class="c6">Figma</span><span class="c7">Slack</span><span class="c8">Stripe</span><span class="c9">Vercel</span><span class="c10">Framer</span>
+      <span class="c1">Airbnb</span><span class="c2">Shopify</span><span class="c3">Notion</span><span class="c4">Linear</span><span class="c5">Webflow</span><span class="c6">Figma</span><span class="c7">Slack</span><span class="c8">Stripe</span><span class="c9">Vercel</span><span class="c10">Framer</span>
+    </div>
+  </div>
+</section>
+
+<script>
+  // Menu drawer
+  const btn = document.getElementById('menuBtn');
+  const drawer = document.getElementById('drawer');
+  btn.addEventListener('click', () => {
+    const open = drawer.classList.toggle('open');
+    btn.classList.toggle('open', open);
+  });
+  drawer.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+    drawer.classList.remove('open');
+    btn.classList.remove('open');
+  }));
+
+  // Curved lines
+  function fillLines(containerId, count) {
+    const c = document.getElementById(containerId);
+    for (let i = 0; i < count; i++) {
+      const l = document.createElement('div');
+      l.className = 'line';
+      l.style.width = (60 + i * 10) + 'px';
+      l.style.animationDelay = (i * 0.25) + 's';
+      c.appendChild(l);
+    }
+  }
+  fillLines('leftLines', 20);
+  fillLines('rightLines', 20);
+  fillLines('mobileLines', 20);
+</script>
+</body>
+</html>

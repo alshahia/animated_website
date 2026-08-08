@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Lumina — Clarity on global events & cosmic wonders</title>
+<style>
+  @font-face {
+    font-family: "Helvetica Regular";
+    src: url("https://db.onlinewebfonts.com/t/a64ff11d2c24584c767f6257e880dc65.eot");
+    src: url("https://db.onlinewebfonts.com/t/a64ff11d2c24584c767f6257e880dc65.eot?#iefix") format("embedded-opentype"),
+      url("https://db.onlinewebfonts.com/t/a64ff11d2c24584c767f6257e880dc65.woff2") format("woff2"),
+      url("https://db.onlinewebfonts.com/t/a64ff11d2c24584c767f6257e880dc65.woff") format("woff"),
+      url("https://db.onlinewebfonts.com/t/a64ff11d2c24584c767f6257e880dc65.ttf") format("truetype"),
+      url("https://db.onlinewebfonts.com/t/a64ff11d2c24584c767f6257e880dc65.svg#Helvetica Regular") format("svg");
+  }
+
+  :root { --font-sans: "Helvetica Regular", Helvetica, Arial, sans-serif; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body { font-family: var(--font-sans); -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+  ::selection { background: rgba(255, 255, 255, 0.2); color: #fff; }
+
+  /* ── Liquid glass ───────────────────── */
+  .liquid-glass {
+    background: rgba(255, 255, 255, 0.01);
+    background-blend-mode: luminosity;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    border: none;
+    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.1);
+    position: relative;
+    overflow: hidden;
+  }
+  .liquid-glass::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1.4px;
+    background: linear-gradient(180deg,
+      rgba(255, 255, 255, 0.45) 0%, rgba(255, 255, 255, 0.15) 20%,
+      rgba(255, 255, 255, 0) 40%, rgba(255, 255, 255, 0) 60%,
+      rgba(255, 255, 255, 0.15) 80%, rgba(255, 255, 255, 0.45) 100%);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+  }
+
+  /* ── Shell ──────────────────────────── */
+  main { position: relative; width: 100%; min-height: 115vh; overflow-x: hidden; display: flex; flex-direction: column; align-items: center; font-family: var(--font-sans); color: #fff; }
+  .bg-video { position: fixed; inset: 0; z-index: 0; }
+  .bg-video video { width: 100%; height: 100%; object-fit: cover; }
+
+  .content { position: relative; z-index: 10; width: 100%; max-width: 80rem; padding: 0 24px; display: flex; flex-direction: column; flex: 1; }
+
+  /* placeholder CTA above footer */
+  .cta { margin-top: 96px; text-align: center; }
+  @media (min-width: 768px) { .cta { margin-top: 160px; } }
+  .cta h1 { font-weight: 400; font-size: clamp(2.2rem, 6vw, 4.5rem); letter-spacing: -0.01em; }
+  .cta p { margin-top: 16px; color: rgba(255, 255, 255, 0.6); font-size: 15px; }
+  .cta button { margin-top: 32px; background: #fff; color: #000; border: none; border-radius: 999px; padding: 14px 32px; font-size: 15px; font-family: inherit; cursor: pointer; transition: transform 200ms, opacity 200ms; }
+  .cta button:hover { transform: scale(1.04); }
+
+  /* ── Footer ─────────────────────────── */
+  .footer { width: 100%; border-radius: 24px; padding: 24px; color: rgba(255, 255, 255, 0.7); margin-top: 128px; margin-bottom: 48px; animation: foot-in 1s ease-out 0.4s both; }
+  @media (min-width: 768px) { .footer { padding: 40px; margin-top: 256px; } }
+  @keyframes foot-in { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
+
+  .foot-grid { display: grid; grid-template-columns: 1fr; gap: 40px; margin-bottom: 40px; }
+  @media (min-width: 768px) { .foot-grid { grid-template-columns: repeat(12, 1fr); gap: 48px; } }
+
+  .foot-brand { grid-column: auto; }
+  @media (min-width: 768px) { .foot-brand { grid-column: span 5; } }
+  .foot-brand-row { display: flex; align-items: center; gap: 12px; }
+  .foot-brand-row svg { width: 24px; height: 24px; flex-shrink: 0; }
+  .foot-brand-row span { font-size: 20px; font-weight: 500; letter-spacing: 0.02em; }
+  .foot-brand p { margin-top: 16px; font-size: 14px; line-height: 1.6; max-width: 24rem; }
+
+  .foot-links { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 24px; }
+  @media (min-width: 768px) { .foot-links { grid-column: span 7; } }
+  .foot-col h3 { font-size: 14px; text-transform: uppercase; letter-spacing: 0.05em; color: #fff; font-weight: 500; margin-bottom: 16px; }
+  .foot-col ul { list-style: none; }
+  .foot-col li { margin-bottom: 8px; }
+  .foot-col a { color: rgba(255, 255, 255, 0.7); font-size: 12px; text-decoration: none; transition: color 200ms; }
+  .foot-col a:hover { color: #fff; }
+
+  .foot-bottom { padding-top: 24px; border-top: 1px solid rgba(255, 255, 255, 0.1); display: flex; flex-direction: column; align-items: center; justify-content: space-between; gap: 16px; }
+  @media (min-width: 768px) { .foot-bottom { flex-direction: row; gap: 16px; } }
+  .foot-curated { font-size: 10px; text-transform: uppercase; letter-spacing: 0.2em; opacity: 0.5; }
+  .foot-social { display: flex; align-items: center; gap: 16px; }
+  .foot-social-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.2em; opacity: 0.5; }
+  .foot-social a { color: rgba(255, 255, 255, 0.7); opacity: 0.7; transition: opacity 200ms, color 200ms; }
+  .foot-social a:hover { opacity: 1; color: #fff; }
+  .foot-social svg { width: 16px; height: 16px; }
+
+  @media (prefers-reduced-motion: reduce) { .footer, .cta button { animation: none !important; } }
+</style>
+</head>
+<body>
+<main>
+  <div class="bg-video">
+    <video autoplay loop muted playsinline>
+      <source src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260429_114316_1c7889ad-2885-410e-b493-98119fee0ddb.mp4" type="video/mp4" />
+    </video>
+  </div>
+
+  <div class="content">
+    <div class="cta">
+      <h1>See the universe<br />with new clarity.</h1>
+      <p>Live coverage of global events and cosmic wonders — free for everyone.</p>
+      <button>Explore Lumina</button>
+    </div>
+
+    <footer class="footer liquid-glass">
+      <div class="foot-grid">
+        <div class="foot-brand">
+          <div class="foot-brand-row">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor"><path d="M 4.688 136 C 68.373 136 120 187.627 120 251.312 C 120 252.883 119.967 254.445 119.905 256 L 0 256 L 0 136.096 C 1.555 136.034 3.117 136 4.688 136 Z M 251.312 136 C 252.883 136 254.445 136.034 256 136.096 L 256 256 L 136.095 256 C 136.032 254.438 136.001 252.875 136 251.312 C 136 187.627 187.627 136 251.312 136 Z M 119.905 0 C 119.967 1.555 120 3.117 120 4.688 C 120 68.373 68.373 120 4.687 120 C 3.117 120 1.555 119.967 0 119.905 L 0 0 Z M 256 119.905 C 254.445 119.967 252.883 120 251.312 120 C 187.627 120 136 68.373 136 4.687 C 136 3.117 136.033 1.555 136.095 0 L 256 0 Z" /></svg>
+            <span>LUMINA</span>
+          </div>
+          <p>Lumina provides premium clarity on global events and cosmic wonders - shared with all for free.</p>
+        </div>
+
+        <div class="foot-links">
+          <div class="foot-col">
+            <h3>Discover</h3>
+            <ul>
+              <li><a href="#">Labs &amp; Workshops</a></li>
+              <li><a href="#">Deep Dive Series</a></li>
+              <li><a href="#">Global Circle</a></li>
+              <li><a href="#">Resource Vault</a></li>
+              <li><a href="#">Future Roadmap</a></li>
+            </ul>
+          </div>
+          <div class="foot-col">
+            <h3>The Mission</h3>
+            <ul>
+              <li><a href="#">Origin Story</a></li>
+              <li><a href="#">The Collective</a></li>
+              <li><a href="#">Newsroom Hub</a></li>
+              <li><a href="#">Join the Team</a></li>
+            </ul>
+          </div>
+          <div class="foot-col">
+            <h3>Concierge</h3>
+            <ul>
+              <li><a href="#">Get in Touch</a></li>
+              <li><a href="#">Legal Privacy</a></li>
+              <li><a href="#">User Agreement</a></li>
+              <li><a href="#">Report Concern</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="foot-bottom">
+        <p class="foot-curated">Curated by @GotInGeorgiG</p>
+        <div class="foot-social">
+          <span class="foot-social-label">Join the Journey:</span>
+          <a href="#" aria-label="Music">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="18" r="4" /><path d="M12 18V2l7 4" /></svg>
+          </a>
+          <a href="#" aria-label="Facebook">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" /></svg>
+          </a>
+          <a href="#" aria-label="Twitter">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z" /></svg>
+          </a>
+          <a href="#" aria-label="Youtube">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 17a24.12 24.12 0 0 1 0-10 2 2 0 0 1 1.4-1.4 49.56 49.56 0 0 1 16.2 0A2 2 0 0 1 21.5 7a24.12 24.12 0 0 1 0 10 2 2 0 0 1-1.4 1.4 49.55 49.55 0 0 1-16.2 0A2 2 0 0 1 2.5 17" /><path d="m10 15 5-3-5-3z" /></svg>
+          </a>
+          <a href="#" aria-label="Instagram">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5" /><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" /><line x1="17.5" x2="17.51" y1="6.5" y2="6.5" /></svg>
+          </a>
+        </div>
+      </div>
+    </footer>
+  </div>
+</main>
+</body>
+</html>

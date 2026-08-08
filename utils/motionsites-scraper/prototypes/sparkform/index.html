@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Beyond Hero</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://db.onlinewebfonts.com/c/58ee300970307a1cc399e6bebd7617ce?family=Bamboly+Demo" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  @font-face {
+    font-family: "Bamboly Demo";
+    src: url('https://db.onlinewebfonts.com/t/58ee300970307a1cc399e6bebd7617ce.woff2') format('woff2'),
+         url('https://db.onlinewebfonts.com/t/58ee300970307a1cc399e6bebd7617ce.woff') format('woff'),
+         url('https://db.onlinewebfonts.com/t/58ee300970307a1cc399e6bebd7617ce.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+  }
+
+  :root {
+    --orange: #EC612C;
+    --green: #90EE90;
+    --blue: #89CFF0;
+    --white: #FFFFFF;
+    --font-display: "Bamboly Demo", sans-serif;
+    --font-body: "Inter", sans-serif;
+    --font-words: "Poppins", sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { font-family: var(--font-body); background: #000; overflow-x: hidden; -webkit-font-smoothing: antialiased; }
+
+  .hero { position: relative; width: 100%; height: 120vh; background: var(--orange); overflow: hidden; }
+
+  .hero-overlay { position: sticky; top: 0; z-index: 5; height: 100vh; width: 100%; }
+
+  .title-wrap { position: absolute; inset: 0; display: flex; align-items: flex-start; justify-content: center; padding-top: 2vh; }
+  @media (min-width: 768px) { .title-wrap { padding-top: 3vh; } }
+
+  .title-stack { position: relative; }
+  .title-stack h1 {
+    position: absolute; top: 0; left: 0; width: 100%;
+    margin: 0; font-family: var(--font-display); font-weight: 400;
+    font-size: clamp(7.5rem, 30vw, 28rem);
+    line-height: 0.85; letter-spacing: -0.025em;
+    text-align: center; user-select: none; -webkit-user-select: none;
+  }
+  .title-stack .front { position: relative; color: var(--white); }
+  .title-stack .green { color: var(--green); transform: translateY(6px); }
+  .title-stack .gap { color: var(--orange); transform: translateY(12px); }
+  .title-stack .back { color: var(--blue); transform: translateY(18px); }
+  @media (min-width: 768px) {
+    .title-stack .green { transform: translateY(12px); }
+    .title-stack .gap { transform: translateY(24px); }
+    .title-stack .back { transform: translateY(36px); }
+  }
+
+  .side-words { position: absolute; inset: 0; bottom: -8vh; display: flex; align-items: flex-end; justify-content: space-between; padding: 0 3vw; pointer-events: none; }
+  @media (min-width: 768px) { .side-words { padding: 0 6vw; } }
+  .word-col { display: flex; flex-direction: column; gap: 4px; }
+  .word-col.right { align-items: flex-end; }
+  @media (min-width: 768px) { .word-col { gap: 8px; } }
+  .word {
+    font-family: var(--font-words); font-weight: 500;
+    font-size: clamp(1.6rem, 7vw, 9rem); line-height: 1.1;
+    color: rgba(255, 255, 255, 0.8); text-transform: uppercase;
+    white-space: nowrap; user-select: none; -webkit-user-select: none;
+    transition: transform 0.05s linear;
+  }
+
+  .character { position: absolute; inset: 0; z-index: 10; pointer-events: none; }
+  .character img {
+    position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
+    width: auto; max-width: none; display: block;
+    height: 115%; max-height: 115%; min-height: 80%;
+  }
+
+  .marquee { width: 100%; background: var(--white); overflow: hidden; padding: 24px 0; }
+  @media (min-width: 768px) { .marquee { padding: 32px 0; } }
+  .marquee-track { display: flex; white-space: nowrap; animation: marquee-scroll 18s linear infinite; }
+  .marquee-track span {
+    flex-shrink: 0; font-family: var(--font-display); font-weight: 400;
+    text-transform: uppercase; color: var(--orange);
+    font-size: clamp(2.5rem, 6vw, 5rem); line-height: 1;
+    padding-right: 0.25em; user-select: none; -webkit-user-select: none;
+  }
+  @keyframes marquee-scroll {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .marquee-track { animation: none; }
+  }
+</style>
+</head>
+<body>
+
+<section class="hero">
+  <div class="hero-overlay">
+    <div class="title-wrap">
+      <div class="title-stack">
+        <h1 class="back">BEYOND</h1>
+        <h1 class="gap">BEYOND</h1>
+        <h1 class="green">BEYOND</h1>
+        <h1 class="front">BEYOND</h1>
+      </div>
+    </div>
+    <div class="side-words">
+      <div class="word-col">
+        <span class="word">spark</span>
+        <span class="word">imagine</span>
+        <span class="word">evolve</span>
+        <span class="word">render</span>
+      </div>
+      <div class="word-col right">
+        <span class="word">blaze</span>
+        <span class="word">genesis</span>
+        <span class="word">purpose</span>
+        <span class="word">ignite</span>
+      </div>
+    </div>
+  </div>
+  <div class="character">
+    <img src="https://images.higgs.ai/?default=1&output=webp&url=https%3A%2F%2Fd8j0ntlcm91z4.cloudfront.net%2Fuser_38xzZboKViGWJOttwIXH07lWA1P%2Fhf_20260801_104316_80b428ea-dc99-4399-afb3-8ccb7b34b2d0.png&w=1280&q=85" alt="3D bust of a young Black man with electric-blue braids, bright blue eyes, and a neon-green turtleneck, looking upward" />
+  </div>
+</section>
+
+<section class="marquee">
+  <div class="marquee-track">
+    <span>SPARK · RENDER · IGNITE · UNFOLD · GENESIS · EVOLVE · PURPOSE · BEYOND · </span>
+    <span>SPARK · RENDER · IGNITE · UNFOLD · GENESIS · EVOLVE · PURPOSE · BEYOND · </span>
+    <span>SPARK · RENDER · IGNITE · UNFOLD · GENESIS · EVOLVE · PURPOSE · BEYOND · </span>
+    <span>SPARK · RENDER · IGNITE · UNFOLD · GENESIS · EVOLVE · PURPOSE · BEYOND · </span>
+  </div>
+</section>
+
+<script>
+  const hero = document.querySelector('.hero');
+  const words = document.querySelectorAll('.word');
+  const cols = document.querySelectorAll('.word-col');
+
+  function update() {
+    const rect = hero.getBoundingClientRect();
+    const range = hero.offsetHeight - window.innerHeight;
+    const progress = Math.min(1, Math.max(0, -rect.top / range));
+    const scale = window.innerWidth < 768 ? 0.5 : 1;
+    words.forEach((w, i) => {
+      const dir = i < 4 ? -1 : 1;
+      w.style.transform = 'translateX(' + dir * (60 + (i % 4) * 40) * scale * (1 - progress) + 'px)';
+    });
+    cols.forEach(c => { c.style.opacity = 0.35 + progress * 0.65; });
+  }
+
+  window.addEventListener('scroll', update, { passive: true });
+  window.addEventListener('resize', update);
+  update();
+</script>
+</body>
+</html>

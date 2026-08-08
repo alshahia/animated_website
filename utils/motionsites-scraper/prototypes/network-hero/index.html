@@ -1,0 +1,322 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Marketeam — Unlock Top Marketing Talent</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Urbanist:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  @property --border-angle {
+    syntax: '<angle>';
+    inherits: false;
+    initial-value: 0deg;
+  }
+  :root {
+    --accent: #A068FF;
+    --dark: #060218;
+    --dark2: #070319;
+    --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body { font-family: 'Inter', sans-serif; background: #0a0a0a; color: #fff; overflow-x: hidden; }
+
+  .app { min-height: 100vh; display: flex; flex-direction: column; background: url('https://images.higgs.ai/?default=1&output=webp&url=https%3A%2F%2Fd8j0ntlcm91z4.cloudfront.net%2Fuser_38xzZboKViGWJOttwIXH07lWA1P%2Fhf_20260624_111401_56af5012-2263-45d3-849a-8688084d7c2a.png&w=1280&q=85') center center / cover no-repeat; }
+
+  /* ── Header ─────────────────────────── */
+  .header { display: flex; align-items: center; justify-content: space-between; padding: 24px 64px; max-width: 1920px; width: 100%; margin: 0 auto; gap: 24px; animation: fade-down 0.8s var(--ease) both; }
+  @media (max-width: 1024px) { .header { padding: 20px 32px; gap: 12px; } }
+  @media (max-width: 480px) { .header { padding: 16px 20px; } }
+  @keyframes fade-down { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+
+  .header-left { display: flex; align-items: center; gap: 48px; }
+  @media (max-width: 1024px) { .header-left { gap: 24px; } }
+  .header-logo { height: 32px; }
+  .nav-links { display: flex; gap: 40px; }
+  @media (max-width: 1024px) { .nav-links { gap: 24px; } }
+  @media (max-width: 768px) { .nav-links { display: none; } }
+  .nav-links a { color: #000; font-size: 15px; font-weight: 400; text-decoration: none; position: relative; }
+  .nav-links a::after { content: ''; position: absolute; left: 0; bottom: -3px; width: 100%; height: 1.5px; background: currentColor; transform: scaleX(0); transform-origin: left; transition: transform 0.3s ease; }
+  .nav-links a:hover::after { transform: scaleX(1); }
+
+  .header-right { display: flex; align-items: center; gap: 32px; }
+  @media (max-width: 1024px) { .header-right { gap: 16px; } }
+  .login-link { color: #fff; font-size: 15px; font-weight: 500; text-decoration: none; position: relative; }
+  .login-link::after { content: ''; position: absolute; left: 0; bottom: -3px; width: 100%; height: 1.5px; background: currentColor; transform: scaleX(0); transform-origin: left; transition: transform 0.3s ease; }
+  .login-link:hover::after { transform: scaleX(1); }
+
+  /* rotating conic-gradient border */
+  .btn-border-wrap { position: relative; display: inline-block; border-radius: 50px; }
+  .btn-border-wrap::before { content: ''; position: absolute; inset: -3px; padding: 3px; border-radius: inherit; background: conic-gradient(from var(--border-angle), #A068FF, #070319, #A068FF, #070319, #A068FF); -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); -webkit-mask-composite: xor; mask-composite: exclude; animation: rotate-border 3s linear infinite; pointer-events: none; }
+  @keyframes rotate-border { to { --border-angle: 360deg; } }
+
+  .btn { position: relative; display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: none; border-radius: 50px; background: #000; color: #fff; font-size: 15px; font-weight: 500; padding: 12px 26px; cursor: pointer; overflow: hidden; font-family: inherit; }
+  .btn::after { content: ''; position: absolute; inset: 0; background: var(--accent); transform: translateX(-100%); transition: transform 0.4s var(--ease); z-index: 0; }
+  .btn span, .btn svg { position: relative; z-index: 1; }
+  .btn:hover::after { transform: translateX(0); }
+  .btn.alt::after { transform: translateX(100%); }
+  .btn.alt:hover::after { transform: translateX(0); }
+  .btn svg { width: 18px; height: 18px; }
+
+  /* ── Hero ───────────────────────────── */
+  .hero { flex: 1; display: flex; align-items: flex-start; justify-content: center; gap: 48px; max-width: 1920px; width: 100%; margin: 0 auto; padding: 24px 64px 0; flex-wrap: wrap; }
+  @media (max-width: 1280px) { .hero { padding: 24px 48px 0; } }
+  @media (max-width: 1024px) { .hero { flex-direction: column; align-items: center; gap: 40px; } }
+  @media (max-width: 480px) { .hero { padding: 16px 20px 0; } }
+
+  .hero-left { flex: 0 1 600px; padding-top: 40px; animation: fade-up 1s var(--ease) both; }
+  @media (max-width: 1024px) { .hero-left { flex: 0 1 auto; padding-top: 8px; text-align: center; } }
+  @keyframes fade-up { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
+
+  .typewriter-wrap { min-height: 128px; }
+  .typewriter { font-family: 'Urbanist', sans-serif; font-size: 64px; font-weight: 600; line-height: 64px; letter-spacing: -1.5px; }
+  @media (max-width: 1024px) { .typewriter { font-size: 48px; line-height: 52px; } }
+  @media (max-width: 768px)  { .typewriter { font-size: 36px; line-height: 42px; } }
+  @media (max-width: 480px)  { .typewriter { font-size: 28px; line-height: 34px; letter-spacing: -1px; } }
+  .typewriter .dark-part { color: #000; }
+  .typewriter .light-part { color: #fff; }
+  .typecursor { display: inline-block; width: 3px; height: 0.85em; background: var(--accent); margin-left: 4px; vertical-align: baseline; animation: blink 0.8s step-start infinite; }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  .hero-cta-row { display: flex; align-items: center; gap: 28px; margin-top: 32px; opacity: 0; animation: fade-up 0.8s var(--ease) 3.2s both; }
+  @media (max-width: 480px) { .hero-cta-row { gap: 16px; } }
+  .btn-start { background: #060218; font-size: 16px; font-weight: 500; padding: 14px 28px; }
+  .btn-start::after { transform: translateX(100%); }
+  .btn-start:hover::after { transform: translateX(0); }
+
+  .cursor-el { display: flex; align-items: center; margin-left: 290px; margin-top: 40px; opacity: 0; animation: fade-up 0.8s var(--ease) 3.6s both; }
+  @media (max-width: 1024px) { .cursor-el { margin-left: 0; justify-content: center; } }
+  @media (max-width: 480px) { .cursor-el { margin-left: 0; justify-content: center; } }
+  .cursor-el svg { width: 24px; height: 24px; }
+  .cursor-pill { background: var(--accent); color: #fff; font-size: 16px; font-weight: 500; padding: 8px 16px; border-radius: 20px; margin-left: 10px; }
+
+  /* ── Circles visualization ──────────── */
+  .hero-right { flex: 0 1 auto; animation: scale-in 1.2s var(--ease) 0.3s both; }
+  @keyframes scale-in { from { opacity: 0; transform: scale(0.85); } to { opacity: 1; transform: scale(1); } }
+  .circles { position: relative; width: 720px; height: 720px; }
+  @media (max-width: 1280px) { .circles { transform: scale(0.85); } }
+  @media (max-width: 1024px) { .circles { transform: scale(0.7); } }
+  @media (max-width: 768px)  { .circles { transform: scale(0.5); } }
+  @media (max-width: 480px)  { .circles { transform: scale(0.4); } }
+
+  .orbit { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); border-radius: 50%; padding: 1px; background: linear-gradient(180deg, rgba(217, 161, 255, 0) 0%, rgba(217, 161, 255, 1) 43%, rgba(217, 161, 255, 0) 100%); -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); -webkit-mask-composite: xor; mask-composite: exclude; }
+  .orbit-1 { width: 353px; height: 353px; animation: spin-left 30s linear infinite; }
+  .orbit-2 { width: 501px; height: 501px; animation: spin-right 40s linear infinite; }
+  .orbit-3 { width: 649px; height: 649px; animation: spin-right 50s linear infinite; }
+  .orbit-4 { width: 797px; height: 797px; animation: spin-left 60s linear infinite; }
+  @keyframes spin-left  { to { transform: translate(-50%, -50%) rotate(-360deg); } }
+  @keyframes spin-right { to { transform: translate(-50%, -50%) rotate(360deg); } }
+
+  .center-num { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 353px; height: 353px; display: flex; flex-direction: column; align-items: center; justify-content: center; animation: counter-spin-left 30s linear infinite; }
+  @keyframes counter-spin-left { to { transform: translate(-50%, -50%) rotate(360deg); } }
+  .countup { font-family: 'Urbanist', sans-serif; font-size: 64px; font-weight: 500; line-height: 1; }
+  .countup-label { font-family: 'Urbanist', sans-serif; font-size: 16px; font-weight: 600; margin-top: 6px; }
+
+  .avatar-wrap { position: absolute; left: 50%; top: 50%; }
+  .avatar-in { animation: fly-in 0.7s var(--ease) both; }
+  @keyframes fly-in { from { opacity: 0; transform: scale(0.3) rotate(-180deg); filter: blur(4px); } to { opacity: 1; transform: scale(1) rotate(0deg); filter: blur(0); } }
+  .avatar-img { width: 58px; height: 58px; object-fit: cover; display: block; animation: none; }
+  .avatar-img.counter-2 { animation: counter-right-40 40s linear infinite; animation-delay: 0.7s; }
+  .avatar-img.counter-3 { animation: counter-right-50 50s linear infinite; animation-delay: 0.7s; }
+  .avatar-img.counter-4 { animation: counter-left-60 60s linear infinite; animation-delay: 0.7s; }
+  .avatar-img.counter-1 { animation: counter-left-30 30s linear infinite; animation-delay: 0.7s; }
+  @keyframes counter-right-40 { to { transform: rotate(-360deg); } }
+  @keyframes counter-right-50 { to { transform: rotate(-360deg); } }
+  @keyframes counter-left-60 { to { transform: rotate(360deg); } }
+  @keyframes counter-left-30 { to { transform: rotate(360deg); } }
+
+  .glow-purple { box-shadow: 0 0 18px 4px rgba(160, 104, 255, 0.55); }
+  .glow-yellow { box-shadow: 0 0 18px 4px rgba(255, 214, 89, 0.55); }
+  .glow-pink   { box-shadow: 0 0 18px 4px rgba(255, 121, 198, 0.55); }
+  .glow-blue   { box-shadow: 0 0 18px 4px rgba(96, 165, 250, 0.55); }
+  .glow-orange { box-shadow: 0 0 18px 4px rgba(255, 159, 67, 0.55); }
+  .sq20 { border-radius: 20px; }
+  .sq24 { border-radius: 24px; }
+  .rnd { border-radius: 50%; }
+
+  /* ── Logo ticker ────────────────────── */
+  .ticker { margin-top: 48px; padding: 0 64px 48px; opacity: 0; animation: fade-up 0.8s var(--ease) 0.6s both; }
+  .ticker-track { display: flex; gap: 64px; width: max-content; animation: ticker-scroll 20s linear infinite; }
+  .ticker-mask { overflow: hidden; -webkit-mask-image: linear-gradient(90deg, transparent, black 10%, black 90%, transparent); mask-image: linear-gradient(90deg, transparent, black 10%, black 90%, transparent); }
+  @keyframes ticker-scroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+  .ticker-track img { width: 137px; height: 40px; object-fit: contain; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .header, .hero-left, .hero-right, .ticker, .hero-cta-row, .cursor-el, .avatar-in, .typewriter .typecursor { animation: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- ── Header ── -->
+  <header class="header">
+    <div class="header-left">
+      <img class="header-logo" src="https://polo-pecan-73837341.figma.site/_assets/v11/17ae538989a509947a8de3892c644664895e69b1.png" alt="Marketeam" />
+      <nav class="nav-links">
+        <a href="#">Your Team</a>
+        <a href="#">Solutions</a>
+        <a href="#">Blog</a>
+        <a href="#">Pricing</a>
+      </nav>
+    </div>
+    <div class="header-right">
+      <a href="#" class="login-link">Log In</a>
+      <div class="btn-border-wrap">
+        <button class="btn"><span>Join Now</span></button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ── Hero ── -->
+  <section class="hero">
+
+    <div class="hero-left">
+      <div class="typewriter-wrap">
+        <h1 class="typewriter" id="typewriter"></h1>
+      </div>
+
+      <div class="hero-cta-row">
+        <div class="btn-border-wrap">
+          <button class="btn alt btn-start">
+            <span>Start Project</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14" /><path d="m12 5 7 7-7 7" /></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="cursor-el">
+        <svg viewBox="0 0 24 24" fill="#A068FF"><path d="M4 3l16 7.5-7.3 2.2L9.8 20z" /></svg>
+        <span class="cursor-pill">David</span>
+      </div>
+    </div>
+
+    <div class="hero-right">
+      <div class="circles" id="circles">
+        <div class="orbit orbit-1"></div>
+        <div class="orbit orbit-2"></div>
+        <div class="orbit orbit-3"></div>
+        <div class="orbit orbit-4"></div>
+        <div class="center-num">
+          <div class="countup"><span id="countUp">0</span>k+</div>
+          <div class="countup-label">Specialists</div>
+        </div>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- ── Logo ticker ── -->
+  <div class="ticker">
+    <div class="ticker-mask">
+      <div class="ticker-track" id="tickerTrack"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ── Typewriter: first 67 chars dark, rest light ──
+  const TEXT = 'Unlock Top Marketing Talent You Thought Was Out of Reach -- Now Just One Click Away!';
+  const tw = document.getElementById('typewriter');
+  const cursor = document.createElement('span');
+  cursor.className = 'typecursor';
+  let typed = 0;
+  const dark = document.createElement('span');
+  dark.className = 'dark-part';
+  const light = document.createElement('span');
+  light.className = 'light-part';
+  tw.appendChild(dark);
+  tw.appendChild(light);
+  tw.appendChild(cursor);
+
+  function typeTick() {
+    if (typed < TEXT.length) {
+      const ch = TEXT[typed];
+      if (typed < 67) dark.textContent += ch; else light.textContent += ch;
+      typed++;
+      setTimeout(typeTick, 35);
+    }
+  }
+  setTimeout(typeTick, 400);
+
+  // ── Count-up: 0 → 20, 2s, easeOutCubic, delay 1.2s ──
+  const countEl = document.getElementById('countUp');
+  setTimeout(() => {
+    const start = performance.now();
+    const D = 2000;
+    function frame(now) {
+      const t = Math.min((now - start) / D, 1);
+      const v = 1 - Math.pow(1 - t, 3);
+      countEl.textContent = Math.round(20 * v);
+      if (t < 1) requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
+  }, 1200);
+
+  // ── Avatars on orbits: (orbit, angle, radius, size, shape, glow, delay) ──
+  const avatars = [
+    [1, 270, 177, 58, 'sq20', 'glow-purple', 0.6],
+    [2, 60, 251, 58, 'rnd', 'glow-yellow', 0.9],
+    [2, 180, 251, 78, 'rnd', 'glow-pink', 1.1],
+    [2, 300, 251, 58, 'sq20', 'glow-blue', 1.3],
+    [3, 130, 325, 88, 'rnd', 'glow-pink', 1.6],
+    [4, 30, 399, 58, 'rnd', 'glow-purple', 1.8],
+    [4, 95, 399, 88, 'sq24', 'glow-orange', 2.0],
+    [4, 220, 399, 88, 'sq24', 'glow-pink', 2.3],
+    [4, 320, 399, 58, 'rnd', 'glow-purple', 2.3],
+  ];
+  const imgs = [
+    'https://polo-pecan-73837341.figma.site/_assets/v11/aa51718fb3af3637e6d666b6543fc27a175fada6.png',
+    'https://polo-pecan-73837341.figma.site/_assets/v11/ca755f7f93c1126fb8bdbf99ab364a33aa9ab272.png',
+    'https://polo-pecan-73837341.figma.site/_assets/v11/dc01064c7093dcc32674876ee3cf5e41c4a485c6.png',
+    'https://polo-pecan-73837341.figma.site/_assets/v11/d5470a58b02388336141575048720f19a50de832.png',
+    'https://polo-pecan-73837341.figma.site/_assets/v11/018736aa5d0275c4ce56cfebaf2ae3007d81ca1e.png',
+    'https://polo-pecan-73837341.figma.site/_assets/v11/c76d8a0b99676de31c014344bfaf75bad090758d.png',
+    'https://polo-pecan-73837341.figma.site/_assets/v11/7b1b5f039de7b54cc9913e96c1923c3b15a157fa.png',
+    'https://polo-pecan-73837341.figma.site/_assets/v11/9ae171d8895199349755c43fbff00e122221a027.png',
+    'https://polo-pecan-73837341.figma.site/_assets/v11/926c9eb7b4bc1df846fa0e39f0b0dc3fefd80671.png',
+  ];
+  const circles = document.getElementById('circles');
+  avatars.forEach((a, i) => {
+    const [orbit, angle, radius, size, shape, glow, delay] = a;
+    const wrap = document.createElement('div');
+    wrap.className = 'avatar-wrap';
+    const rad = angle * Math.PI / 180;
+    wrap.style.transform = 'translate(-50%, -50%) rotate(' + angle + 'deg) translate(' + radius + 'px) rotate(' + (-angle) + 'deg)';
+    const inner = document.createElement('div');
+    inner.className = 'avatar-in';
+    inner.style.animationDelay = delay + 's';
+    const img = document.createElement('img');
+    img.src = imgs[i];
+    img.alt = '';
+    img.className = 'avatar-img ' + shape + ' ' + glow + ' counter-' + orbit;
+    img.style.width = size + 'px';
+    img.style.height = size + 'px';
+    inner.appendChild(img);
+    wrap.appendChild(inner);
+    circles.appendChild(wrap);
+  });
+
+  // ── Logo ticker: 5 SVGs × 4 ──
+  const logos = [
+    'https://polo-pecan-73837341.figma.site/_assets/v11/1e7b0e6fcc016cd28aec5c68990118b8c54c35a5.svg',
+    'https://polo-pecan-73837341.figma.site/_assets/v11/3eac03c183db2ae080d910159211c14843398b61.svg',
+    'https://polo-pecan-73837341.figma.site/_assets/v11/17705a4c0023a0e5a99154dfb10582adbbf4260b.svg',
+    'https://polo-pecan-73837341.figma.site/_assets/v11/0e5f442b09dc5c248e3e60d40a65505fb1887228.svg',
+    'https://polo-pecan-73837341.figma.site/_assets/v11/63f99030ceb459e3c9ab9e429cfa2353491d3816.svg',
+  ];
+  const track = document.getElementById('tickerTrack');
+  for (let rep = 0; rep < 4; rep++) {
+    for (const src of logos) {
+      const img = document.createElement('img');
+      img.src = src;
+      img.alt = 'partner logo';
+      track.appendChild(img);
+    }
+  }
+</script>
+</body>
+</html>

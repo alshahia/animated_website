@@ -1,0 +1,13 @@
+{
+  "name": "motionsites-scraper",
+  "version": "0.1.0",
+  "type": "module",
+  "private": true,
+  "description": "Scrape free prompts from motionsites.ai by clicking 'Copy prompt' buttons.",
+  "scripts": {
+    "scrape": "node scrape.mjs"
+  },
+  "dependencies": {
+    "playwright": "^1.48.0"
+  }
+}

@@ -1,0 +1,373 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Contact Cybernetic — Interactive hero</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #fff;
+    --text: #1C2E1E;
+    --muted: #5A635A;
+    --accent: #4D6D47;
+    --border: #F1F3F1;
+    --green-bg: #FAFBF9;
+    --green-light: #EAECE9;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: var(--bg); color: var(--text);
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+  }
+  @media (min-width: 1024px) { body { display: block; min-height: 100vh; } }
+  ::selection { background: var(--green-light); color: var(--text); }
+
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+  }
+  .cursor-blink {
+    display: inline-block; width: 2px; height: 1.1em;
+    background: #000; vertical-align: middle; margin-left: 2px;
+    animation: blink 1s step-end infinite;
+  }
+
+  /* ── Layout ─────────────────────── */
+  .page-wrap {
+    position: relative; width: 100%;
+    display: flex; flex-direction: column;
+  }
+  @media (min-width: 1024px) { .page-wrap { display: block; min-height: 100vh; } }
+
+  /* ── Video Background ─────────────────────── */
+  .video-bg {
+    order-last; position: relative;
+    width: 100%; aspect-ratio: 1; background: #f5f5f5; overflow: hidden;
+  }
+  @media (min-width: 768px) { .video-bg { aspect-ratio: 16/9; } }
+  @media (min-width: 1024px) {
+    .video-bg {
+      position: absolute; inset: 0; z-index: 0;
+      aspect-ratio: auto; height: 100%; background: transparent;
+    }
+  }
+  .video-bg video {
+    width: 100%; height: 100%; object-fit: cover;
+    object-position: right bottom;
+  }
+
+  /* ── Content Layer ─────────────────────── */
+  .content-layer {
+    position: relative; z-index: 10;
+    display: flex; flex-direction: column;
+    order-first; width: 100%;
+    background: #fff; padding-bottom: 32px;
+  }
+  @media (min-width: 1024px) {
+    .content-layer {
+      position: relative; order-none;
+      background: transparent; min-height: 100vh;
+      padding-bottom: 0;
+    }
+  }
+
+  .main-content {
+    width: 100%; max-width: 1280px; margin: 0 auto;
+    padding: 48px 24px; flex: 1;
+    display: flex; flex-direction: column; justify-content: center;
+  }
+  @media (min-width: 640px) { .main-content { padding: 48px 32px; } }
+
+  /* ── Navbar ─────────────────────── */
+  .nav {
+    position: fixed; top: 0; inset-x: 0; z-index: 10;
+    padding: 16px 20px;
+    display: flex; justify-content: space-between; align-items: center;
+    background: transparent;
+  }
+  @media (min-width: 640px) { .nav { padding: 20px 32px; } }
+
+  .nav-logo { display: flex; align-items: center; gap: 8px; }
+  .nav-logo-text { font-size: 21px; font-weight: 500; letter-spacing: -0.02em; }
+  .nav-logo-icon { font-size: 25px; font-weight: 500; line-height: 1; margin-bottom: 1px; }
+
+  .nav-links { display: none; gap: 6px; font-size: 23px; }
+  @media (min-width: 768px) { .nav-links { display: flex; } }
+  .nav-links a {
+    color: #000; text-decoration: none; transition: opacity 0.2s;
+  }
+  .nav-links a:hover { opacity: 0.6; }
+  .nav-links .sep { opacity: 0.4; }
+
+  .nav-cta {
+    display: none; font-size: 23px; color: #000; text-decoration: none;
+    text-underline-offset: 2px; transition: opacity 0.2s;
+  }
+  .nav-cta:hover { opacity: 0.6; }
+  @media (min-width: 768px) { .nav-cta { display: block; } }
+
+  /* Hamburger */
+  .hamburger { display: flex; flex-direction: column; gap: 5px; background: none; border: none; cursor: pointer; padding: 4px; }
+  @media (min-width: 768px) { .hamburger { display: none; } }
+  .hamburger span { display: block; width: 24px; height: 2px; background: #000; transition: all 0.3s; border-radius: 2px; }
+  .hamburger.open span:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }
+  .hamburger.open span:nth-child(2) { opacity: 0; }
+  .hamburger.open span:nth-child(3) { transform: rotate(-45deg) translate(5px, -5px); }
+
+  /* Mobile Overlay */
+  .mobile-overlay {
+    position: fixed; inset: 0; z-index: 9;
+    background: rgba(255,255,255,0.95); backdrop-filter: blur(8px);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 32px; opacity: 0; pointer-events: none;
+    transition: opacity 0.3s;
+  }
+  .mobile-overlay.open { opacity: 1; pointer-events: auto; }
+  .mobile-overlay a {
+    font-size: 32px; font-weight: 500; color: var(--text); text-decoration: none;
+    transform: translateY(16px); opacity: 0;
+    transition: transform 0.35s cubic-bezier(0.16,1,0.3,1), opacity 0.35s;
+  }
+  .mobile-overlay.open a { transform: translateY(0); opacity: 1; }
+  .mobile-overlay.open a:nth-child(1) { transition-delay: 0.05s; }
+  .mobile-overlay.open a:nth-child(2) { transition-delay: 0.1s; }
+  .mobile-overlay.open a:nth-child(3) { transition-delay: 0.15s; }
+  .mobile-overlay.open a:nth-child(4) { transition-delay: 0.2s; }
+
+  /* ── Headline ─────────────────────── */
+  .headline {
+    font-size: clamp(40px, 8vw, 76px);
+    font-weight: 400; letter-spacing: -0.03em;
+    line-height: 1.08; margin-bottom: 32px;
+    white-space: pre-wrap;
+  }
+
+  .description {
+    font-size: clamp(16px, 2vw, 20px);
+    color: var(--muted); line-height: 1.6;
+    max-width: 640px; margin-bottom: 56px;
+  }
+
+  /* ── Service Pills ─────────────────────── */
+  .services-title { font-size: 24px; font-weight: 500; letter-spacing: -0.02em; margin-bottom: 8px; }
+  .services-sub { opacity: 0.85; color: #738273; font-size: 14px; margin-bottom: 32px; }
+
+  .pills-wrap { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 24px; }
+
+  .pill {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 10px 20px; border-radius: 999px;
+    font-size: 14px; font-weight: 500; cursor: pointer;
+    border: 1px solid var(--border); background: #fff; color: var(--text);
+    transition: all 0.25s cubic-bezier(0.16,1,0.3,1);
+    user-select: none;
+  }
+  .pill:hover { background: rgba(241,243,241,0.55); }
+  .pill.active {
+    background: var(--text); color: #fff; border-color: var(--text);
+    box-shadow: 0 4px 12px rgba(28,46,30,0.15);
+  }
+  .pill-check {
+    width: 16px; height: 16px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    transform: scale(0); transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  .pill.active .pill-check { transform: scale(1); }
+  .pill-check svg { width: 10px; height: 10px; }
+
+  /* ── Status Banner ─────────────────────── */
+  .status-banner {
+    background: var(--green-bg); border: 1px solid var(--border);
+    border-radius: 16px; padding: 16px 20px;
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 12px;
+    opacity: 0; transform: translateY(8px);
+    transition: opacity 0.35s, transform 0.35s cubic-bezier(0.16,1,0.3,1);
+  }
+  .status-banner.visible { opacity: 1; transform: translateY(0); }
+  .status-text { font-size: 14px; color: var(--accent); }
+  .status-go {
+    font-size: 11px; font-weight: 600; color: var(--accent);
+    text-transform: uppercase; letter-spacing: 0.08em;
+    background: none; border: none; cursor: pointer;
+    display: flex; align-items: center; gap: 6px;
+    transition: gap 0.2s;
+  }
+  .status-go:hover { gap: 10px; }
+  .status-go svg { width: 14px; height: 14px; }
+
+  .placeholder-msg {
+    font-size: 12px; color: var(--muted); opacity: 0.5;
+    font-style: italic;
+  }
+
+  /* ── Entry Animations ─────────────────────── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .fade-up { animation: fadeUp 0.6s cubic-bezier(0.16,1,0.3,1) both; }
+  .fade-up-d1 { animation-delay: 0.1s; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .fade-up { animation: none; opacity: 1; transform: none; }
+    .cursor-blink { animation: none; opacity: 1; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page-wrap">
+  <!-- Video BG -->
+  <div class="video-bg">
+    <video muted playsinline preload="auto" id="bgVideo">
+      <source src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260601_110537_3a579fa0-7bbc-4d94-9d25-0e816c7840f5.mp4" type="video/mp4" />
+    </video>
+  </div>
+
+  <!-- Content -->
+  <div class="content-layer">
+    <header class="nav">
+      <div class="nav-logo">
+        <span class="nav-logo-text">Mainframe&reg;</span>
+        <span class="nav-logo-icon">&#10033;</span>
+      </div>
+      <div class="nav-links">
+        <a href="#">Labs</a><span class="sep">,&nbsp;</span>
+        <a href="#">Studio</a><span class="sep">,&nbsp;</span>
+        <a href="#">Openings</a><span class="sep">,&nbsp;</span>
+        <a href="#">Shop</a>
+      </div>
+      <a href="#" class="nav-cta">Get in touch</a>
+      <button class="hamburger" id="hamburgerBtn" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </header>
+
+    <div class="mobile-overlay" id="mobileOverlay">
+      <a href="#">Labs</a>
+      <a href="#">Studio</a>
+      <a href="#">Openings</a>
+      <a href="#">Shop</a>
+    </div>
+
+    <main class="main-content">
+      <h1 class="headline fade-up" id="headline"></h1>
+      <p class="description fade-up fade-up-d1">
+        Whether you have questions, feedback,<br>
+        drop us a message and we'll get back to you as soon as possible.
+      </p>
+
+      <div class="services-title">What sort of service?</div>
+      <div class="services-sub">Select all that apply</div>
+      <div class="pills-wrap" id="pillsWrap"></div>
+
+      <div id="statusArea">
+        <div class="placeholder-msg" id="placeholderMsg">Please click to select services above.</div>
+        <div class="status-banner" id="statusBanner">
+          <span class="status-text" id="statusText"></span>
+          <button class="status-go">Let's Go <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></button>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<script>
+  // Typewriter
+  const headlineEl = document.getElementById('headline');
+  const text = "we'd love to\nhear from you!";
+  let charIdx = 0;
+  const cursor = document.createElement('span');
+  cursor.className = 'cursor-blink';
+
+  function typeNext() {
+    if (charIdx <= text.length) {
+      headlineEl.textContent = text.slice(0, charIdx);
+      headlineEl.appendChild(cursor);
+      charIdx++;
+      setTimeout(typeNext, 38);
+    } else {
+      cursor.remove();
+      headlineEl.textContent = text;
+    }
+  }
+  setTimeout(typeNext, 600);
+
+  // Video scrubbing (desktop)
+  const video = document.getElementById('bgVideo');
+  let prevX = window.innerWidth / 2;
+  let isDesktop = window.innerWidth >= 1024;
+
+  window.addEventListener('mousemove', (e) => {
+    if (!isDesktop || !video.duration) return;
+    const delta = e.clientX - prevX;
+    prevX = e.clientX;
+    const target = video.currentTime + (delta / window.innerWidth) * 0.8 * video.duration;
+    video.currentTime = Math.max(0, Math.min(target, video.duration));
+  });
+
+  window.addEventListener('resize', () => {
+    isDesktop = window.innerWidth >= 1024;
+    if (!isDesktop) { video.play().catch(() => {}); }
+  });
+
+  if (!isDesktop) { video.play().catch(() => {}); }
+
+  // Mobile menu
+  const hamburger = document.getElementById('hamburgerBtn');
+  const overlay = document.getElementById('mobileOverlay');
+  let menuOpen = false;
+  hamburger.addEventListener('click', () => {
+    menuOpen = !menuOpen;
+    hamburger.classList.toggle('open', menuOpen);
+    overlay.classList.toggle('open', menuOpen);
+    document.body.style.overflow = menuOpen ? 'hidden' : '';
+  });
+  overlay.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+    menuOpen = false;
+    hamburger.classList.remove('open');
+    overlay.classList.remove('open');
+    document.body.style.overflow = '';
+  }));
+
+  // Service pills
+  const services = ['Brand', 'Digital', 'Campaign', 'Other'];
+  const selected = new Set();
+  const pillsWrap = document.getElementById('pillsWrap');
+  const statusBanner = document.getElementById('statusBanner');
+  const statusText = document.getElementById('statusText');
+  const placeholderMsg = document.getElementById('placeholderMsg');
+
+  services.forEach(svc => {
+    const btn = document.createElement('button');
+    btn.className = 'pill';
+    btn.innerHTML = `<span class="pill-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></span>${svc}`;
+    btn.addEventListener('click', () => {
+      if (selected.has(svc)) { selected.delete(svc); btn.classList.remove('active'); }
+      else { selected.add(svc); btn.classList.add('active'); }
+      updateStatus();
+    });
+    pillsWrap.appendChild(btn);
+  });
+
+  function updateStatus() {
+    if (selected.size === 0) {
+      statusBanner.classList.remove('visible');
+      placeholderMsg.style.display = '';
+    } else {
+      placeholderMsg.style.display = 'none';
+      statusText.textContent = `Ready to inquire about: ${[...selected].join(', ')}`;
+      statusBanner.classList.add('visible');
+    }
+  }
+</script>
+</body>
+</html>
