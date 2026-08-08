@@ -1,7 +1,6 @@
 "use client";
 import { useEffect, useRef } from "react";
 import { registerReveal } from "@/lib/scroll-setup";
-import { useReducedMotion } from "@/lib/use-reduced-motion";
 
 /**
  * kind-i building block. Wrap any section in this to get a scroll-triggered
@@ -21,7 +20,16 @@ export function ScrollScene({
   id: string;
 }) {
   const ref = useRef<HTMLElement>(null);
-  const reduced = useReducedMotion();
+  // ponytail: read matchMedia synchronously on first render (mirrors
+  // LottieIcon's pattern). The useReducedMotion() hook would return false
+  // for one frame, causing registerReveal to start a 0->1 opacity tween
+  // before the hook's useEffect fires setReduced(true) — test catches this
+  // as opacity=0.5467. Inline matchMedia is decisive on first paint.
+  const reducedRef = useRef(
+    typeof window !== "undefined" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches
+  );
+  const reduced = reducedRef.current;
 
   useEffect(() => {
     if (!ref.current) return;

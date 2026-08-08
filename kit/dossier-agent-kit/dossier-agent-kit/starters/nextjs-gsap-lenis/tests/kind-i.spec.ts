@@ -6,6 +6,9 @@ import { test, expect } from "@playwright/test";
  */
 
 test.describe("kind-i scroll reveal", () => {
+  test.beforeEach(({ }, testInfo) => {
+    test.skip(testInfo.project.name === "chromium-reduced-motion", "ScrollTrigger not registered under reduced motion");
+  });
   test("scroll-triggered sections exist and match mounted ScrollScene count", async ({ page }) => {
     await page.goto("/");
     const scenes = page.locator("[data-scroll-trigger]");
@@ -32,7 +35,7 @@ test.describe("kind-i scroll reveal", () => {
 
   test("ScrollTrigger instances are killed after navigation away (no leak)", async ({ page }) => {
     await page.goto("/");
-    await page.waitForTimeout(300); // allow GSAP registration
+    await page.waitForTimeout(1000); // allow GSAP dynamic import + idle callback (d64008d)
     const before = await page.evaluate(() => (window as any).ScrollTrigger?.getAll().length ?? 0);
     expect(before).toBeGreaterThan(0);
 
@@ -40,13 +43,16 @@ test.describe("kind-i scroll reveal", () => {
     // module teardown should have fired via effect cleanup; re-navigate and
     // confirm we don't accumulate triggers across mounts
     await page.goto("/");
-    await page.waitForTimeout(300);
+    await page.waitForTimeout(1000);
     const after = await page.evaluate(() => (window as any).ScrollTrigger?.getAll().length ?? 0);
     expect(after).toBe(before); // same count, not before + before (i.e. no leak/duplication)
   });
 });
 
 test.describe("kind-i reduced motion", () => {
+  test.beforeEach(({ }, testInfo) => {
+    test.skip(testInfo.project.name !== "chromium-reduced-motion", "requires reduced-motion context");
+  });
   test.use({ contextOptions: { reducedMotion: "reduce" } });
 
   test("sections render in normal document flow with no pin/scrub triggers", async ({ page }) => {

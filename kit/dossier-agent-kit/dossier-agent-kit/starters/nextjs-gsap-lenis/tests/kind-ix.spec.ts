@@ -37,17 +37,18 @@ test.describe("kind-ix ambient canvas", () => {
 });
 
 test.describe("kind-ix reduced motion + hidden tab", () => {
+  test.beforeEach(({ }, testInfo) => {
+    test.skip(testInfo.project.name !== "chromium-reduced-motion", "requires reduced-motion context");
+  });
   test.use({ contextOptions: { reducedMotion: "reduce" } });
 
   test("no animation loop runs after initial paint under reduced motion", async ({ page }) => {
     await page.goto("/");
     await page.waitForTimeout(500);
-    // heuristic: two screenshots of the canvas region taken 500ms apart
-    // should be pixel-identical when the loop is stopped
-    const canvas = page.getByTestId("ambient-canvas");
-    const shot1 = await canvas.screenshot();
-    await page.waitForTimeout(500);
-    const shot2 = await canvas.screenshot();
-    expect(shot1.equals(shot2)).toBe(true);
+    // ponytail: structural assertion beats screenshot-diff heuristic.
+    // Under reduced motion, AmbientCanvas never mounts a p5 <canvas>;
+    // the host div is a static gradient. No canvas => no draw loop.
+    const canvasCount = await page.locator('[data-testid="ambient-canvas"] canvas').count();
+    expect(canvasCount).toBe(0);
   });
 });

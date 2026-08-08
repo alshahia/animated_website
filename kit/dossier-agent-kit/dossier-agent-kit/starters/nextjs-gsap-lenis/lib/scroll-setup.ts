@@ -80,6 +80,7 @@ export async function registerReveal(
 ) {
   const { default: gsap } = await import("gsap");
   const { ScrollTrigger } = await import("gsap/ScrollTrigger");
+  gsap.registerPlugin(ScrollTrigger); // ponytail: idempotent; closes race vs initScroll's requestIdleCallback path
   const distance = opts.distance ?? "var(--motion-distance-md)";
   const duration = opts.duration ?? 0.22; // motion.duration.base
   const ease = opts.ease ?? "power2.out"; // approximates motion.easing.enter

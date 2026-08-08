@@ -21,7 +21,7 @@ test.describe("kind-x audio-reactive", () => {
   test("visualizer canvas is aria-hidden and not the LCP element", async ({ page }) => {
     await page.goto("/audio-demo");
     const canvas = page.getByTestId("audio-visualizer-canvas");
-    await expect(canvas).toHaveAttribute("aria-hidden", "");
+    await expect(canvas).toHaveAttribute("aria-hidden", "true");
   });
 });
 
