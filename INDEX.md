@@ -57,6 +57,15 @@ If you want to **edit the vendored orchestrator** → focus on `agents_manager/`
 | `resources/animated_website_deepseek_flash/` | **Secondary** — 20-genre inventory + deep anti-pattern coverage + 60+ resources / 80+ templates | — |
 | `resources/animated_website_minimax_2.7/` | — | **Pre-correction — DO NOT USE as canonical** |
 
+### `utils/motionsites-scraper/prompts/` — motion-design prompt corpus (136 entries)
+- `README.md` — index of all 136 prompts (134 generation + **2 critique**)
+- `all.json` — full array, one entry per prompt (1 MB)
+- `prompts/<slug>.md` — one Markdown file per prompt
+- **Criticism prompts (review phase)**:
+  - `prompts/criticism.md` (`id: criticism-comprehensive`) — full multi-dimensional audit (10 dimensions, 9 output sections, severity rubric 🔴🟠🟡🔵⚪, license report)
+  - `prompts/criticism-quick.md` (`id: criticism-quick-scan`) — ≤15 min verdict (Ship / Fix / Block)
+- Use them when reviewing an already-built animated site, not when generating one.
+
 ---
 
 ## Vendored tooling (the backdrop)
@@ -164,6 +173,9 @@ A: `share/README.md` "Who reads / writes what" table.
 **Q: Where are past tasks?**
 A: `tasks/T-YYYY-MM-DD-NNN.md`.
 
+**Q: I want to review / critique an already-built animated website.**
+A: `utils/motionsites-scraper/prompts/prompts/criticism.md` for the full audit, or `.../criticism-quick.md` for a ≤15 min Ship/Fix/Block verdict. Both prompts reference the 12 kinds, 3 budget caps, and the 10 CC + per-kind forbidden patterns — read the prompt as-is, do not paraphrase.
+
 ---
 
 ## Things to NEVER do
@@ -225,4 +237,11 @@ E:\react_projects\animated_website\
     ├── animated_website_minimax_3/        ← CANONICAL
     ├── animated_website_deepseek_flash/   ← secondary (breadth)
     └── animated_website_minimax_2.7/      ← DO NOT USE (pre-correction)
+└── utils/motionsites-scraper/   ← motion-design prompt corpus (136 prompts incl. 2 critique)
+    └── prompts/
+        ├── README.md           ← 136-row index
+        ├── all.json            ← full array (1 MB)
+        └── prompts/            ← one .md per prompt
+            ├── criticism.md            ← id: criticism-comprehensive
+            └── criticism-quick.md      ← id: criticism-quick-scan
 ```

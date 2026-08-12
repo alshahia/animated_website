@@ -17,10 +17,20 @@ npm run scrape
 ```
 
 Output goes to `prompts/`:
-- `prompts.json` — full array, one entry per prompt
-- `<slug>.md` — one Markdown file per prompt
+- `all.json` — full array, one entry per prompt
+- `README.md` — index of all captured prompts (table of title · category · page_type · file)
+- `prompts/<slug>.md` — one Markdown file per prompt
 
-Re-running is safe: existing titles in `prompts.json` are skipped, so it only captures new ones.
+Re-running is safe: existing titles in `all.json` are skipped, so it only captures new ones.
+
+## What's in the captured corpus
+
+- **134 generation prompts** (page_type `hero` / `landing`) — the motionsites.ai corpus that `kit/AGENT_SYSTEM_PROMPT.md` references.
+- **2 critique prompts** (page_type `report`, category `Critique`) — hand-written, NOT scraped:
+  - `prompts/criticism.md` (`id: criticism-comprehensive`) — full multi-dimensional audit (10 review dimensions, 9 mandatory output sections, severity rubric 🔴🟠🟡🔵⚪, license report). Use for deep review of an already-built site.
+  - `prompts/criticism-quick.md` (`id: criticism-quick-scan`) — ≤15 min Ship / Fix / Block verdict. Use as a fast pre-flight gate.
+
+Total: **136** prompts (`README.md` "Total: 136"). Do not modify the two critique prompts without a clear use case — they are the single source of truth for review output shape.
 
 ## How it works
 

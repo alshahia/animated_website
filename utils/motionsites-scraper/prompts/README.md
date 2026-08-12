@@ -1,6 +1,6 @@
 # motionsites.ai — Free Prompts
 
-Total: 134
+Total: 136
 
 | Title | Category | Page Type | File |
 |---|---|---|---|
@@ -138,3 +138,5 @@ Total: 134
 | CodeNest Coding Platform | Landing Page | hero | [codenest-coding-platform.md](./prompts/codenest-coding-platform.md) |
 | Velorah | Agency | hero | [velorah.md](./prompts/velorah.md) |
 | Datacore Booking | SaaS | hero | [datacore-booking.md](./prompts/datacore-booking.md) |
+| Criticism — Animated Website Critique | Critique | report | [criticism.md](./prompts/criticism.md) |
+| Criticism — Quick Animated Site Scan | Critique | report | [criticism-quick.md](./prompts/criticism-quick.md) |

@@ -34,6 +34,7 @@ The animated-website project is the protagonist. agents-manager is the orchestra
 | `resources/animated_website_minimax_2.7/` | **Do not use** — pre-correction, 8 known errors |
 | `agents_manager/` | Vendored multi-agent orchestrator (its own `AGENTS.md` lives here) |
 | `bin/`, `share/`, `tasks/`, `scripts/`, `opencode.jsonc` | Vendored orchestrator runtime |
+| `utils/motionsites-scraper/prompts/` | 136 scraped motionsites.ai prompts (134 generation + **2 critique**); `all.json` + `README.md` index + one `.md` per prompt |
 
 ## The 12 kinds (one-line each)
 
@@ -51,6 +52,16 @@ Full matrix: `kit/dossier-agent-kit/dossier-agent-kit/schemas/kinds.json`. Decis
 - **Don't put `@theatre/studio` (AGPL-3.0) or Remotion-at-scale (commercial threshold) in a stack without flagging it** — see `resources/animated_website_minimax_3/07_license_posture.md` watchlist.
 - **Don't edit `agents_manager/<role>/SKILL.md`** unless redesigning the vendored controller — that's upstream territory.
 - **Don't commit unless explicitly asked.** Project convention; commits are user-driven.
+
+## Criticism prompts (review / critique phase)
+
+For reviewing an already-built animated website — constructive, positive, and negative critique that produces an actionable fix/enhance/improve report — read the prompt, **don't paraphrase it**, then run it.
+
+- **`prompts/criticism.md`** (`id: criticism-comprehensive`) — full multi-dimensional audit (10 review dimensions, 9 mandatory output sections, severity rubric, license report). Use for deep reviews.
+- **`prompts/criticism-quick.md`** (`id: criticism-quick-scan`) — ≤15 min verdict with Ship / Fix / Block decision. Use for fast pre-flight or CI gate.
+- Index row + 134 corpus prompts: `utils/motionsites-scraper/prompts/README.md` (total 136, category `Critique`, page_type `report`).
+- Both prompts assume the agent can inspect the target site (Playwright / axe-core / Lighthouse / DevTools) and produce structured findings with severity 🔴🟠🟡🔵⚪, evidence, recommended fix, effort, and priority.
+- **Do not** modify the prompts themselves without a clear use case — they are the single source of truth for review output shape.
 
 ## Vendored agents-manager
 
